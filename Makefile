@@ -11,8 +11,8 @@ build-with-distrobox:
 	#distrobox stop -Y $(DISTROBOX_NAME)
 
 clean:
-	docker kill distrobox-$(DISTROBOX_NAME) || /bin/true
-	docker rm -f distrobox-$(DISTROBOX_NAME)
+	$(CONTAINER_MANAGER) kill $(DISTROBOX_NAME) || /bin/true
+	$(CONTAINER_MANAGER) rm -f $(DISTROBOX_NAME)
 	rm -rf .venv
 
 compile:
