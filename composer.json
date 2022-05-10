@@ -39,6 +39,12 @@
         "sentry/sdk": "^2.0",
         "twig/twig": "^2.12",
         "deployer/recipes": "dev-master",
-        "hipex/deploy-configuration": "^2.4.2"
+        "hypernode/deploy-configuration": "dev-master"
+    },
+    "repositories": {
+        "hypernode-deploy-configuration": {
+            "type": "git",
+            "url": "https://github.com/ByteInternet/hypernode-deploy-configuration"
+        }
     }
 }
