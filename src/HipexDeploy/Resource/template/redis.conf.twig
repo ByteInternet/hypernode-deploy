@@ -1,0 +1,43 @@
+# This file is generated with Hipex Deploy. DO NOT EDIT!
+bind 0.0.0.0
+loglevel notice
+databases 1
+maxmemory-policy allkeys-lru
+timeout 10
+daemonize no
+supervised no
+maxmemory {{ max_memory }}
+dir {{ directory }}
+pidfile {{ pid_file }}
+
+{% if port is defined %}
+port {{ port }}
+{% endif %}
+
+{% if unix_socket is defined %}
+unixsocket {{ unix_socket }}
+unixsocketperm 770
+{% endif %}
+
+{% if snapshot_frequency is defined %}
+save {{ snapshot_frequency }} 1
+{% else %}
+appendonly no
+save ""
+{% endif %}
+
+{% if master is defined %}
+slaveof {{ master }} {{ port }}
+{% endif %}
+
+# Extra settings
+{% for key, setting in extra_settings %}
+{{ key }} {{ setting }}
+{% endfor %}
+
+# Config includes
+{% if includes is defined %}
+{% for file in includes %}
+include {{ file }}
+{% endfor %}
+{% endif %}

@@ -1,0 +1,9 @@
+ignored:
+    - DL3018 # tag apk add versions
+    - DL4006 # set -o pipefail
+    - SC2039 # POSIX sh [[ ]]
+    - SC2038 # Use -print0/-0 or -exec + to allow for non-alphanumeric filenames.
+    - SC2086 # Double quote to prevent globbing and word splitting.
+    - DL3022 # Allowed to copy from external image
+    - DL3008 # Do not require specific pinned package versions
+    - DL3059 # Allow multiple consecutive RUN statements

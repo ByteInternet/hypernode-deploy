@@ -1,0 +1,32 @@
+FROM {{base_image}}
+
+# Copy application code
+COPY build.tgz /app/build.tgz
+RUN cd /app \
+    && tar -xf build.tgz \
+    && rm -Rf build.tgz \
+    && find ./ -name \*.php -delete
+
+# Link public folder
+{% if public_folder != "public" %}
+RUN ln -s {{public_folder}} public
+{% endif %}
+
+# Prepare volumes
+RUN mkdir -p {% for volume in volumes %}/app/{{volume}} {% endfor %} \
+    && chown nginx:nginx {% for volume in volumes %}/app/{{volume}} {% endfor %}
+
+{% for volume in volumes %}
+VOLUME /app/{{volume}}
+{% endfor %}
+
+# Copy nginx configuration
+{% if config_directory is defined %}
+RUN rsync \
+    --delete \
+    --verbose \
+    --recursive \
+    --copy-links \
+    --ignore-errors \
+     /app/{{config_directory}}/ /etc/nginx/app/
+{% endif %}

@@ -1,0 +1,87 @@
+# PHP 7.2
+publish:php7-2-node10:
+    needs: ["test:php7-2-node10"]
+    extends:
+        - .publish
+        - .variables-php7-2
+        - .variables-node10
+
+publish:php7-2-node12:
+    needs: ["test:php7-2-node12"]
+    extends:
+        - .publish
+        - .variables-php7-2
+        - .variables-node12
+
+publish:php7-2-node14:
+    needs: ["test:php7-2-node14"]
+    extends:
+        - .publish
+        - .variables-php7-2
+        - .variables-node14
+
+# PHP 7.3
+publish:php7-3-node10:
+    needs: ["test:php7-3-node10"]
+    extends:
+        - .publish
+        - .variables-php7-3
+        - .variables-node10
+
+publish:php7-3-node12:
+    needs: ["test:php7-3-node12"]
+    extends:
+        - .publish
+        - .variables-php7-3
+        - .variables-node12
+
+publish:php7-3-node14:
+    needs: ["test:php7-3-node14"]
+    extends:
+        - .publish
+        - .variables-php7-3
+        - .variables-node14
+
+# PHP 7.4
+publish:php7-4-node10:
+    needs: ["test:php7-4-node10"]
+    extends:
+        - .publish
+        - .variables-php7-4
+        - .variables-node10
+
+publish:php7-4-node12:
+    needs: ["test:php7-4-node12"]
+    extends:
+        - .publish
+        - .variables-php7-4
+        - .variables-node12
+
+publish:php7-4-node14:
+    needs: ["test:php7-4-node14"]
+    extends:
+        - .publish
+        - .variables-php7-4
+        - .variables-node14
+
+# PHP 8.0
+publish:php8-0-node10:
+    needs: ["test:php8-0-node10"]
+    extends:
+        - .publish
+        - .variables-php8-0
+        - .variables-node10
+
+publish:php8-0-node12:
+    needs: ["test:php8-0-node12"]
+    extends:
+        - .publish
+        - .variables-php8-0
+        - .variables-node12
+
+publish:php8-0-node14:
+    needs: ["test:php8-0-node14"]
+    extends:
+        - .publish
+        - .variables-php8-0
+        - .variables-node14

@@ -1,0 +1,13 @@
+{
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "platform": {
+            "php": "7.2"
+        }
+    },
+    "require": {
+        "hirak/prestissimo": "^0.3",
+        "humbug/box": "^3.8"
+    }
+}

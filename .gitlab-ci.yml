@@ -1,0 +1,77 @@
+image: docker:latest
+
+variables:
+    CONTAINER_IMAGE: git-registry.emico.nl/$CI_PROJECT_PATH
+    CONTAINER_IMAGE_HUB: hipex/deploy
+    DOCKER_DRIVER: overlay2
+    COMPOSER_CACHE_DIR: composer-cache
+
+stages:
+    - quality
+    - build
+    - test
+    - release
+    - publish
+
+services:
+    - docker:dind
+
+# General extends
+.default:
+    only:
+        - tags
+        - merge_requests
+
+include:
+    - '/gitlab/.gitlab-ci-variables-php.yml'
+    - '/gitlab/.gitlab-ci-variables-node.yml'
+    - '/gitlab/.gitlab-ci-build.yml'
+    - '/gitlab/.gitlab-ci-test.yml'
+    - '/gitlab/.gitlab-ci-publish.yml'
+
+# Code quality step
+quality:dockerfile:
+    extends: .default
+    stage: quality
+    image: hadolint/hadolint:latest-debian
+    script:
+        - find . -type f -name "Dockerfile" | xargs --max-lines=1 hadolint --config=hadolint.yaml
+
+# Build include
+.build:
+    extends: .default
+    stage: build
+    script:
+        - ./ci/build.sh
+
+# Test include
+.test:
+    extends: .default
+    image: docker:latest
+    stage: test
+    before_script:
+        - apk add curl
+        - curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64 && chmod +x container-structure-test-linux-amd64 && mkdir -p $HOME/bin && export PATH=$PATH:$HOME/bin && mv container-structure-test-linux-amd64 $HOME/bin/container-structure-test
+    script:
+        - ./ci/test.sh
+
+# Publish include
+.publish:
+    extends: .default
+    stage: publish
+    only:
+        - tags
+    script:
+        - ./ci/publish.sh
+
+# Release step
+release:
+    image: registry.hipex.cloud/hipex-services/release-cl
+    stage: release
+    script:
+        - semantic-release
+    only:
+        - master
+        - alpha
+        - beta
+        - next

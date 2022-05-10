@@ -1,0 +1,28 @@
+{
+    "plugins": [
+        "@semantic-release/commit-analyzer",
+        "@semantic-release/release-notes-generator",
+        [
+            "@semantic-release/gitlab",
+            {
+                "gitlabUrl": "https://git.emico.nl/"
+            }
+        ],
+        [
+            "semantic-release-slack-bot",
+            {
+                "notifyOnSuccess": true,
+                "notifyOnFail": true
+            }
+        ],
+        [
+            "@semantic-release/git",
+            {
+                "assets": [
+                    "docs/CHANGELOG.md"
+                ],
+                "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
+            }
+        ]
+    ]
+}

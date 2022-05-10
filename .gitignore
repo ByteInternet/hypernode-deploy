@@ -1,0 +1,7 @@
+/vendor/
+/.idea
+/build/*.phar
+/build/vendor
+.DS_Store
+*.iml
+*.local.*

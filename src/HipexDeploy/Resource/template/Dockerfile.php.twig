@@ -1,0 +1,34 @@
+FROM {{base_image}}
+
+# Default env variables
+ENV DATABASE_HOSTNAME="mysql"
+ENV DATABASE_USERNAME="username"
+ENV DATABASE_PASSWORD="password"
+ENV REDIS_FPC_MASTER_HOST="redis"
+ENV REDIS_FPC_MASTER_PORT="7002"
+ENV REDIS_FPC_SLAVE_HOST="localhost"
+ENV REDIS_FPC_SLAVE_PORT="7002"
+ENV REDIS_SESSION_HOST="redis"
+ENV REDIS_SESSION_PORT="7001"
+ENV REDIS_CACHE_MASTER_HOST="redis"
+ENV REDIS_CACHE_MASTER_PORT="7000"
+ENV REDIS_CACHE_SLAVE_HOST="localhost"
+ENV REDIS_CACHE_SLAVE_PORT="7000"
+
+# Copy application code
+COPY build.tgz /app/build.tgz
+RUN tar -xf /app/build.tgz \
+    && rm -Rf /app/build.tgz
+
+# Link public folder
+{% if public_folder != "public" %}
+RUN ln -s {{public_folder}} public
+{% endif %}
+
+# Prepare volumes
+RUN mkdir -p {% for volume in volumes %}/app/{{volume}} {% endfor %} \
+    && chown app:app {% for volume in volumes %}/app/{{volume}} {% endfor %}
+
+{% for volume in volumes %}
+VOLUME /app/{{volume}}
+{% endfor %}

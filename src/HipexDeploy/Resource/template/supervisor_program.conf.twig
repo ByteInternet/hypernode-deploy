@@ -1,0 +1,14 @@
+[program:{{ program_name }}]
+command=bash -c '{{ command }}'
+{% if numprocs is defined %}
+numprocs={{ numprocs }}
+process_name=%(process_num)02d
+{% else %}
+numprocs=1
+{% endif %}
+autorestart=true
+autostart=true
+directory={{ directory }}
+stdout_logfile={{ stdout_log }}
+redirect_stderr=true
+stdout_logfile_maxbytes=50MB
