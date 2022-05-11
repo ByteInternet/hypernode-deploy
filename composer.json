@@ -13,7 +13,7 @@
         "deployer/deployer": "^6.8",
         "deployer/recipes": "dev-master",
         "doctrine/annotations": "^1.6",
-        "hypernode/deploy-configuration": "dev-namespace",
+        "hypernode/deploy-configuration": "dev-master",
         "ocramius/proxy-manager": "^2.1",
         "php-di/php-di": "^6.0",
         "psr/log": "^1.0",
