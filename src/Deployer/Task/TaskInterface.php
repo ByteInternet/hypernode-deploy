@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @author Hypernode
- * @copyright Copyright (c) Hypernode
- */
-
 namespace Hypernode\Deploy\Deployer\Task;
 
 use Hypernode\DeployConfiguration\Configuration;

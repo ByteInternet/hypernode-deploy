@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @author Hypernode
- * @copyright Copyright (c) Hypernode
- */
-
 namespace Hypernode\Deploy\Stdlib;
 
 use function Deployer\run;
