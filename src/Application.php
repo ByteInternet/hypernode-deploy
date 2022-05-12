@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @author Hypernode
+ * @copyright Copyright (c) Hypernode
+ */
+
 namespace Hypernode\Deploy;
 
 use Composer\InstalledVersions;
@@ -19,6 +24,19 @@ use Twig\Loader\FilesystemLoader;
 
 class Application
 {
+    private const APP_LOGO = <<<NAME
+        __  __                                      __        ____             __
+       / / / /_  ______  ___  _________  ____  ____/ /__     / __ \___  ____  / /___  __  __
+      / /_/ / / / / __ \/ _ \/ ___/ __ \/ __ \/ __  / _ \   / / / / _ \/ __ \/ / __ \/ / / /
+     / __  / /_/ / /_/ /  __/ /  / / / / /_/ / /_/ /  __/  / /_/ /  __/ /_/ / / /_/ / /_/ /
+    /_/ /_/\__, / .___/\___/_/  /_/ /_/\____/\__,_/\___/  /_____/\___/ .___/_/\____/\__, /
+          /____/_/                                                  /_/            /____/
+
+    Deployer version: %s
+    Deployer Recipe version: %s
+
+    NAME;
+
     /**
      * Run application
      *
@@ -33,21 +51,13 @@ class Application
 
         $container = $this->createDiContainer();
         $application = new ConsoleApplication();
-        $application->setName('Hipex Deploy');
-        $application->setName(implode(PHP_EOL, [
-            ' _   _ _                  ______           _',
-            '| | | (_)                 |  _  \         | |',
-            '| |_| |_ _ __   _____  __ | | | |___ _ __ | | ___  _   _',
-            '|  _  | | \'_ \ / _ \ \/ / | | | / _ \ \'_ \| |/ _ \| | | |',
-            '| | | | | |_) |  __/>  <  | |/ /  __/ |_) | | (_) | |_| |',
-            '\_| |_/_| .__/ \___/_/\_\ |___/ \___| .__/|_|\___/ \__, |',
-            '        | |                         | |             __/ |',
-            '        |_|                         |_|            |___/',
-            '',
-            sprintf('Deployer version: %s', InstalledVersions::getVersion('deployer/deployer')),
-            sprintf('Deployer Recipe version: %s', InstalledVersions::getVersion('deployer/recipes')),
-            ''
-        ]));
+        $application->setName(
+            sprintf(
+                self::APP_LOGO,
+                InstalledVersions::getVersion('deployer/deployer'),
+                InstalledVersions::getVersion('deployer/recipes')
+            )
+        );
         $application->setVersion('Version: ' . $this->getVersion());
         $this->addCommands($container, $application);
         $this->registerTwigLoader($container);
