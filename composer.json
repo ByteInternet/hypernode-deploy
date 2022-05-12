@@ -14,7 +14,6 @@
         "deployer/recipes": "dev-master",
         "doctrine/annotations": "^1.6",
         "hypernode/deploy-configuration": "dev-master",
-        "ocramius/proxy-manager": "^2.1",
         "php-di/php-di": "^6.0",
         "psr/log": "^1.0",
         "sentry/sdk": "^2.0",
