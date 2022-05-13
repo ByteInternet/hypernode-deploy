@@ -3,17 +3,19 @@
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
 use Hypernode\DeployConfiguration\ServerRole;
+use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\DeployConfiguration\Configuration;
+
 use function Deployer\run;
 use function Deployer\set;
 use function Deployer\task;
-
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
-use Hypernode\DeployConfiguration\Configuration;
 
 class PackageTask implements TaskInterface
 {
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {
@@ -59,13 +61,21 @@ class PackageTask implements TaskInterface
     }
 
     /**
-     * @param string[] $paths
-     * @return array
+     * @param string[]|object[] $paths
+     * @return string[]
      */
     private function prefixPath(array $paths): array
     {
-        return array_map(static function (string $path): string {
-            return './' . ltrim($path, '/');
-        }, $paths);
+        $result = [];
+
+        foreach ($paths as $path) {
+            if (\is_object($path)) {
+                /** @psalm-suppress InvalidCast cast is ok here */
+                $path = (string)$path;
+            }
+            $result[] = './' . ltrim($path, '/');
+        }
+
+        return $result;
     }
 }

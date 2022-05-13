@@ -24,6 +24,8 @@ class RunTask extends Command
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     protected function configure()
     {
@@ -36,10 +38,12 @@ class RunTask extends Command
 
     /**
      * {@inheritdoc}
+     *
      * @throws Throwable
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->deployRunner->run($output, $input->getArgument('stage'), $input->getArgument('task'));
+        return 0;
     }
 }

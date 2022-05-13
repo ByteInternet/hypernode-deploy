@@ -28,6 +28,8 @@ class Build extends Command
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     protected function configure()
     {
@@ -38,10 +40,12 @@ class Build extends Command
 
     /**
      * {@inheritdoc}
+     *
      * @throws Throwable
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->deployRunner->run($output, 'build', 'build');
+        return 0;
     }
 }

@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-
 namespace Hypernode\Deploy\Deployer\Task\Common;
+
+use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\DeployConfiguration\Configuration;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 use function Deployer\get;
 use function Deployer\runLocally;
@@ -12,15 +15,14 @@ use function Deployer\task;
 use function Deployer\testLocally;
 use function Deployer\writeln;
 
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
-use Hypernode\DeployConfiguration\Configuration;
-
 class PrepareSshTaskGlobal implements TaskInterface
 {
     private const BITBUCKET_KEY_PATH = '/opt/atlassian/pipelines/agent/ssh/id_rsa';
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {
@@ -60,6 +62,8 @@ class PrepareSshTaskGlobal implements TaskInterface
 
     /**
      * Initialize private key if set
+     *
+     * @return void
      */
     private function configureKey()
     {

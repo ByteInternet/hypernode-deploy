@@ -2,23 +2,27 @@
 
 namespace Hypernode\Deploy\Deployer;
 
-use function Deployer\parse;
-use function Deployer\run;
-use function Deployer\task;
 use Deployer\Task\Task;
-use function Deployer\within;
-use function Deployer\writeln;
 use Hypernode\DeployConfiguration\Command\Command;
 use Hypernode\DeployConfiguration\Command\DeployCommand;
 use Hypernode\DeployConfiguration\ServerRoleConfigurableInterface;
 use Hypernode\DeployConfiguration\StageConfigurableInterface;
+
+use function Deployer\parse;
+use function Deployer\run;
+use function Deployer\task;
+use function Deployer\within;
+use function Deployer\writeln;
 
 class TaskBuilder
 {
     /**
      * @param Command[] $commands
      * @param string $namePrefix
-     * @return Task[]
+     *
+     * @return string[]
+     *
+     * @psalm-return list<string>
      */
     public function buildAll(array $commands, string $namePrefix): array
     {
@@ -57,7 +61,7 @@ class TaskBuilder
     /**
      * @param Command $command
      */
-    private function runCommandWithin(Command $command)
+    private function runCommandWithin(Command $command): void
     {
         $directory = $command->getWorkingDirectory();
         if ($directory === null && $command instanceof DeployCommand) {
@@ -72,7 +76,7 @@ class TaskBuilder
     /**
      * @param Command $command
      */
-    private function runCommand(Command $command)
+    private function runCommand(Command $command): void
     {
         $commandAction = $command->getCommand();
         if (\is_callable($commandAction)) {

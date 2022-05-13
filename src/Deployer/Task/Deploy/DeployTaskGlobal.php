@@ -2,12 +2,12 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Deploy;
 
-use function Deployer\task;
-
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\Deploy\Deployer\TaskBuilder;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\ServerRole;
+
+use function Deployer\task;
 
 class DeployTaskGlobal implements TaskInterface
 {
@@ -28,6 +28,8 @@ class DeployTaskGlobal implements TaskInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

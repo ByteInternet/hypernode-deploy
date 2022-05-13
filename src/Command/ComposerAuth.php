@@ -24,6 +24,8 @@ class ComposerAuth extends Command
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     protected function configure()
     {
@@ -34,10 +36,12 @@ class ComposerAuth extends Command
 
     /**
      * {@inheritdoc}
+     *
      * @throws Throwable
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->deployRunner->run($output, 'build', 'deploy:vendors:auth');
+        return 0;
     }
 }

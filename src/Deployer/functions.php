@@ -4,6 +4,7 @@ namespace Hypernode\Deploy\Deployer;
 
 use Deployer\Deployer;
 use Hypernode\DeployConfiguration\Exception\EnvironmentVariableNotDefinedException;
+
 use function Hypernode\DeployConfiguration\getenv;
 
 /**
@@ -11,6 +12,8 @@ use function Hypernode\DeployConfiguration\getenv;
  *
  * @param string $it The task before $that should be run.
  * @param string $that The task to be run.
+ *
+ * @return void
  */
 function before($it, $that)
 {
@@ -29,6 +32,8 @@ function before($it, $that)
  *
  * @param string $it The task after $that should be run.
  * @param string $that The task to be run.
+ *
+ * @return void
  */
 function after($it, $that)
 {

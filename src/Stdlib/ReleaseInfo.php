@@ -2,11 +2,12 @@
 
 namespace Hypernode\Deploy\Stdlib;
 
+use Hypernode\DeployConfiguration\Stage;
+
 use function Deployer\get;
 use function Deployer\parse;
 use function Deployer\runLocally;
 use function Deployer\write;
-use Hypernode\DeployConfiguration\Stage;
 
 class ReleaseInfo
 {

@@ -2,8 +2,6 @@
 
 namespace Hypernode\Deploy\Deployer\Task\After;
 
-use function Hypernode\Deploy\Deployer\after;
-use function Deployer\set;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
@@ -12,6 +10,9 @@ use Hypernode\DeployConfiguration\AfterDeployTask\NewRelic;
 use Hypernode\DeployConfiguration\Command\Command;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
+
+use function Hypernode\Deploy\Deployer\after;
+use function Deployer\set;
 
 class NewRelicTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
@@ -30,10 +31,6 @@ class NewRelicTask implements ConfigurableTaskInterface, RegisterAfterInterface
         $this->recipeLoader = $recipeLoader;
     }
 
-    /**
-     * @param Command $config
-     * @return bool
-     */
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof NewRelic;
@@ -63,6 +60,8 @@ class NewRelicTask implements ConfigurableTaskInterface, RegisterAfterInterface
      * Configure deployer using Hipex configuration
      *
      * @param TaskConfigurationInterface|NewRelic $config
+     *
+     * @return void
      */
     public function configureTask(TaskConfigurationInterface $config)
     {
@@ -76,6 +75,8 @@ class NewRelicTask implements ConfigurableTaskInterface, RegisterAfterInterface
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

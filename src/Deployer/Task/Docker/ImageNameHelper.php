@@ -6,6 +6,7 @@ namespace Hypernode\Deploy\Deployer\Task\Docker;
 
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Exception\EnvironmentVariableNotDefinedException;
+
 use function Hypernode\Deploy\Deployer\getenvFallback;
 use function Hypernode\DeployConfiguration\getenv;
 

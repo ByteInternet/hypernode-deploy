@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-
 namespace Hypernode\Deploy\Deployer\Task\Common;
-
-use function Deployer\set;
 
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\Deploy\Stdlib\CpuCoreInfo;
 use Hypernode\Deploy\Stdlib\ReleaseInfo;
 use Hypernode\DeployConfiguration\Configuration;
+
+use function Deployer\set;
 
 class DefaultsTaskGlobal implements TaskInterface
 {
@@ -38,6 +37,8 @@ class DefaultsTaskGlobal implements TaskInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

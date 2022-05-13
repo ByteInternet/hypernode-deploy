@@ -3,15 +3,15 @@
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
 use Hypernode\DeployConfiguration\ServerRole;
+use Hypernode\Deploy\Deployer\RecipeLoader;
+use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
+use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\DeployConfiguration\Configuration;
+
 use function Hypernode\Deploy\Deployer\after;
 use function Deployer\run;
 use function Deployer\task;
 use function Deployer\test;
-use Hypernode\Deploy\Deployer\RecipeLoader;
-
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
-use Hypernode\DeployConfiguration\Configuration;
 
 class ComposerAuthTaskGlobal implements TaskInterface, RegisterAfterInterface
 {
@@ -32,6 +32,8 @@ class ComposerAuthTaskGlobal implements TaskInterface, RegisterAfterInterface
 
     /**
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

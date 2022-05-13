@@ -2,9 +2,6 @@
 
 namespace Hypernode\Deploy\Deployer\Task\After;
 
-use function Hypernode\Deploy\Deployer\after;
-use function Hypernode\Deploy\Deployer\before;
-use function Deployer\set;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
@@ -13,6 +10,10 @@ use Hypernode\DeployConfiguration\AfterDeployTask\SlackWebhook;
 use Hypernode\DeployConfiguration\Command\Command;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
+
+use function Hypernode\Deploy\Deployer\after;
+use function Hypernode\Deploy\Deployer\before;
+use function Deployer\set;
 
 class SlackTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
@@ -35,6 +36,8 @@ class SlackTask implements ConfigurableTaskInterface, RegisterAfterInterface
      * Configure using hipex configuration command
      *
      * @param TaskConfigurationInterface|SlackWebhook $config
+     *
+     * @return void
      */
     public function configureTask(TaskConfigurationInterface $config)
     {
@@ -44,10 +47,6 @@ class SlackTask implements ConfigurableTaskInterface, RegisterAfterInterface
         set('slack_text', '{{release_message}}');
     }
 
-    /**
-     * @param Command $config
-     * @return bool
-     */
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof SlackWebhook;
@@ -79,6 +78,8 @@ class SlackTask implements ConfigurableTaskInterface, RegisterAfterInterface
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

@@ -9,11 +9,6 @@ use Deployer\Exception\Exception;
 use Deployer\Exception\GracefulShutdownException;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
-use function Deployer\host;
-use function Deployer\localhost;
-use function Deployer\run;
-use function Deployer\task;
-use function Deployer\output;
 use DI\Annotation\Injectable;
 use Hypernode\Deploy\Deployer\Task\CommandTaskInterface;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
@@ -32,6 +27,12 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
+
+use function Deployer\host;
+use function Deployer\localhost;
+use function Deployer\run;
+use function Deployer\task;
+use function Deployer\output;
 
 class DeployRunner
 {
@@ -79,9 +80,12 @@ class DeployRunner
      * @param OutputInterface $output
      * @param string $stage
      * @param string $task
+     *
      * @throws GracefulShutdownException
      * @throws Throwable
      * @throws Exception
+     *
+     * @return void
      */
     public function run(OutputInterface $output, string $stage, string $task = 'deploy')
     {
@@ -101,14 +105,16 @@ class DeployRunner
 
     /**
      * Initialize deployer settings
+     *
      * @param Deployer        $deployer
      * @param OutputInterface $output
+     *
      * @throws Exception
      * @throws GracefulShutdownException
      * @throws Throwable
      * @throws InvalidConfigurationException
      */
-    private function initializeDeployer(Deployer $deployer)
+    private function initializeDeployer(Deployer $deployer): void
     {
         $this->recipeLoader->load('common.php');
         $tasks = $this->taskFactory->loadAll();
@@ -142,9 +148,10 @@ class DeployRunner
      *
      * @param ConfigurableTaskInterface $task
      * @param Configuration             $mainConfig
+     *
      * @throws InvalidConfigurationException
      */
-    private function initializeConfigurableTask(ConfigurableTaskInterface $task, Configuration $mainConfig)
+    private function initializeConfigurableTask(ConfigurableTaskInterface $task, Configuration $mainConfig): void
     {
         $configurations = array_merge(
             $mainConfig->getBuildCommands(),
@@ -196,7 +203,7 @@ class DeployRunner
     /**
      * @param Configuration $config
      */
-    private function configureStages(Configuration $config)
+    private function configureStages(Configuration $config): void
     {
         $this->initializeBuildStage();
 
@@ -211,8 +218,9 @@ class DeployRunner
      * @param Stage $stage
      * @param Server $server
      */
-    private function configureStageServer(Stage $stage, Server $server)
+    private function configureStageServer(Stage $stage, Server $server): void
     {
+        /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
         $host = host($stage->getName() . ':' . $server->getHostname());
         $host->hostname($server->getHostname());
         $host->port(339);
@@ -242,6 +250,7 @@ class DeployRunner
      */
     private function initializeBuildStage(): void
     {
+        /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
         $host = localhost('build');
         $host->stage('build');
         $host->set('bin/php', 'php');
@@ -251,11 +260,12 @@ class DeployRunner
      * @param Deployer $deployer
      * @param string $stage
      * @param string $task
+     *
      * @throws GracefulShutdownException
      * @throws Throwable
      * @throws Exception
      */
-    private function runStage(Deployer $deployer, string $stage, string $task = 'deploy')
+    private function runStage(Deployer $deployer, string $stage, string $task = 'deploy'): void
     {
         $hosts = $deployer->hostSelector->getHosts($stage);
         if (empty($hosts)) {
@@ -317,6 +327,7 @@ class DeployRunner
      */
     private function tryComposerInstall(Deployer $deployer): void
     {
+        /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
         $host = localhost('composer-prepare');
         $host->stage('composer-prepare');
         $host->set('bin/php', 'php');
@@ -338,6 +349,7 @@ class DeployRunner
      */
     private function initializeAppAutoloader(): void
     {
+        /** @psalm-suppress UndefinedConstant */
         if (file_exists(WORKING_DIR . '/vendor/autoload.php')) {
             require_once WORKING_DIR . '/vendor/autoload.php';
         }

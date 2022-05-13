@@ -3,14 +3,8 @@
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
-use function Deployer\run;
-use function Deployer\set;
-use function Deployer\task;
 use Deployer\Task\Context;
 use Deployer\Task\Task;
-use function Deployer\upload;
-use function Deployer\within;
-use function Hypernode\Deploy\Deployer\before;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\DeployConfiguration\Configuration;
@@ -18,9 +12,15 @@ use Hypernode\DeployConfiguration\PlatformConfiguration\CronConfiguration;
 use Hypernode\DeployConfiguration\ServerRole;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
+use function Deployer\run;
+use function Deployer\set;
+use function Deployer\task;
+use function Deployer\upload;
+use function Deployer\within;
+use function Hypernode\Deploy\Deployer\before;
+
 class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
-
     use IncrementedTaskTrait;
 
     /**
@@ -60,7 +60,7 @@ class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
         return task($this->getTaskName(), function () use ($cronSourceFile) {
             upload('{{' . $cronSourceFile . '}}', '/tmp/crontab.source');
             within('{{release_path}}', function () use ($cronSourceFile) {
-                set('cron/tmp-file', '/tmp/crontab.' . md5(rand()));
+                set('cron/tmp-file', '/tmp/crontab.' . md5((string)rand()));
                 try {
                     $host = Context::get()->getHost();
                     $path = sprintf('/home/%s/.bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin', $host->getUser());
@@ -95,6 +95,8 @@ class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

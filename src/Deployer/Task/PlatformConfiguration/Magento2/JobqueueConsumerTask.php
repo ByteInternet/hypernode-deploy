@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration\Magento2;
 
 use Deployer\Task\Task;
@@ -12,6 +11,7 @@ use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\PlatformConfiguration\Magento2\JobQueueConsumer;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Twig\Environment;
+
 use function Deployer\get;
 use function Deployer\run;
 use function Deployer\task;
@@ -47,6 +47,8 @@ class JobqueueConsumerTask implements ConfigurableTaskInterface, RegisterAfterIn
      * Configure deployer using Hipex configuration
      *
      * @param TaskConfigurationInterface $config
+     *
+     * @return void
      */
     public function configureTask(TaskConfigurationInterface $config)
     {
@@ -126,6 +128,8 @@ class JobqueueConsumerTask implements ConfigurableTaskInterface, RegisterAfterIn
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

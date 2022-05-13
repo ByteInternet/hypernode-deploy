@@ -2,13 +2,14 @@
 
 namespace Hypernode\Deploy\Di;
 
-use function DI\autowire;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use function DI\autowire;
 
 class ConsoleDefinition
 {

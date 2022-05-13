@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Hypernode\Deploy\Deployer\Task;
 
 use Deployer\Task\Task;

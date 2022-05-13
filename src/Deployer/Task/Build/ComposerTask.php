@@ -4,15 +4,16 @@ namespace Hypernode\Deploy\Deployer\Task\Build;
 
 use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\DeployConfiguration\ServerRole;
-use function Deployer\before;
-use function Deployer\run;
-use function Deployer\set;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\DeployConfiguration\Command\Build\Composer;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
+
+use function Deployer\before;
+use function Deployer\run;
+use function Deployer\set;
 use function Deployer\task;
 use function Deployer\test;
 
@@ -42,6 +43,8 @@ class ComposerTask implements ConfigurableTaskInterface
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {
@@ -52,6 +55,8 @@ class ComposerTask implements ConfigurableTaskInterface
      * {@inheritDoc}
      *
      * @param TaskConfigurationInterface|Composer $config
+     *
+     * @return void
      */
     public function configureTask(TaskConfigurationInterface $config)
     {

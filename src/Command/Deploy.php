@@ -24,6 +24,8 @@ class Deploy extends Command
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     protected function configure()
     {
@@ -35,10 +37,12 @@ class Deploy extends Command
 
     /**
      * {@inheritdoc}
+     *
      * @throws Throwable
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->deployRunner->run($output, $input->getArgument('stage'), 'deploy');
+        return 0;
     }
 }

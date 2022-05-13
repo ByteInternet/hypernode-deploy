@@ -14,12 +14,13 @@ use Hypernode\DeployConfiguration\Server;
 use Hypernode\DeployConfiguration\ServerRole;
 use Hypernode\DeployConfiguration\Stage;
 use RuntimeException;
+use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\DeployConfiguration\Configuration;
+
 use function Deployer\after;
 use function Deployer\get;
 use function Deployer\input;
 use function Deployer\task;
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
-use Hypernode\DeployConfiguration\Configuration;
 use function Deployer\upload;
 
 class DaasManifestTask implements TaskInterface, RegisterAfterInterface
@@ -47,6 +48,8 @@ class DaasManifestTask implements TaskInterface, RegisterAfterInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {
