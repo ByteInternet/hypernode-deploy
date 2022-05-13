@@ -23,9 +23,6 @@ class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
     use IncrementedTaskTrait;
 
-    /**
-     * @return string
-     */
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:crontab:';
@@ -39,21 +36,11 @@ class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
         set($this->getSourceFileName($config), $config->getSourceFile());
     }
 
-    /**
-     * @param TaskConfigurationInterface $config
-     * @return bool
-     */
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof CronConfiguration;
     }
 
-    /**
-     * Define deployer task using Hipex configuration
-     *
-     * @param TaskConfigurationInterface $config
-     * @return Task|null
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         $cronSourceFile = $this->getSourceFileName($config);
@@ -80,10 +67,6 @@ class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
         })->onRoles(ServerRole::APPLICATION);
     }
 
-    /**
-     * Use this method to register your task after another task
-     * i.e. after('taska', 'taskb')
-     */
     public function registerAfter(): void
     {
         foreach ($this->getRegisteredTasks() as $taskName) {
@@ -91,21 +74,10 @@ class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
         }
     }
 
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
     }
 
-    /**
-     * @param TaskConfigurationInterface $config
-     * @return string
-     */
     protected function getSourceFileName(TaskConfigurationInterface $config): string
     {
         return 'cron/source-file-' . spl_object_hash($config);

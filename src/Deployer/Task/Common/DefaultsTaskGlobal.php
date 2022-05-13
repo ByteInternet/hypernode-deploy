@@ -23,24 +23,13 @@ class DefaultsTaskGlobal implements TaskInterface
      */
     private $releaseInfo;
 
-    /**
-     * DefaultsTask constructor.
-     *
-     * @param CpuCoreInfo $cpuInfo
-     * @param ReleaseInfo $releaseInfo
-     */
     public function __construct(CpuCoreInfo $cpuInfo, ReleaseInfo $releaseInfo)
     {
         $this->cpuInfo = $cpuInfo;
         $this->releaseInfo = $releaseInfo;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         set('bin/php', '{{configured/bin/php}}');
         set('public_folder', '{{configured/public_folder}}');

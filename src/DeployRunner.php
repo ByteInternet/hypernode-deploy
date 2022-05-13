@@ -9,14 +9,9 @@ use Deployer\Exception\Exception;
 use Deployer\Exception\GracefulShutdownException;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
-use DI\Annotation\Injectable;
-use Hypernode\Deploy\Deployer\Task\CommandTaskInterface;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
-use Hypernode\Deploy\Deployer\Task\PlatformConfiguration\PlatformConfigurationTaskInterface;
-use Hypernode\Deploy\Deployer\Task\PlatformService\PlatformServiceTaskInterface;
 use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\Deploy\Deployer\Task\TaskFactory;
-use Hypernode\DeployConfiguration\AfterDeployTask\AfterDeployTaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Server;
 use Hypernode\DeployConfiguration\ServerRoleConfigurableInterface;
@@ -32,7 +27,6 @@ use function Deployer\host;
 use function Deployer\localhost;
 use function Deployer\run;
 use function Deployer\task;
-use function Deployer\output;
 
 class DeployRunner
 {
@@ -56,14 +50,6 @@ class DeployRunner
      */
     private $recipeLoader;
 
-    /**
-     * DeployRunner constructor.
-     *
-     * @param TaskFactory     $taskFactory
-     * @param InputInterface  $input
-     * @param LoggerInterface $log
-     * @param RecipeLoader    $recipeLoader
-     */
     public function __construct(
         TaskFactory $taskFactory,
         InputInterface $input,
@@ -77,10 +63,6 @@ class DeployRunner
     }
 
     /**
-     * @param OutputInterface $output
-     * @param string $stage
-     * @param string $task
-     *
      * @throws GracefulShutdownException
      * @throws Throwable
      * @throws Exception
@@ -105,9 +87,6 @@ class DeployRunner
 
     /**
      * Initialize deployer settings
-     *
-     * @param Deployer        $deployer
-     * @param OutputInterface $output
      *
      * @throws Exception
      * @throws GracefulShutdownException
@@ -145,10 +124,6 @@ class DeployRunner
 
     /**
      * Configure deploy tasks based on specific configuration in Hipex deploy configuration
-     *
-     * @param ConfigurableTaskInterface $task
-     * @param Configuration             $mainConfig
-     *
      * @throws InvalidConfigurationException
      */
     private function initializeConfigurableTask(ConfigurableTaskInterface $task, Configuration $mainConfig): void
@@ -182,8 +157,6 @@ class DeployRunner
     }
 
     /**
-     * @param Deployer $deployer
-     * @return Configuration
      * @throws Exception
      * @throws GracefulShutdownException
      * @throws Throwable
@@ -200,9 +173,6 @@ class DeployRunner
         }
     }
 
-    /**
-     * @param Configuration $config
-     */
     private function configureStages(Configuration $config): void
     {
         $this->initializeBuildStage();
@@ -214,10 +184,6 @@ class DeployRunner
         }
     }
 
-    /**
-     * @param Stage $stage
-     * @param Server $server
-     */
     private function configureStageServer(Stage $stage, Server $server): void
     {
         /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
@@ -257,10 +223,6 @@ class DeployRunner
     }
 
     /**
-     * @param Deployer $deployer
-     * @param string $stage
-     * @param string $task
-     *
      * @throws GracefulShutdownException
      * @throws Throwable
      * @throws Exception
@@ -320,7 +282,6 @@ class DeployRunner
     }
 
     /**
-     * @param Deployer $deployer
      * @throws GracefulShutdownException
      * @throws Throwable
      * @throws Exception

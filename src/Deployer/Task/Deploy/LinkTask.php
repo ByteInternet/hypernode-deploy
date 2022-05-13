@@ -12,14 +12,7 @@ use function Deployer\test;
 
 class LinkTask implements TaskInterface
 {
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         task('deploy:link', [
             'deploy:symlink',

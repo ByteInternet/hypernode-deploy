@@ -65,7 +65,6 @@ class Application
     }
 
     /**
-     * @return Container
      * @throws InvalidArgumentException
      * @throws Exception
      */
@@ -92,18 +91,12 @@ class Application
         $container->set(Environment::class, $twig);
     }
 
-    /**
-     * @return string
-     */
     private function getVersion(): string
     {
         return '@git_version@ @build_datetime@';
     }
 
     /**
-     * @param ContainerInterface $container
-     * @param ConsoleApplication $application
-     *
      * @throws InvalidArgumentException
      */
     private function addCommands(ContainerInterface $container, ConsoleApplication $application): void

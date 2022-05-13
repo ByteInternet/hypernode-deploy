@@ -2,8 +2,6 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
-use Hypernode\DeployConfiguration\ServerRole;
-use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
@@ -15,27 +13,7 @@ use function Deployer\test;
 
 class ComposerAuthTaskGlobal implements TaskInterface, RegisterAfterInterface
 {
-    /**
-     * @var RecipeLoader
-     */
-    private $loader;
-
-    /**
-     * DeployTask constructor.
-     *
-     * @param RecipeLoader $loader
-     */
-    public function __construct(RecipeLoader $loader)
-    {
-        $this->loader = $loader;
-    }
-
-    /**
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         task('deploy:vendors:auth', function () {
             if (test('[ ! -f auth.json ]') && \getenv('DEPLOY_COMPOSER_AUTH')) {
@@ -47,10 +25,6 @@ class ComposerAuthTaskGlobal implements TaskInterface, RegisterAfterInterface
         })->onStage('build');
     }
 
-    /**
-     * Use this method to register your task after another task
-     * i.e. after('taska', 'taskb')
-     */
     public function registerAfter(): void
     {
         after('build:compile:prepare', 'deploy:vendors:auth');

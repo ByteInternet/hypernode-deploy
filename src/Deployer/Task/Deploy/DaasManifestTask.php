@@ -19,7 +19,6 @@ use Hypernode\DeployConfiguration\Configuration;
 
 use function Deployer\after;
 use function Deployer\get;
-use function Deployer\input;
 use function Deployer\task;
 use function Deployer\upload;
 
@@ -37,8 +36,6 @@ class DaasManifestTask implements TaskInterface, RegisterAfterInterface
 
     /**
      * @Inject({"version"="version"})
-     * @param string          $version
-     * @param ImageNameHelper $imageHelper
      */
     public function __construct(string $version, ImageNameHelper $imageHelper)
     {
@@ -46,12 +43,7 @@ class DaasManifestTask implements TaskInterface, RegisterAfterInterface
         $this->imageHelper = $imageHelper;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         task('deploy:daas:manifest', function () use ($config) {
             file_put_contents('.hipex-daas.json', json_encode($this->getManifestData($config)));
@@ -59,17 +51,12 @@ class DaasManifestTask implements TaskInterface, RegisterAfterInterface
         })->onRoles(ServerRole::APPLICATION_FIRST);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function registerAfter(): void
     {
         after('deploy:release', 'deploy:daas:manifest');
     }
 
     /**
-     * @param Configuration $configuration
-     * @return array
      * @throws EnvironmentVariableNotDefinedException|CompatibilityException
      */
     private function getManifestData(Configuration $configuration): array
@@ -86,10 +73,6 @@ class DaasManifestTask implements TaskInterface, RegisterAfterInterface
         ];
     }
 
-    /**
-     * @param Configuration $configuration
-     * @return array[]
-     */
     private function getSharedFilesAndFolders(Configuration $configuration): array
     {
         $files = [];
@@ -118,10 +101,6 @@ class DaasManifestTask implements TaskInterface, RegisterAfterInterface
         ];
     }
 
-    /**
-     * @param Configuration $configuration
-     * @return Stage
-     */
     private function getCurrentStage(Configuration $configuration): Stage
     {
         foreach ($configuration->getStages() as $stage) {
@@ -133,10 +112,6 @@ class DaasManifestTask implements TaskInterface, RegisterAfterInterface
         throw new RuntimeException('Could not determine current stage');
     }
 
-    /**
-     * @param Stage $stage
-     * @return array
-     */
     private function getStageServers(Stage $stage): array
     {
         $servers = [];
@@ -146,10 +121,6 @@ class DaasManifestTask implements TaskInterface, RegisterAfterInterface
         return $servers;
     }
 
-    /**
-     * @param Server $server
-     * @return array
-     */
     private function getStageServer(Server $server): array
     {
         return [
@@ -159,10 +130,6 @@ class DaasManifestTask implements TaskInterface, RegisterAfterInterface
         ];
     }
 
-    /**
-     * @param Configuration $configuration
-     * @return array|null
-     */
     private function getDaasInfo(Configuration $configuration): ?array
     {
         try {
@@ -177,9 +144,6 @@ class DaasManifestTask implements TaskInterface, RegisterAfterInterface
     }
 
     /**
-     * @param Configuration $configuration
-     * @param Stage         $stage
-     * @return array
      * @throws CompatibilityException
      */
     private function getRedisServices(Configuration $configuration, Stage $stage): array

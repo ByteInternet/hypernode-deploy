@@ -15,7 +15,7 @@ interface ConfigurableTaskInterface extends TaskInterface
      * @param TaskConfigurationInterface $config
      * @throws InvalidConfigurationException
      */
-    public function configureTask(TaskConfigurationInterface $config);
+    public function configureTask(TaskConfigurationInterface $config): void;
 
     /**
      * Define deployer task using Hipex configuration

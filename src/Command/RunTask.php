@@ -22,11 +22,6 @@ class RunTask extends Command
         $this->deployRunner = $deployRunner;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return void
-     */
     protected function configure()
     {
         parent::configure();
@@ -37,8 +32,6 @@ class RunTask extends Command
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws Throwable
      */
     protected function execute(InputInterface $input, OutputInterface $output)

@@ -17,20 +17,12 @@ class PushTask implements TaskInterface
      */
     private $imageHelper;
 
-    /**
-     * @param ImageNameHelper $imageHelper
-     */
     public function __construct(ImageNameHelper $imageHelper)
     {
         $this->imageHelper = $imageHelper;
     }
 
-    /**
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         task('docker:push', function () use ($config) {
             $this->registryLogin($config);
@@ -46,7 +38,6 @@ class PushTask implements TaskInterface
     }
 
     /**
-     * @param Configuration $config
      * @throws EnvironmentVariableNotDefinedException
      */
     private function registryLogin(Configuration $config): void

@@ -2,7 +2,6 @@
 
 namespace Hypernode\Deploy\Deployer\Task\PlatformService;
 
-use Hypernode\Deploy\Deployer\Task\ConfigValidationInterface;
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Deployer\Task\Task;
@@ -15,7 +14,6 @@ use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Twig\Environment;
 
 use function Deployer\upload;
-use function Deployer\output;
 use function Hypernode\Deploy\Deployer\after;
 use function Deployer\run;
 use function Deployer\task;
@@ -29,10 +27,6 @@ class VarnishTask implements ConfigurableTaskInterface, RegisterAfterInterface
      */
     private $twig;
 
-    /**
-     * VarnishTask constructor.
-     * @param Environment $twig
-     */
     public function __construct(Environment $twig)
     {
         $this->twig = $twig;
@@ -47,10 +41,7 @@ class VarnishTask implements ConfigurableTaskInterface, RegisterAfterInterface
     }
 
     /**
-     * Define deployer task using Hipex configuration
-     *
      * @param VarnishService|TaskConfigurationInterface $config
-     * @return Task|null
      */
     public function build(TaskConfigurationInterface $config): ?Task
     {
@@ -66,10 +57,6 @@ class VarnishTask implements ConfigurableTaskInterface, RegisterAfterInterface
         })->onRoles($config->getServerRoles());
     }
 
-    /**
-     * Use this method to register your task after another task
-     * i.e. after('taska', 'taskb')
-     */
     public function registerAfter(): void
     {
         foreach ($this->getRegisteredTasks() as $taskName) {
@@ -78,8 +65,6 @@ class VarnishTask implements ConfigurableTaskInterface, RegisterAfterInterface
     }
 
     /**
-     * @param VarnishService $varnishServiceConfiguration
-     * @return string
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
@@ -96,10 +81,6 @@ class VarnishTask implements ConfigurableTaskInterface, RegisterAfterInterface
         );
     }
 
-    /**
-     * @param VarnishService $varnishServiceConfiguration
-     * @return string
-     */
     private function buildVarnishRunCommand(VarnishService $varnishServiceConfiguration): string
     {
         $args = implode(' ', array_merge([
@@ -118,8 +99,6 @@ class VarnishTask implements ConfigurableTaskInterface, RegisterAfterInterface
     }
 
     /**
-     * Configure using hipex configuration
-     *
      * @param TaskConfigurationInterface|VarnishService $config
      * @throws InvalidConfigurationException
      */
@@ -134,30 +113,17 @@ class VarnishTask implements ConfigurableTaskInterface, RegisterAfterInterface
         }
     }
 
-    /**
-     * @param TaskConfigurationInterface $config
-     * @return bool
-     */
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof VarnishService;
     }
 
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
     }
 
     /**
      * Get the VCL location
-     *
-     * @return string
      */
     protected function getServerVclLocation(): string
     {

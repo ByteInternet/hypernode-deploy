@@ -3,7 +3,6 @@
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
-use Hypernode\DeployConfiguration\Exception\ConfigurationException;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
@@ -15,7 +14,6 @@ use function Deployer\after;
 use function Deployer\fail;
 use function Deployer\get;
 use function Deployer\run;
-use function Deployer\runLocally;
 use function Deployer\set;
 use function Deployer\task;
 use function Deployer\test;
@@ -27,34 +25,20 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
     use IncrementedTaskTrait;
 
-    /**
-     * @return string
-     */
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:nginx:';
     }
 
-    /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
-     */
     public function configureTask(TaskConfigurationInterface $config): void
     {
     }
 
-    /**
-     * @param TaskConfigurationInterface $config
-     * @return bool
-     */
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof NginxConfiguration;
     }
 
-    /**
-     * Use this method to register your task after another task
-     * i.e. after('taska', 'taskb')
-     */
     public function registerAfter(): void
     {
         before('deploy:symlink', 'deploy:nginx');
@@ -64,10 +48,7 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
     }
 
     /**
-     * Define deployer task using Hipex configuration
-     *
      * @param TaskConfigurationInterface|NginxConfiguration $config
-     * @return Task|null
      */
     public function build(TaskConfigurationInterface $config): ?Task
     {
@@ -90,15 +71,7 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
         )->onRoles($config->getServerRoles());
     }
 
-
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         set('nginx/config_path', function () {
             return '/tmp/nginx-config-' . get('hostname');

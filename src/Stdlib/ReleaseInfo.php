@@ -16,17 +16,11 @@ class ReleaseInfo
      */
     private const MERGE_PATTERN = "/Merge branch '(.*)' into/";
 
-    /**
-     * @return string
-     */
     public function getCommitSha(): string
     {
         return runLocally('git rev-parse HEAD');
     }
 
-    /**
-     * @return string
-     */
     public function getMessage(): string
     {
         $body = [];
@@ -80,9 +74,6 @@ class ReleaseInfo
         return $branchesList;
     }
 
-    /**
-     * @return iterable
-     */
     private function getServers(): iterable
     {
         $stage = get('configuration_stage');

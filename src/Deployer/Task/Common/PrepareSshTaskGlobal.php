@@ -19,12 +19,7 @@ class PrepareSshTaskGlobal implements TaskInterface
 {
     private const BITBUCKET_KEY_PATH = '/opt/atlassian/pipelines/agent/ssh/id_rsa';
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         set('ssh_key_file', function () {
             if (testLocally('[ -f ' . self::BITBUCKET_KEY_PATH . ' ]')) {
@@ -62,10 +57,8 @@ class PrepareSshTaskGlobal implements TaskInterface
 
     /**
      * Initialize private key if set
-     *
-     * @return void
      */
-    private function configureKey()
+    private function configureKey(): void
     {
         $key = \getenv('SSH_PRIVATE_KEY');
         if ($key === false) {

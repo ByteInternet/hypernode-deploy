@@ -15,20 +15,12 @@ class CompileTask implements TaskInterface
      */
     private $imageHelper;
 
-    /**
-     * @param ImageNameHelper $imageHelper
-     */
     public function __construct(ImageNameHelper $imageHelper)
     {
         $this->imageHelper = $imageHelper;
     }
 
-    /**
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         task('docker:compile', function () use ($config) {
             $this->build('build/Dockerfile.php', $this->imageHelper->getDockerImage($config, 'php'));
@@ -36,10 +28,6 @@ class CompileTask implements TaskInterface
         })->onStage('build');
     }
 
-    /**
-     * @param string $file
-     * @param string $tag
-     */
     private function build(string $file, string $tag): void
     {
         $file = escapeshellarg($file);

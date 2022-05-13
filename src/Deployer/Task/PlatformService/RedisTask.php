@@ -14,7 +14,6 @@ use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\Deploy\Stdlib\PathInfo;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\PlatformService\RedisService;
-use Hypernode\DeployConfiguration\PlatformService\VarnishService;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Twig\Environment;
 
@@ -33,28 +32,18 @@ class RedisTask implements ConfigurableTaskInterface, RegisterAfterInterface
      */
     private $twig;
 
-    /**
-     * VarnishTask constructor.
-     * @param Environment $twig
-     */
     public function __construct(Environment $twig)
     {
         $this->twig = $twig;
     }
 
-    /**
-     * @return string
-     */
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:service:redis:';
     }
 
     /**
-     * Define deployer task using Hipex configuration
-     *
      * @param RedisService|TaskConfigurationInterface $config
-     * @return Task|null
      */
     public function build(TaskConfigurationInterface $config): ?Task
     {
@@ -71,18 +60,12 @@ class RedisTask implements ConfigurableTaskInterface, RegisterAfterInterface
         return $task;
     }
 
-    /**
-     * Use this method to register your task after another task
-     * i.e. after('taska', 'taskb')
-     */
     public function registerAfter(): void
     {
         after('deploy:configuration:supervisor', self::WRAPPER_TASK_NAME);
     }
 
     /**
-     * @param RedisService $config
-     * @return string
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
@@ -100,8 +83,6 @@ class RedisTask implements ConfigurableTaskInterface, RegisterAfterInterface
     }
 
     /**
-     * @param RedisService $config
-     * @return string
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
@@ -144,44 +125,23 @@ class RedisTask implements ConfigurableTaskInterface, RegisterAfterInterface
         return PathInfo::getAbsoluteDomainPath() . '/var/etc/redis.' . $config->getIdentifier() . '.conf';
     }
 
-    /**
-     * @param RedisService $config
-     * @return string
-     */
     private function getRedisRunPath(RedisService $config): string
     {
         $fullIdentifier = 'redis.' . $config->getIdentifier();
         return PathInfo::getAbsoluteDomainPath() . '/var/run/' . $fullIdentifier;
     }
 
-    /**
-     * Configure using hipex configuration
-     *
-     * @param TaskConfigurationInterface|VarnishService $config
-     */
     public function configureTask(TaskConfigurationInterface $config): void
     {
     }
 
-    /**
-     * @param TaskConfigurationInterface $config
-     * @return bool
-     */
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof RedisService;
     }
 
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
-        task(self::WRAPPER_TASK_NAME, static function () {
-        });
+        task(self::WRAPPER_TASK_NAME, static function () {});
     }
 }

@@ -17,22 +17,12 @@ class AfterTaskGlobal implements TaskInterface
      */
     private $taskBuilder;
 
-    /**
-     * CompileTask constructor.
-     *
-     * @param TaskBuilder $taskBuilder
-     */
     public function __construct(TaskBuilder $taskBuilder)
     {
         $this->taskBuilder = $taskBuilder;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         $tasks = $this->taskBuilder->buildAll($config->getAfterDeployTasks(), 'deploy:after');
         if (\count($tasks) === 0) {

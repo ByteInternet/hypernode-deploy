@@ -22,11 +22,6 @@ class ComposerAuth extends Command
         $this->deployRunner = $deployRunner;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return void
-     */
     protected function configure()
     {
         parent::configure();
@@ -35,8 +30,6 @@ class ComposerAuth extends Command
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws Throwable
      */
     protected function execute(InputInterface $input, OutputInterface $output)

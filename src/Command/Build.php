@@ -15,22 +15,12 @@ class Build extends Command
      */
     private $deployRunner;
 
-    /**
-     * Deploy constructor.
-     *
-     * @param DeployRunner $deployRunner
-     */
     public function __construct(DeployRunner $deployRunner)
     {
         $this->deployRunner = $deployRunner;
         parent::__construct();
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return void
-     */
     protected function configure()
     {
         parent::configure();
@@ -39,8 +29,6 @@ class Build extends Command
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws Throwable
      */
     protected function execute(InputInterface $input, OutputInterface $output)
