@@ -3,12 +3,12 @@
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
 use Hypernode\DeployConfiguration\ServerRole;
-use function Deployer\run;
-use function Deployer\task;
-
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\Deploy\Deployer\TaskBuilder;
 use Hypernode\DeployConfiguration\Configuration;
+
+use function Deployer\run;
+use function Deployer\task;
 
 class CompileTaskGlobal implements TaskInterface
 {
@@ -29,6 +29,8 @@ class CompileTaskGlobal implements TaskInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

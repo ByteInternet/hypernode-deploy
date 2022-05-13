@@ -11,6 +11,7 @@ use Hypernode\DeployConfiguration\Exception\ConfigurationException;
 use Hypernode\DeployConfiguration\PlatformConfiguration\SupervisorConfiguration;
 use Hypernode\DeployConfiguration\Stage;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
+
 use function Deployer\before;
 use function Deployer\fail;
 use function Deployer\get;
@@ -93,6 +94,8 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

@@ -5,11 +5,6 @@ namespace Hypernode\Deploy\Deployer\Task\PlatformService;
 use Hypernode\Deploy\Deployer\Task\ConfigValidationInterface;
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
-use function Deployer\upload;
-use function Deployer\output;
-use function Hypernode\Deploy\Deployer\after;
-use function Deployer\run;
-use function Deployer\task;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
@@ -18,6 +13,12 @@ use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\PlatformService\VarnishService;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Twig\Environment;
+
+use function Deployer\upload;
+use function Deployer\output;
+use function Hypernode\Deploy\Deployer\after;
+use function Deployer\run;
+use function Deployer\task;
 
 class VarnishTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
@@ -134,18 +135,20 @@ class VarnishTask implements ConfigurableTaskInterface, RegisterAfterInterface
     }
 
     /**
-     * @param TaskConfigurationInterface $service
+     * @param TaskConfigurationInterface $config
      * @return bool
      */
-    public function supports(TaskConfigurationInterface $service): bool
+    public function supports(TaskConfigurationInterface $config): bool
     {
-        return $service instanceof VarnishService;
+        return $config instanceof VarnishService;
     }
 
     /**
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

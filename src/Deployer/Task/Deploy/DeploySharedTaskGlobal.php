@@ -2,12 +2,12 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Deploy;
 
-use function Deployer\get;
-use function Deployer\set;
 use Hypernode\Deploy\Deployer\RecipeLoader;
-
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
+
+use function Deployer\get;
+use function Deployer\set;
 
 class DeploySharedTaskGlobal implements TaskInterface
 {
@@ -28,6 +28,8 @@ class DeploySharedTaskGlobal implements TaskInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

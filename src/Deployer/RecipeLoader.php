@@ -9,7 +9,7 @@ class RecipeLoader
     /**
      * @param string $recipe
      */
-    public function load(string $recipe)
+    public function load(string $recipe): void
     {
         $recipe = ltrim($recipe, DIRECTORY_SEPARATOR);
 
@@ -39,6 +39,7 @@ class RecipeLoader
      */
     private function getRecipePaths(): array
     {
+        /** @psalm-suppress UndefinedConstant */
         return [
             APPLICATION_ROOT . '/vendor/deployer/deployer/recipe',
             APPLICATION_ROOT . '/vendor/deployer/recipes/recipe',

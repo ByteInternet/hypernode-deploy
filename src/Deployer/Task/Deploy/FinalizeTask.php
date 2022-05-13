@@ -3,11 +3,12 @@
 namespace Hypernode\Deploy\Deployer\Task\Deploy;
 
 use Hypernode\DeployConfiguration\ServerRole;
-use function Deployer\fail;
-use function Deployer\task;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
+
+use function Deployer\fail;
+use function Deployer\task;
 
 class FinalizeTask implements TaskInterface
 {
@@ -30,6 +31,8 @@ class FinalizeTask implements TaskInterface
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

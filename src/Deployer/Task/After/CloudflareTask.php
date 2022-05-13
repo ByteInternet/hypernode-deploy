@@ -2,9 +2,6 @@
 
 namespace Hypernode\Deploy\Deployer\Task\After;
 
-use function Hypernode\Deploy\Deployer\after;
-use function Deployer\get;
-use function Deployer\set;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
@@ -12,6 +9,10 @@ use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\DeployConfiguration\AfterDeployTask\Cloudflare;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
+
+use function Hypernode\Deploy\Deployer\after;
+use function Deployer\get;
+use function Deployer\set;
 
 class CloudflareTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
@@ -63,6 +64,8 @@ class CloudflareTask implements ConfigurableTaskInterface, RegisterAfterInterfac
      * Configure deployer using Hipex configuration
      *
      * @param TaskConfigurationInterface|Cloudflare $config
+     *
+     * @return void
      */
     public function configureTask(TaskConfigurationInterface $config)
     {
@@ -78,6 +81,8 @@ class CloudflareTask implements ConfigurableTaskInterface, RegisterAfterInterfac
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

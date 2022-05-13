@@ -24,6 +24,8 @@ class DockerBuild extends Command
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     protected function configure()
     {
@@ -34,10 +36,12 @@ class DockerBuild extends Command
 
     /**
      * {@inheritdoc}
+     *
      * @throws Throwable
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->deployRunner->run($output, 'build', 'docker:build');
+        return 0;
     }
 }

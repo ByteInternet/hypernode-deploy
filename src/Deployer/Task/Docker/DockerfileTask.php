@@ -5,9 +5,10 @@ namespace Hypernode\Deploy\Deployer\Task\Docker;
 use Hypernode\DeployConfiguration\Exception\ConfigurationException;
 use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
 use Twig\Environment;
-use function Deployer\task;
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
+
+use function Deployer\task;
 use function Deployer\write;
 
 class DockerfileTask implements TaskInterface
@@ -32,7 +33,10 @@ class DockerfileTask implements TaskInterface
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
      * @throws ConfigurationException
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

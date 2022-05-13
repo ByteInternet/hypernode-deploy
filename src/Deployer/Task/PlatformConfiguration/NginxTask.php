@@ -4,6 +4,13 @@ namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\DeployConfiguration\Exception\ConfigurationException;
+use Deployer\Task\Task;
+use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
+use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
+use Hypernode\DeployConfiguration\Configuration;
+use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
+use Hypernode\DeployConfiguration\TaskConfigurationInterface;
+
 use function Deployer\after;
 use function Deployer\fail;
 use function Deployer\get;
@@ -13,14 +20,8 @@ use function Deployer\set;
 use function Deployer\task;
 use function Deployer\test;
 use function Deployer\upload;
-use Deployer\Task\Task;
 use function Deployer\writeln;
 use function Hypernode\Deploy\Deployer\before;
-use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
-use Hypernode\DeployConfiguration\Configuration;
-use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
-use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
 class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
@@ -94,6 +95,8 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

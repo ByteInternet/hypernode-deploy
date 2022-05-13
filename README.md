@@ -7,6 +7,15 @@ nvm install -s stable
 
 ## Tests
 
+### Static tests
+To run the static tests, please run the following commands:
+
+```bash
+composer --working-dir tools install
+tools/vendor/bin/grumphp run --config tools/grumphp.yml
+```
+
+### Docker container
 We use Google Container Structure Tests over https://github.com/aelsabbahy/goss because the Hipex deploy container does not require a health check.
 
 ## Build images locally

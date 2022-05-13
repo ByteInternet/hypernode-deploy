@@ -3,10 +3,11 @@
 namespace Hypernode\Deploy\Deployer\Task\Docker;
 
 use Hypernode\DeployConfiguration\Exception\EnvironmentVariableNotDefinedException;
-use function Deployer\run;
-use function Deployer\task;
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
+
+use function Deployer\run;
+use function Deployer\task;
 use function Deployer\writeln;
 
 class PushTask implements TaskInterface
@@ -26,6 +27,8 @@ class PushTask implements TaskInterface
 
     /**
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

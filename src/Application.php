@@ -13,9 +13,10 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function Sentry\init as sentryInit;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+
+use function Sentry\init as sentryInit;
 
 class Application
 {
@@ -37,7 +38,7 @@ class Application
      *
      * @throws Exception
      */
-    public function run()
+    public function run(): int
     {
         sentryInit([
             'dsn' => 'https://85e2b396851b4fcc9cc5df626b974687@sentry.hipex.cloud/10',
@@ -57,7 +58,7 @@ class Application
         $this->addCommands($container, $application);
         $this->registerTwigLoader($container);
 
-        $application->run(
+        return $application->run(
             $container->get(InputInterface::class),
             $container->get(OutputInterface::class)
         );
@@ -84,7 +85,7 @@ class Application
     /**
      * @param Container $container
      */
-    private function registerTwigLoader(Container $container)
+    private function registerTwigLoader(Container $container): void
     {
         $loader = new FilesystemLoader(__DIR__ . '/Resource/template');
         $twig = new Environment($loader);
@@ -102,9 +103,10 @@ class Application
     /**
      * @param ContainerInterface $container
      * @param ConsoleApplication $application
+     *
      * @throws InvalidArgumentException
      */
-    private function addCommands(ContainerInterface $container, ConsoleApplication $application)
+    private function addCommands(ContainerInterface $container, ConsoleApplication $application): void
     {
         $finder = new ClassFinder(__NAMESPACE__ . '\\Command');
         $finder->in(__DIR__ . DIRECTORY_SEPARATOR . 'Command');

@@ -4,6 +4,7 @@ namespace Hypernode\Deploy\Deployer\Task\Docker;
 
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
+
 use function Deployer\run;
 use function Deployer\task;
 
@@ -24,6 +25,8 @@ class CompileTask implements TaskInterface
 
     /**
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

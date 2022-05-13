@@ -3,6 +3,10 @@
 namespace Hypernode\Deploy\Deployer\Task\After;
 
 use Hypernode\DeployConfiguration\ServerRole;
+use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
+use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\DeployConfiguration\Configuration;
+
 use function Deployer\after;
 use function Deployer\before;
 use function Deployer\desc;
@@ -13,9 +17,6 @@ use function Deployer\set;
 use function Deployer\task;
 use function Deployer\upload;
 use function Deployer\within;
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
-use Hypernode\DeployConfiguration\Configuration;
 use function Deployer\writeln;
 
 class CachetoolTask implements TaskInterface, RegisterAfterInterface
@@ -55,9 +56,11 @@ class CachetoolTask implements TaskInterface, RegisterAfterInterface
     }
 
     /**
-     *
      * Configure using hipex configuration
+     *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {

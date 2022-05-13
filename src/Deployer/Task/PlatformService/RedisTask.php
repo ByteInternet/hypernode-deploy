@@ -8,9 +8,6 @@ use Deployer\Task\Context;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
-use function Hypernode\Deploy\Deployer\after;
-use function Deployer\run;
-use function Deployer\task;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
@@ -21,11 +18,15 @@ use Hypernode\DeployConfiguration\PlatformService\VarnishService;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Twig\Environment;
 
+use function Hypernode\Deploy\Deployer\after;
+use function Deployer\run;
+use function Deployer\task;
+
 class RedisTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
-    protected const WRAPPER_TASK_NAME = 'deploy:configuration:supervisor:redis';
-
     use IncrementedTaskTrait;
+
+    protected const WRAPPER_TASK_NAME = 'deploy:configuration:supervisor:redis';
 
     /**
      * @var Environment
@@ -118,7 +119,7 @@ class RedisTask implements ConfigurableTaskInterface, RegisterAfterInterface
 
         $snapshotFrequency = $config->getSnapshotSaveFrequency();
         if ($snapshotFrequency && $snapshotFrequency > 0) {
-            $templateParams['snapshot_frequency'] = (int) $snapshotFrequency;
+            $templateParams['snapshot_frequency'] = $snapshotFrequency;
         }
 
         $templateParams['unix_socket'] = sprintf(
@@ -163,18 +164,20 @@ class RedisTask implements ConfigurableTaskInterface, RegisterAfterInterface
     }
 
     /**
-     * @param TaskConfigurationInterface $service
+     * @param TaskConfigurationInterface $config
      * @return bool
      */
-    public function supports(TaskConfigurationInterface $service): bool
+    public function supports(TaskConfigurationInterface $config): bool
     {
-        return $service instanceof RedisService;
+        return $config instanceof RedisService;
     }
 
     /**
      * Configure using hipex configuration
      *
      * @param Configuration $config
+     *
+     * @return void
      */
     public function configure(Configuration $config)
     {
