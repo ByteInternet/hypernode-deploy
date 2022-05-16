@@ -40,10 +40,10 @@ class Application
      */
     public function run(): int
     {
-        #sentryInit([
-        #    'dsn' => 'https://85e2b396851b4fcc9cc5df626b974687@sentry.hipex.cloud/10',
-        #    'release' => $this->getVersion()
-        #]);
+        sentryInit([
+            'dsn' => 'https://85e2b396851b4fcc9cc5df626b974687@sentry.hipex.cloud/10',
+            'release' => $this->getVersion()
+        ]);
 
         $container = $this->createDiContainer();
         $application = new ConsoleApplication();
