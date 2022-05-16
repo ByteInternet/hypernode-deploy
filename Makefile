@@ -17,7 +17,7 @@ clean:
 
 compile:
 	ci/compile.sh
-	sudo mv build/hipex-deploy.phar /usr/local/bin/hipex-deploy
+	sudo cp build/hypernode-deploy.phar /usr/local/bin/hypernode-deploy
 
 create-distrobox:
 	$(CONTAINER_MANAGER) build -t distrobox-$(DISTROBOX_NAME) .distrobox

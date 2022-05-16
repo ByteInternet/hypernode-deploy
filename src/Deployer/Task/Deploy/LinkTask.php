@@ -21,12 +21,16 @@ class LinkTask implements TaskInterface
 
         // Symlink public_html folder
         task('deploy:public_link', function () {
-            if (!test('[ -z "$(ls -A {{domain_path}}/public_html)" ]')) {
-                return;
+            if (test('[ -e /data/web/public ]')) {
+                // If the current public directory is not empty we do nothing
+                if (!test('[ -z "$(ls -A /data/web/public)" ]')) {
+                    return;
+                } else {
+                    run('rmdir /data/web/public');
+                }
             }
 
-            run('rmdir {{domain_path}}/public_html');
-            run('cd {{domain_path}} && ln -s application/current/{{public_folder}} public_html');
+            run('ln -s {{deploy_path}}/current/{{public_folder}} /data/web/public');
         })->onRoles(ServerRole::APPLICATION);
     }
 }
