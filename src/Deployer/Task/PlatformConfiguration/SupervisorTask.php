@@ -74,6 +74,7 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
 
     public function configure(Configuration $config): void
     {
+        // @TODO(timon): what's the use case for SupervisorTask? if it's for DaaS, we can disable it
         set('supervisor/config_path', function () {
             return '/tmp/supervisor-config-' . get('hostname');
         });
@@ -114,8 +115,8 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
         task('deploy:supervisor-reload', function () {
             /** @var Stage $stage */
             $stage = get('configuration_stage');
-            run('/usr/bin/supervisorctl -c /etc/supervisor/' . $stage->getUsername() . '.conf reread');
-            run('/usr/bin/supervisorctl -c /etc/supervisor/' . $stage->getUsername() . '.conf update');
+            run('/usr/bin/supervisorctl reread');
+            run('/usr/bin/supervisorctl update');
         });
     }
 }

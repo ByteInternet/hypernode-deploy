@@ -28,8 +28,8 @@ class CachetoolTask implements TaskInterface, RegisterAfterInterface
      * CacheTool 4.x works with PHP >=7.1
      */
     private $versionBinaryMapping = [
-        8 => 'https://github.com/gordalina/cachetool/releases/download/8.0.2/cachetool.phar',
-        7 => 'https://github.com/gordalina/cachetool/releases/download/7.0.0/cachetool.phar',
+        8 => 'https://github.com/gordalina/cachetool/releases/download/8.4.0/cachetool.phar',
+        7 => 'https://github.com/gordalina/cachetool/releases/download/7.1.0/cachetool.phar',
         6 => 'https://github.com/gordalina/cachetool/releases/download/6.6.0/cachetool.phar',
         5 => 'https://github.com/gordalina/cachetool/releases/download/5.1.3/cachetool.phar',
         4 => 'https://gordalina.github.io/cachetool/downloads/cachetool-4.1.1.phar',
@@ -48,9 +48,7 @@ class CachetoolTask implements TaskInterface, RegisterAfterInterface
             return "cachetool.phar";
         });
 
-        set('cachetool', function () {
-            return run('realpath {{domain_path}}/var/run/{{bin/php}}.sock');
-        });
+        set('cachetool', '127.0.0.1:9000');
 
         set('bin/cachetool', function () {
             $cachetoolBinary = get('cachetool_binary');

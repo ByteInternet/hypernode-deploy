@@ -24,7 +24,7 @@ class ReleaseInfo
     public function getMessage(): string
     {
         $body = [];
-        $body[] = parse('Succesvolle deploy naar **{{stage}}**');
+        $body[] = parse('Successful deployment to **{{stage}}**');
         $body[] = parse('Branch: `{{branch}}`');
         $body[] = parse('User: `{{user}}`');
         $body[] = parse('Commit: `{{commit_sha}}`');

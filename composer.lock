@@ -661,7 +661,10 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:ByteInternet/hypernode-deploy-configuration.git",
-                "reference": "3a321546bff2cab01b627db362dac765f9afeaf9"
+                "reference": "0e48396dcf957c0b3aef2f4768a3a21fbfbd3e2f"
+            },
+            "conflict": {
+                "hipex/deploy-configuration": "*"
             },
             "default-branch": true,
             "type": "library",
@@ -678,7 +681,7 @@
                 "OSL-3.0"
             ],
             "description": "Hypernode deploy configuration files",
-            "time": "2022-05-13T12:58:39+00:00"
+            "time": "2022-05-16T10:27:05+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",
@@ -2998,16 +3001,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.14.13",
+            "version": "v2.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "66856cd0459df3dc97d32077a98454dc2a0ee75a"
+                "reference": "2fcc95728fbe9278773edcb605c7cf8bdc426c22"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/66856cd0459df3dc97d32077a98454dc2a0ee75a",
-                "reference": "66856cd0459df3dc97d32077a98454dc2a0ee75a",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/2fcc95728fbe9278773edcb605c7cf8bdc426c22",
+                "reference": "2fcc95728fbe9278773edcb605c7cf8bdc426c22",
                 "shasum": ""
             },
             "require": {
@@ -3023,7 +3026,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.14-dev"
+                    "dev-master": "2.15-dev"
                 }
             },
             "autoload": {
@@ -3062,7 +3065,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v2.14.13"
+                "source": "https://github.com/twigphp/Twig/tree/v2.15.0"
             },
             "funding": [
                 {
@@ -3074,7 +3077,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-04-06T06:45:17+00:00"
+            "time": "2022-05-15T06:21:48+00:00"
         }
     ],
     "packages-dev": [
@@ -3945,12 +3948,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "2ed308386e65cafaadd54723f5b57775374c2ae8"
+                "reference": "c491d086242983f784b8af91cbb9de43d3374971"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/2ed308386e65cafaadd54723f5b57775374c2ae8",
-                "reference": "2ed308386e65cafaadd54723f5b57775374c2ae8",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/c491d086242983f784b8af91cbb9de43d3374971",
+                "reference": "c491d086242983f784b8af91cbb9de43d3374971",
                 "shasum": ""
             },
             "conflict": {
@@ -3983,6 +3986,7 @@
                 "bolt/core": "<=4.2",
                 "bottelet/flarepoint": "<2.2.1",
                 "brightlocal/phpwhois": "<=4.2.5",
+                "brotkrueml/codehighlight": "<2.7",
                 "buddypress/buddypress": "<7.2.1",
                 "bugsnag/bugsnag-laravel": ">=2,<2.0.2",
                 "bytefury/crater": "<6.0.2",
@@ -4426,7 +4430,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-05-11T11:06:18+00:00"
+            "time": "2022-05-16T08:10:11+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",

@@ -189,17 +189,18 @@ class DeployRunner
         /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
         $host = host($stage->getName() . ':' . $server->getHostname());
         $host->hostname($server->getHostname());
-        $host->port(339);
+        $host->port(22);
         $host->stage($stage->getName());
-        $host->user($stage->getUsername());
+        $host->user('app');
         $host->forwardAgent();
         $host->multiplexing(true);
         $host->roles($server->getRoles());
         $host->set('domain', $stage->getDomain());
+        // @TODO(timon): get rid of domain_path variable usage
         $host->set('domain_path', function () {
-            return run('realpath ~/domains/{{domain}}');
+            return run('realpath ~/apps/{{domain}}');
         });
-        $host->set('deploy_path', '{{domain_path}}/application');
+        $host->set('deploy_path', '{{domain_path}}');
         $host->set('configuration_stage', $stage);
 
         foreach ($server->getOptions() as $optionName => $optionValue) {
