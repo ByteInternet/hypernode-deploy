@@ -9,9 +9,6 @@ use function Deployer\set;
 
 class PathInfo
 {
-    /**
-     * @return string
-     */
     public static function getAbsoluteDomainPath(): string
     {
         if (!has('domain_path/realpath')) {

@@ -7,7 +7,6 @@ use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\DeployConfiguration\Configuration;
-use Hypernode\DeployConfiguration\Exception\ConfigurationException;
 use Hypernode\DeployConfiguration\PlatformConfiguration\SupervisorConfiguration;
 use Hypernode\DeployConfiguration\Stage;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
@@ -27,34 +26,20 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
 {
     use IncrementedTaskTrait;
 
-    /**
-     * @return string
-     */
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:supervisor:';
     }
 
-    /**
-     * @param TaskConfigurationInterface|SupervisorConfiguration $config
-     */
     public function configureTask(TaskConfigurationInterface $config): void
     {
     }
 
-    /**
-     * @param TaskConfigurationInterface $config
-     * @return bool
-     */
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof SupervisorConfiguration;
     }
 
-    /**
-     * Use this method to register your task after another task
-     * i.e. after('taska', 'taskb')
-     */
     public function registerAfter(): void
     {
         before('deploy:symlink', 'deploy:configuration:supervisor');
@@ -65,10 +50,7 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
     }
 
     /**
-     * Define deployer task using Hipex configuration
-     *
      * @param TaskConfigurationInterface|SupervisorConfiguration $config
-     * @return Task|null
      */
     public function build(TaskConfigurationInterface $config): ?Task
     {
@@ -90,14 +72,7 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
         )->onRoles($config->getServerRoles());
     }
 
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         set('supervisor/config_path', function () {
             return '/tmp/supervisor-config-' . get('hostname');

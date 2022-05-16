@@ -6,9 +6,6 @@ use RuntimeException;
 
 class RecipeLoader
 {
-    /**
-     * @param string $recipe
-     */
     public function load(string $recipe): void
     {
         $recipe = ltrim($recipe, DIRECTORY_SEPARATOR);

@@ -12,14 +12,7 @@ use function Deployer\upload;
 
 class CopyTask implements TaskInterface
 {
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         task('deploy:copy:code', function () use ($config) {
             $packageFilepath = $config->getBuildArchiveFile();

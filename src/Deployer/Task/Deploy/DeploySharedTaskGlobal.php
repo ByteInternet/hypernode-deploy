@@ -16,22 +16,12 @@ class DeploySharedTaskGlobal implements TaskInterface
      */
     private $recipeLoader;
 
-    /**
-     * DeploySharedTask constructor.
-     *
-     * @param RecipeLoader $recipeLoader
-     */
     public function __construct(RecipeLoader $recipeLoader)
     {
         $this->recipeLoader = $recipeLoader;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         $this->recipeLoader->load('deploy/shared.php');
 

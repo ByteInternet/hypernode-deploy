@@ -8,14 +8,11 @@ use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
 
 use function Deployer\after;
-use function Deployer\before;
 use function Deployer\desc;
 use function Deployer\get;
-use function Deployer\locateBinaryPath;
 use function Deployer\run;
 use function Deployer\set;
 use function Deployer\task;
-use function Deployer\upload;
 use function Deployer\within;
 use function Deployer\writeln;
 
@@ -38,31 +35,13 @@ class CachetoolTask implements TaskInterface, RegisterAfterInterface
         4 => 'https://gordalina.github.io/cachetool/downloads/cachetool-4.1.1.phar',
     ];
 
-    /**
-     * LinkTask constructor.
-     */
-    public function __construct()
-    {
-    }
-
-    /**
-     * Use this method to register your task after another task
-     * i.e. after('taska', 'taskb')
-     */
     public function registerAfter(): void
     {
         after('deploy:symlink', 'cachetool:clear:opcache');
         after('cachetool:clear:opcache', 'cachetool:cleanup');
     }
 
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         set('cachetool_binary', function () {
             set('cachetool_args', '');
@@ -130,17 +109,11 @@ class CachetoolTask implements TaskInterface, RegisterAfterInterface
         })->onRoles(ServerRole::APPLICATION);
     }
 
-    /**
-     * @return float
-     */
     protected function getPhpVersion(): float
     {
         return (float) run('{{bin/php}} -r "echo PHP_VERSION . \" - \" . PHP_VERSION_ID;"');
     }
 
-    /**
-     * @return string
-     */
     public function getCachetoolUrl(): string
     {
         $phpVersion = $this->getPhpVersion();

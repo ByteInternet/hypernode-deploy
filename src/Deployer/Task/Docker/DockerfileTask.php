@@ -21,24 +21,15 @@ class DockerfileTask implements TaskInterface
      */
     private $twig;
 
-    /**
-     * @param Environment $twig
-     */
     public function __construct(Environment $twig)
     {
         $this->twig = $twig;
     }
 
     /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
      * @throws ConfigurationException
-     *
-     * @return void
      */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         if (!method_exists($config, 'getDockerBaseImagePhp')) {
             throw new ConfigurationException('Deploy configuration version used is not supported. Please update "hypernode/deploy-configuration" package');
@@ -61,8 +52,6 @@ class DockerfileTask implements TaskInterface
     }
 
     /**
-     * @param Configuration $config
-     * @return string
      * @throws ConfigurationException
      */
     private function getBaseImagePhp(Configuration $config): string
@@ -96,10 +85,6 @@ class DockerfileTask implements TaskInterface
         }
     }
 
-    /**
-     * @param Configuration $config
-     * @return array
-     */
     private function getVolumes(Configuration $config): array
     {
         $result = [];
@@ -116,10 +101,6 @@ class DockerfileTask implements TaskInterface
         return $result;
     }
 
-    /**
-     * @param Configuration $config
-     * @return string
-     */
     private function getBaseImageNginx(Configuration $config): string
     {
         $image = $config->getDockerBaseImageNginx();
@@ -139,10 +120,6 @@ class DockerfileTask implements TaskInterface
         return self::DEFAULT_NGINX_IMAGE;
     }
 
-    /**
-     * @param Configuration $config
-     * @return string|null
-     */
     private function getNginxConfigDirectory(Configuration $config): ?string
     {
         foreach ($config->getPlatformConfigurations() as $configuration) {

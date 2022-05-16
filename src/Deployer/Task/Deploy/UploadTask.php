@@ -17,24 +17,12 @@ class UploadTask implements TaskInterface
      */
     private $loader;
 
-    /**
-     * DeployTask constructor.
-     *
-     * @param RecipeLoader $loader
-     */
     public function __construct(RecipeLoader $loader)
     {
         $this->loader = $loader;
     }
 
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         $this->loader->load('deploy/info.php');
 

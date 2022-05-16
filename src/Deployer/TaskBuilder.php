@@ -18,7 +18,6 @@ class TaskBuilder
 {
     /**
      * @param Command[] $commands
-     * @param string $namePrefix
      *
      * @return string[]
      *
@@ -36,11 +35,6 @@ class TaskBuilder
         return $tasks;
     }
 
-    /**
-     * @param Command $command
-     * @param string $name
-     * @return Task
-     */
     private function build(Command $command, string $name): Task
     {
         $task = task($name, function () use ($command) {
@@ -58,9 +52,6 @@ class TaskBuilder
         return $task;
     }
 
-    /**
-     * @param Command $command
-     */
     private function runCommandWithin(Command $command): void
     {
         $directory = $command->getWorkingDirectory();
@@ -73,9 +64,6 @@ class TaskBuilder
         });
     }
 
-    /**
-     * @param Command $command
-     */
     private function runCommand(Command $command): void
     {
         $commandAction = $command->getCommand();

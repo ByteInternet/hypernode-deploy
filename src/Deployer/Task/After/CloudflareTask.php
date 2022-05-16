@@ -21,53 +21,30 @@ class CloudflareTask implements ConfigurableTaskInterface, RegisterAfterInterfac
      */
     private $recipeLoader;
 
-    /**
-     * LinkTask constructor.
-     *
-     * @param RecipeLoader $recipeLoader
-     */
     public function __construct(RecipeLoader $recipeLoader)
     {
         $this->recipeLoader = $recipeLoader;
     }
 
-    /**
-     * @param TaskConfigurationInterface $config
-     * @return bool
-     */
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof Cloudflare;
     }
 
-    /**
-     * Define deployer task using Hipex configuration
-     *
-     * @param TaskConfigurationInterface $config
-     * @return Task|null
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;
     }
 
-    /**
-     * Use this method to register your task after another task
-     * i.e. after('taska', 'taskb')
-     */
     public function registerAfter(): void
     {
         after('deploy:symlink', 'deploy:cloudflare');
     }
 
     /**
-     * Configure deployer using Hipex configuration
-     *
      * @param TaskConfigurationInterface|Cloudflare $config
-     *
-     * @return void
      */
-    public function configureTask(TaskConfigurationInterface $config)
+    public function configureTask(TaskConfigurationInterface $config): void
     {
         $this->recipeLoader->load('cloudflare.php');
 
@@ -77,14 +54,7 @@ class CloudflareTask implements ConfigurableTaskInterface, RegisterAfterInterfac
         ]);
     }
 
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
     }
 }

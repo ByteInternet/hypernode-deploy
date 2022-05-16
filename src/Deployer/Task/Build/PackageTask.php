@@ -2,7 +2,6 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
-use Hypernode\DeployConfiguration\ServerRole;
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
 
@@ -12,12 +11,7 @@ use function Deployer\task;
 
 class PackageTask implements TaskInterface
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         set('tar/exclude', '{{configured/tar/exclude}}');
         set('tar/filepath', $config->getBuildArchiveFile());
@@ -36,10 +30,6 @@ class PackageTask implements TaskInterface
         })->onStage('build');
     }
 
-    /**
-     * @param Configuration $config
-     * @return string
-     */
     private function getTarExclude(Configuration $config): string
     {
         $excludes = array_merge(

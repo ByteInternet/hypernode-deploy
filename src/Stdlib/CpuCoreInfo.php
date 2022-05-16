@@ -7,17 +7,11 @@ use function Deployer\test;
 
 class CpuCoreInfo
 {
-    /**
-     * @return int
-     */
     public function count(): int
     {
         return max($this->getActualCores(), 10);
     }
 
-    /**
-     * @return int
-     */
     private function getActualCores(): int
     {
         if (test('[ -f /proc/cpuinfo ]')) {

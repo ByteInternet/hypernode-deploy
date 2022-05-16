@@ -23,10 +23,6 @@ class ClassFinder extends Finder
      */
     protected $namespace;
 
-    /**
-     * ClassFinder constructor.
-     * @param string $namespace
-     */
     public function __construct(string $namespace)
     {
         parent::__construct();
@@ -38,7 +34,6 @@ class ClassFinder extends Finder
     }
 
     /**
-     * @param string $interface
      * @return $this
      */
     public function implements(string $interface): self
@@ -48,7 +43,6 @@ class ClassFinder extends Finder
     }
 
     /**
-     * @param string $class
      * @return $this
      */
     public function subclassOff(string $class): self
@@ -57,9 +51,6 @@ class ClassFinder extends Finder
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getIterator()
     {
         foreach (parent::getIterator() as $file) {

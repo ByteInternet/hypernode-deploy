@@ -13,9 +13,6 @@ use function DI\autowire;
 
 class ConsoleDefinition
 {
-    /**
-     * @return array
-     */
     public static function getDefinition(): array
     {
         return [

@@ -9,20 +9,12 @@ use function Deployer\task;
 
 class BuildTask implements TaskInterface
 {
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         task('docker:build', [
             'docker:dockerfile',
             'docker:compile',
             'docker:push',
-        ])
-            ->onStage('build');
+        ])->onStage('build');
     }
 }

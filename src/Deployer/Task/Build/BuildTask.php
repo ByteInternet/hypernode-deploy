@@ -15,24 +15,12 @@ class BuildTask implements TaskInterface
      */
     private $recipeLoader;
 
-    /**
-     * DeployTask constructor.
-     *
-     * @param RecipeLoader $loader
-     */
     public function __construct(RecipeLoader $loader)
     {
         $this->recipeLoader = $loader;
     }
 
-    /**
-     * Configure using hipex configuration
-     *
-     * @param Configuration $config
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         $this->recipeLoader->load('deploy/info.php');
 
@@ -41,7 +29,6 @@ class BuildTask implements TaskInterface
             'prepare:ssh',
             'build:compile',
             'build:package',
-        ])
-            ->onStage('build');
+        ])->onStage('build');
     }
 }

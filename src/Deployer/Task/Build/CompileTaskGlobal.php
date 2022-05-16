@@ -2,7 +2,6 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
-use Hypernode\DeployConfiguration\ServerRole;
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\Deploy\Deployer\TaskBuilder;
 use Hypernode\DeployConfiguration\Configuration;
@@ -17,22 +16,12 @@ class CompileTaskGlobal implements TaskInterface
      */
     private $taskBuilder;
 
-    /**
-     * CompileTask constructor.
-     *
-     * @param TaskBuilder $taskBuilder
-     */
     public function __construct(TaskBuilder $taskBuilder)
     {
         $this->taskBuilder = $taskBuilder;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         task('build:compile:prepare', function () {
             run('rm -Rf build');

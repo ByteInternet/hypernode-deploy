@@ -13,9 +13,6 @@ use function Hypernode\DeployConfiguration\getenv;
 class ImageNameHelper
 {
     /**
-     * @param Configuration $config
-     * @param string        $suffix
-     * @return string
      * @throws EnvironmentVariableNotDefinedException
      */
     public function getDockerImage(Configuration $config, string $suffix): string
@@ -42,8 +39,6 @@ class ImageNameHelper
     }
 
     /**
-     * @param Configuration $config
-     * @return string
      * @throws EnvironmentVariableNotDefinedException
      */
     public function getImageRegistry(Configuration $config): string
@@ -60,7 +55,6 @@ class ImageNameHelper
     }
 
     /**
-     * @return string
      * @throws EnvironmentVariableNotDefinedException
      */
     public function getVersion(): string

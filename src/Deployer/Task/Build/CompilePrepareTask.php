@@ -12,12 +12,7 @@ use function Deployer\task;
 
 class CompilePrepareTask implements TaskInterface, RegisterAfterInterface
 {
-    /**
-     * {@inheritdoc}
-     *
-     * @return void
-     */
-    public function configure(Configuration $config)
+    public function configure(Configuration $config): void
     {
         task('build:compile:prepare', function () {
             run('rm -Rf build');
@@ -25,9 +20,6 @@ class CompilePrepareTask implements TaskInterface, RegisterAfterInterface
         })->onStage('build');
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function registerAfter(): void
     {
         before('build:compile', 'build:compile:prepare');
