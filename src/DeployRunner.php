@@ -196,11 +196,9 @@ class DeployRunner
         $host->multiplexing(true);
         $host->roles($server->getRoles());
         $host->set('domain', $stage->getDomain());
-        // @TODO(timon): get rid of domain_path variable usage
-        $host->set('domain_path', function () {
+        $host->set('deploy_path', function () {
             return run('realpath ~/apps/{{domain}}');
         });
-        $host->set('deploy_path', '{{domain_path}}');
         $host->set('configuration_stage', $stage);
 
         foreach ($server->getOptions() as $optionName => $optionValue) {

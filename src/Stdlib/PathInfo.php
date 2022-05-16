@@ -11,10 +11,10 @@ class PathInfo
 {
     public static function getAbsoluteDomainPath(): string
     {
-        if (!has('domain_path/realpath')) {
-            $realpath = run('realpath {{domain_path}}');
-            set('domain_path/realpath', $realpath);
+        if (!has('deploy_path/realpath')) {
+            $realpath = run('realpath {{deploy_path}}');
+            set('deploy_path/realpath', $realpath);
         }
-        return get('domain_path/realpath');
+        return get('deploy_path/realpath');
     }
 }

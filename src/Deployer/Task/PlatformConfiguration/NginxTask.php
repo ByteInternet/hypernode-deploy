@@ -106,7 +106,7 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
                 '--delete',
             ];
             $args = implode(' ', array_map('escapeshellarg', $args));
-            run("rsync {$args} {{nginx/config_path}}/ {{domain_path}}/var/etc/");
+            run("rsync {$args} {{nginx/config_path}}/ {{deploy_path}}/var/etc/");
         });
 
         task('deploy:nginx', [
