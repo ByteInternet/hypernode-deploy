@@ -26,6 +26,10 @@ class CompileTaskGlobal implements TaskInterface
         task('build:compile:prepare', function () {
             run('rm -Rf build');
             run('mkdir -p build');
+            $dirs = ['generated', 'pub/static', 'var/view_preprocessed'];
+            foreach ($dirs as $dir) {
+                run(sprintf('rm -rf %s', $dir));
+            }
         })->onStage('build');
 
         $tasks = $this->taskBuilder->buildAll($config->getBuildCommands(), 'build:compile');
