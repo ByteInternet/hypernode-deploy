@@ -9,6 +9,7 @@ use Hypernode\DeployConfiguration\Exception\EnvironmentVariableNotDefinedExcepti
 
 use function Hypernode\Deploy\Deployer\getenvFallback;
 use function Hypernode\DeployConfiguration\getenv;
+use function Deployer\run;
 
 class ImageNameHelper
 {
@@ -59,7 +60,14 @@ class ImageNameHelper
      */
     public function getVersion(): string
     {
-        $commitSha = getenvFallback(['CI_COMMIT_SHA', 'BITBUCKET_COMMIT', 'GITHUB_SHA', 'CIRCLE_SHA1', 'COMMIT_SHA']);
+        try {
+            $commitSha = getenvFallback(['CI_COMMIT_SHA', 'BITBUCKET_COMMIT', 'GITHUB_SHA', 'CIRCLE_SHA1', 'COMMIT_SHA']);
+        } catch(EnvironmentVariableNotDefinedException $e) {
+            $commitSha = run("git rev-parse HEAD");
+            if (!$commitSha) {
+                throw $e;
+            }
+        }
         return substr($commitSha, 0, 8);
     }
 }
