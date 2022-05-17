@@ -83,7 +83,7 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
         });
 
         task('deploy:nginx:managevhost', function () {
-            run('hypernode-manage-vhosts {{hostname}}');
+            run('hypernode-manage-vhosts {{domain}}');
         });
 
         task('deploy:nginx:cleanup', function () {
@@ -110,7 +110,7 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
                 '--delete',
             ];
             $args = implode(' ', array_map('escapeshellarg', $args));
-            run("rsync {$args} {{nginx/config_path}}/ ~/nginx/{{hostname}}/");
+            run("rsync {$args} {{nginx/config_path}}/ ~/nginx/{{domain}}/");
         });
 
         task('deploy:nginx', [
