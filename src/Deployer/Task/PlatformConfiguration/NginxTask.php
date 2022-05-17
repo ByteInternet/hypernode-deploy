@@ -82,6 +82,10 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
             run('mkdir -p {{nginx/config_path}}');
         });
 
+        task('deploy:nginx:managevhost', function () {
+            run('hypernode-manage-vhosts {{hostname}}');
+        });
+
         task('deploy:nginx:cleanup', function () {
             run('if [ -d {{nginx/config_path}} ]; then rm -Rf {{nginx/config_path}}; fi');
         });
@@ -111,6 +115,7 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
 
         task('deploy:nginx', [
             'deploy:nginx:prepare',
+            'deploy:nginx:managevhost',
             'deploy:nginx:upload',
             'deploy:nginx:cleanup',
         ]);
