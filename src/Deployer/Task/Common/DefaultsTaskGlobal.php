@@ -45,7 +45,7 @@ class DefaultsTaskGlobal implements TaskInterface
             return $this->releaseInfo->getCommitSha();
         });
 
-        set('configured/bin/php', $config->getPhpVersion());
+        set('configured/bin/php', 'php');
         set('configured/public_folder', $config->getPublicFolder());
     }
 }
