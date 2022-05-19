@@ -12,6 +12,7 @@ use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
 use function Deployer\before;
+use function Deployer\get;
 use function Deployer\run;
 use function Deployer\set;
 use function Deployer\task;
@@ -39,7 +40,7 @@ class ComposerTask implements ConfigurableTaskInterface
      */
     public function configureTask(TaskConfigurationInterface $config): void
     {
-        set('bin/composer', 'composer');
+        set('bin/composer', get('bin/composer', 'composer2'));
         set('composer/install_arguments', implode(' ', $config->getInstallArguments()));
     }
 
