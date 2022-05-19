@@ -154,6 +154,7 @@ RUN rm -rvf \
 # Setup hipex deploy command
 COPY --from=build /hypernode/build/hypernode-deploy.phar /bin/hypernode-deploy
 RUN chmod +x /bin/hypernode-deploy
+RUN ln -s /bin/hypernode-deploy /bin/hipex-deploy
 
 # Setup default command
 CMD ["hypernode-deploy"]
