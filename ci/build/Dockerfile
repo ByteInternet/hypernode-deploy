@@ -10,8 +10,6 @@ FROM php:${PHP_VERSION}-cli-buster as build-vendor
 
 COPY ./src /hypernode/src
 COPY ./composer.json /hypernode/composer.json
-COPY ./composer.lock /hypernode/composer.lock
-COPY ./vendor /hypernode/vendor
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -41,7 +39,6 @@ COPY ./build /hypernode/build
 COPY ./bin /hypernode/bin
 COPY ./box.json /hypernode/box.json
 COPY ./composer.json /hypernode/composer.json
-COPY ./composer.lock /hypernode/composer.lock
 COPY ./ci/build/files /
 COPY --from=build-vendor /hypernode/vendor /hypernode/vendor
 
