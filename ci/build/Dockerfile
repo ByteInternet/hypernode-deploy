@@ -5,8 +5,24 @@ ARG PHP_VERSION
 # Ref node image for later copy usage
 FROM node:${NODE_VERSION}-buster as node-image
 
-# PHP build phase
-FROM php:${PHP_VERSION}-cli-buster as build
+# Install hypernode-deploy dependencies with target PHP version
+FROM php:${PHP_VERSION}-cli-buster as build-vendor
+
+COPY ./src /hypernode/src
+COPY ./composer.json /hypernode/composer.json
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git zip unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer \
+    && chmod +x /usr/local/bin/composer \
+    && composer install --no-dev --optimize-autoloader --working-dir=/hypernode
+
+# Compile hipex-deploy PHAR binary with box using PHP 8.1
+FROM php:8.1-cli-buster as build
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -16,21 +32,22 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # We can't use .dockerignore here.
-COPY ./src /hipex/src
-COPY ./ci/compile.sh /hipex/ci/compile.sh
-COPY ./.git /hipex/.git
-COPY ./build /hipex/build
-COPY ./bin /hipex/bin
-COPY ./box.json /hipex/box.json
-COPY ./composer.json /hipex/composer.json
-COPY ./composer.lock /hipex/composer.lock
+COPY ./src /hypernode/src
+COPY ./ci/compile.sh /hypernode/ci/compile.sh
+COPY ./.git /hypernode/.git
+COPY ./build /hypernode/build
+COPY ./bin /hypernode/bin
+COPY ./box.json /hypernode/box.json
+COPY ./composer.json /hypernode/composer.json
 COPY ./ci/build/files /
+COPY --from=build-vendor /hypernode/vendor /hypernode/vendor
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer
 
-RUN sh /hipex/ci/compile.sh
+RUN sh /hypernode/ci/compile.sh
 
+# Finish the rest of the image build
 FROM php:${PHP_VERSION}-cli-buster
 
 # Add docker repository
@@ -69,12 +86,13 @@ RUN apt-get update && \
         gnupg \
         zip \
         docker-ce-cli \
+        bc \
     && rm -rf /var/lib/apt/lists/*
 
 # Install php extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
+
 RUN install-php-extensions \
-        gd \
         pcntl \
         dom \
         bcmath \
@@ -92,8 +110,14 @@ RUN install-php-extensions \
         sockets \
         yaml \
         imagick \
-        solr \ 
         calendar
+
+# Install solr for PHP < 8.1, because solr hasn't been made available for 8.1 on pecl.
+# Source: https://github.com/mlocati/docker-php-extension-installer/issues/549
+RUN export PHP_VERSION_MAJOR_MINOR=$(echo ${PHP_VERSION} | cut -d'.' -f1,2) && \
+    export PHP_VERSION_SOLR_COMPAT_COMMAND="$(echo "${PHP_VERSION_MAJOR_MINOR} < 8.1")" && \
+    export PHP_VERSION_SOLR_COMPAT_RESULT=$(echo "${PHP_VERSION_SOLR_COMPAT_COMMAND}" | bc -l) && \
+    if [ "${PHP_VERSION_SOLR_COMPAT_RESULT}" -eq "1" ]; then install-php-extensions solr; else echo "not installing solr"; fi
 
 # Install node
 COPY --from=node-image /opt /opt
@@ -125,11 +149,12 @@ RUN rm -rvf \
     && apt-get autoremove -y
 
 # Setup hipex deploy command
-COPY --from=build /hipex/build/hipex-deploy.phar /bin/hipex-deploy
-RUN chmod +x /bin/hipex-deploy
+COPY --from=build /hypernode/build/hypernode-deploy.phar /bin/hypernode-deploy
+RUN chmod +x /bin/hypernode-deploy
+RUN ln -s /bin/hypernode-deploy /bin/hipex-deploy
 
 # Setup default command
-CMD ["hipex-deploy"]
+CMD ["hypernode-deploy"]
 
 # Setup build location
 RUN mkdir /build

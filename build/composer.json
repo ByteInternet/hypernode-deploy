@@ -1,13 +1,7 @@
 {
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "config": {
-        "platform": {
-            "php": "7.2"
-        }
-    },
     "require": {
         "humbug/box": "^3.8"
     }
 }
-

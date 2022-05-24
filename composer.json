@@ -43,11 +43,5 @@
             "hypernode/*": "source"
         },
         "sort-packages": true
-    },
-    "repositories": {
-        "hypernode-deploy-configuration": {
-            "type": "git",
-            "url": "git@github.com:ByteInternet/hypernode-deploy-configuration.git"
-        }
     }
 }
