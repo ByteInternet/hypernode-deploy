@@ -98,6 +98,7 @@ class DeployRunner
         $this->recipeLoader->load('common.php');
         $tasks = $this->taskFactory->loadAll();
         $config = $this->getConfiguration($deployer);
+        $config->setLogger($this->log);
         $this->configureStages($config);
 
         foreach ($tasks as $task) {
@@ -131,8 +132,6 @@ class DeployRunner
         $configurations = array_merge(
             $mainConfig->getBuildCommands(),
             $mainConfig->getDeployCommands(),
-            $mainConfig->getPlatformConfigurations(),
-            $mainConfig->getPlatformServices(),
             $mainConfig->getAfterDeployTasks()
         );
 
