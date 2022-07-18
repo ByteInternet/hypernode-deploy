@@ -20,6 +20,7 @@ services:
     volumes:
       - ./ci/test/.ssh:/root/.ssh
       - ../magento2.komkommer.store:/web
+      - ./ci/test/magento/deploy.php:/web/deploy_simple.php
     depends_on:
     - hypernode
     networks:
