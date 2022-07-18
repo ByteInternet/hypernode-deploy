@@ -2,7 +2,7 @@ version: '3.9'
 services:
   hypernode:
     container_name: hypernode
-    image: docker.hypernode.com/byteinternet/hypernode-docker:latest
+    image: docker.hypernode.com/byteinternet/hypernode-buster-docker-php81-mysql57
     volumes:
       - ./ci/test/.ssh:/root/.ssh
     networks:

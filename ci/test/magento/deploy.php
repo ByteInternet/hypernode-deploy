@@ -16,4 +16,21 @@ $productionStage->addServer('hypernode', [], [], [
     'port' => 22,
 ]);
 
+$configuration->setSharedFiles([
+    'app/etc/env.php',
+    'pub/errors/local.xml',
+    '.user.ini',
+    'pub/.user.ini'
+]);
+
+$configuration->setSharedFolders([
+    'var/log',
+    'var/session',
+    'var/report',
+    'var/export',
+    'pub/media',
+    'pub/sitemaps',
+    'pub/static/_cache'
+]);
+
 return $configuration;
