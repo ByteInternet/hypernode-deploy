@@ -5,6 +5,7 @@ services:
     image: docker.hypernode.com/byteinternet/hypernode-buster-docker-php81-mysql57
     volumes:
       - ./ci/test/.ssh:/root/.ssh
+      - ../magento2.komkommer.store:/banaan
     networks:
       - hn
   deploy:
