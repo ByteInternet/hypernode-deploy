@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  hypernode:
+    container_name: hypernode
+    image: docker.hypernode.com/byteinternet/hypernode-docker:latest
+    volumes:
+      - ./ci/test/.ssh:/root/.ssh
+    networks:
+      - hn
+  deploy:
+    build:
+      context: .
+      dockerfile: ci/build/Dockerfile
+      # Match environment of magento2.komkommer.store
+      args:
+      - NODE_VERSION=16
+      - PHP_VERSION=8.1
+    command: "/bin/bash -c 'sleep 5000'"
+    working_dir: /web
+    volumes:
+      - ./ci/test/.ssh:/root/.ssh
+      - ../magento2.komkommer.store:/web
+    depends_on:
+    - hypernode
+    networks:
+      - hn
+
+networks:
+  hn:
+    driver: bridge
