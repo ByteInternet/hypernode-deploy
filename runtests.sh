@@ -36,8 +36,7 @@ function install_magento() {
     --admin-password=admin123 --language=en_US --currency=USD  \
     --timezone=America/Chicago --elasticsearch-host=localhost"
 }
-install_magento || /bin/true
-install_magento  # Second time works?
+install_magento || install_magento  # Second time works?
 docker-compose exec hypernode cp /banaan/app/etc/env.php /data/web/apps/magento2.komkommer.store/shared/app/etc/env.php
 docker-compose exec hypernode chown -R app:app /data/web/apps/magento2.komkommer.store
 
