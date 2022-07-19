@@ -4,8 +4,8 @@ set -e
 set -x
 
 # Handy aliases
-export HN="docker-compose exec hypernode"
-export DP="docker-compose run deploy"
+export HN="docker-compose exec -T hypernode"
+export DP="docker-compose run -T deploy"
 
 # Clear up env
 trap "docker-compose down -v" EXIT
@@ -14,7 +14,7 @@ trap "docker-compose down -v" EXIT
 docker-compose up -d hypernode
 
 # Build
-if [ ! -e "../magento2.komkommer.store/build" ]; then
+if [ ! -e "${MAGENTO_REPO:-../magento2.komkommer.store}/build" ]; then
     $DP hypernode-deploy build
 else
     echo "Build folder already exists, skipping build"

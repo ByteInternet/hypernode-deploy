@@ -5,7 +5,7 @@ services:
     image: docker.hypernode.com/byteinternet/hypernode-buster-docker-php81-mysql57
     volumes:
       - ./ci/test/.ssh:/root/.ssh
-      - ../magento2.komkommer.store:/banaan
+      - ${MAGENTO_REPO:-../magento2.komkommer.store}:/banaan
     networks:
       - hn
   deploy:
@@ -20,7 +20,7 @@ services:
     working_dir: /web
     volumes:
       - ./ci/test/.ssh:/root/.ssh
-      - ../magento2.komkommer.store:/web
+      - ${MAGENTO_REPO:-../magento2.komkommer.store}:/web
       - ./ci/test/magento/deploy.php:/web/deploy_simple.php
     depends_on:
     - hypernode
