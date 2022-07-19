@@ -26,11 +26,19 @@ echo "Waiting for MySQL to be available on the Hypernode container"
 $HN bash -c "until mysql -e 'select 1' 2> /dev/null ; do sleep 1; done"
 $HN mkdir -p /data/web/apps/magento2.komkommer.store/shared/app/etc/
 
+# Loop until elasticsearch is running in the Hypernode container
+echo "Waiting for Elasticsearch to be available on the Hypernode container"
+$HN bash -c "until curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"' ; do sleep 1; done"
+
 # You need a working Magento install before you can use the hn-deploy
 # This sets up the database on the Hypernode container and generates a valid env.php
 $HN mysql -e "CREATE DATABASE dummytag_preinstalled_magento"
 function install_magento() {
     local pw=$($HN bash -c "grep password /data/web/.my.cnf | cut -d' ' -f3")
+
+    # Strip carriage return of pw and saves it in a new variable
+    pw=$(echo $pw | tr -d '\r')
+
     $HN bash -c "/banaan/bin/magento setup:install  \
     --base-url=http://magento2.komkommer.store  \
     --db-host=mysqlmaster.dummytag.hypernode.io  \

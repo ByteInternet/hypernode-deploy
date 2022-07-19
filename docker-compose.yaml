@@ -6,8 +6,6 @@ services:
     volumes:
       - ./ci/test/.ssh:/root/.ssh
       - ${MAGENTO_REPO:-../magento2.komkommer.store}:/banaan
-    networks:
-      - hn
   deploy:
     build:
       context: .
@@ -24,9 +22,3 @@ services:
       - ./ci/test/magento/deploy.php:/web/deploy_simple.php
     depends_on:
     - hypernode
-    networks:
-      - hn
-
-networks:
-  hn:
-    driver: bridge
