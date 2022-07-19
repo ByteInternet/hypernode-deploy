@@ -67,13 +67,13 @@ $DP bash -c "until ssh app@hypernode echo UP! 2> /dev/null ; do sleep 1; done"
 chmod 0600 ci/test/.ssh/id_rsa
 
 # SSH from deploy container to hypernode container
-$DP hypernode-deploy deploy production -f /web/deploy_simple.php
+$DP hypernode-deploy deploy production -f /deploy_simple.php
 
 # Check if deployment made only one release
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 1
 
 # Deploy again
-$DP hypernode-deploy deploy production -f /web/deploy_simple.php
+$DP hypernode-deploy deploy production -f /deploy_simple.php
 
 # Check if another deployment was made
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 2

@@ -18,6 +18,6 @@ services:
     working_dir: /web
     volumes:
       - ./ci/test/.ssh:/root/.ssh
-      - ./ci/test/magento/deploy.php:/web/deploy_simple.php
+      - ./ci/test/magento/deploy.php:/deploy_simple.php
     depends_on:
     - hypernode
