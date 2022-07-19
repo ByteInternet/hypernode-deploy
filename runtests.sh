@@ -24,7 +24,7 @@ docker-compose up -d hypernode
 
 # Build
 if [ ! -e "${MAGENTO_REPO}/build" ]; then
-    $DP hypernode-deploy build
+    $DP hypernode-deploy build -f /deploy_simple.php
 else
     echo "Build folder already exists, skipping build"
 fi
