@@ -10,10 +10,14 @@ export DP="docker-compose run -T deploy"
 # Clear up env
 trap "docker-compose down -v" EXIT
 
+MAGENTO_REPO=${MAGENTO_REPO:-../magento2.komkommer.store}
+if [ ! -d $MAGENTO_REPO ]; then
+    mkdir -p $MAGENTO_REPO
+    $DP composer create-project --repository=https://mage-os.hypernode.com/mirror/ magento/project-community-edition /web
+fi
+
 # Start hypernode-docker
 docker-compose up -d hypernode
-
-MAGENTO_REPO=${MAGENTO_REPO:-../magento2.komkommer.store}
 
 # Build
 if [ ! -e "${MAGENTO_REPO}/build" ]; then

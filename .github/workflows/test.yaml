@@ -8,11 +8,6 @@ jobs:
     steps:
     - name: Checkout hypernode-deploy
       uses: actions/checkout@v3
-    - name: Create magento2 project
-      uses: php-actions/composer@v6
-      with:
-        command: create-project
-        args: --repository=https://mage-os.hypernode.com/mirror/ magento/project-community-edition magento2
     - name: Run test script
       run: MAGENTO_REPO=./magento2 ./runtests.sh
       shell: bash
