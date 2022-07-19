@@ -8,7 +8,7 @@ export HN="docker-compose exec hypernode"
 export DP="docker-compose run deploy"
 
 # Clear up env
-# trap "docker-compose down -v" EXIT
+trap "docker-compose down -v" EXIT
 
 # Start hypernode-docker
 docker-compose up -d hypernode
