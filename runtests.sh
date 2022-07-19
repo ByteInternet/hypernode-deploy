@@ -26,11 +26,12 @@ docker-compose exec hypernode mkdir -p /data/web/apps/magento2.komkommer.store/s
 # This sets up the database on the Hypernode container and generates a valid env.php
 docker-compose exec hypernode mysql -e "CREATE DATABASE dummytag_preinstalled_magento"
 function install_magento() {
+    local pw=$(docker-compose exec hypernode bash -c "grep password /data/web/.my.cnf | cut -d' ' -f3")
     docker-compose exec hypernode bash -c "/banaan/bin/magento setup:install  \
     --base-url=http://magento2.komkommer.store  \
     --db-host=mysqlmaster.dummytag.hypernode.io  \
     --db-name=dummytag_preinstalled_magento --db-user=app  \
-    --db-password=RjeXDj7FAPWCyBxlWEAbKMSkpKyxMptY  \
+    --db-password=$pw  \
     --admin-firstname=admin --admin-lastname=admin  \
     --admin-email=admin@admin.com --admin-user=admin  \
     --admin-password=admin123 --language=en_US --currency=USD  \
