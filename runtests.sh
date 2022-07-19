@@ -10,6 +10,9 @@ export DP="docker-compose run -T deploy"
 # Clear up env
 trap "docker-compose down -v" EXIT
 
+docker-compose build
+
+# Make sure MAGENTO_REPO exists and has magento2 install
 MAGENTO_REPO=${MAGENTO_REPO:-../magento2.komkommer.store}
 if [ ! -d $MAGENTO_REPO ]; then
     mkdir -p $MAGENTO_REPO
