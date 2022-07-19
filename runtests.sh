@@ -13,15 +13,17 @@ trap "docker-compose down -v" EXIT
 # Start hypernode-docker
 docker-compose up -d hypernode
 
+MAGENTO_REPO=${MAGENTO_REPO:-../magento2.komkommer.store}
+
 # Build
-if [ ! -e "${MAGENTO_REPO:-../magento2.komkommer.store}/build" ]; then
+if [ ! -e "${MAGENTO_REPO}/build" ]; then
     $DP hypernode-deploy build
 else
     echo "Build folder already exists, skipping build"
 fi
 
 # Prepare env
-rm ../magento2.komkommer.store/app/etc/env.php || /bin/true
+rm "${MAGENTO_REPO}/app/etc/env.php" || /bin/true
 echo "Waiting for MySQL to be available on the Hypernode container"
 $HN bash -c "until mysql -e 'select 1' 2> /dev/null ; do sleep 1; done"
 $HN mkdir -p /data/web/apps/magento2.komkommer.store/shared/app/etc/

@@ -8,12 +8,11 @@ jobs:
     steps:
     - name: Checkout hypernode-deploy
       uses: actions/checkout@v3
-    - name: Checkout magento2.komkommer.store
-      uses: actions/checkout@v3
+    - name: Create magento2 project
+      uses: php-actions/composer@v6
       with:
-        repository: ByteInternet/magento2.komkommer.store
-        path: "./magento2.komkommer.store"
-        token: "${{secrets.HYPERNODE_PULL_REPO_TOKEN}}"
+        command: create-project
+        args: --repository=https://mage-os.hypernode.com/mirror/ magento/project-community-edition magento2
     - name: Run test script
-      run: MAGENTO_REPO=./magento2.komkommer.store ./runtests.sh
+      run: MAGENTO_REPO=./magento2 ./runtests.sh
       shell: bash
