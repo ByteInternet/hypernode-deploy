@@ -5,12 +5,12 @@ set -x
 
 # Handy aliases
 export HN="docker-compose exec -T hypernode"
-export DP="docker-compose run -T deploy"
+export DP="docker-compose exec -T deploy"
 
 # Clear up env
 trap "docker-compose down -v" EXIT
 
-docker-compose build
+docker-compose up -d deploy
 
 # Make sure MAGENTO_REPO exists and has magento2 install
 MAGENTO_REPO=${MAGENTO_REPO:-../magento2.komkommer.store}
@@ -65,6 +65,10 @@ $HN chown -R app:app /data/web/apps/magento2.komkommer.store
 echo "Waiting for SSH to be available on the Hypernode container"
 $DP bash -c "until ssh app@hypernode echo UP! 2> /dev/null ; do sleep 1; done"
 chmod 0600 ci/test/.ssh/id_rsa
+
+###################################
+# TESTS HAPPEN FROM THIS POINT ON #
+###################################
 
 # SSH from deploy container to hypernode container
 $DP hypernode-deploy deploy production -f /deploy_simple.php
