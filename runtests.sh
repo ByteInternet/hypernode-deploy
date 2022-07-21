@@ -40,8 +40,8 @@ install_magento
 # Copy env to the deploy container
 $HN /data/web/magento2/bin/magento app:config:dump scopes themes
 echo "Waiting for SSH to be available on the Hypernode container"
-$DP bash -c "until ssh app@hypernode echo UP! ; do sleep 1; done"
-$DP rsync -a app@hypernode:/data/web/magento2/ /web
+$DP bash -c "until ssh hypernode echo UP! ; do sleep 1; done"
+$DP rsync -a hypernode:/data/web/magento2/ /web
 $DP rm /web/app/etc/env.php
 
 # Build
