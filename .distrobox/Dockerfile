@@ -32,7 +32,7 @@ RUN wget https://raw.githubusercontent.com/composer/getcomposer.org/master/web/i
   mv composer.phar /usr/local/bin/composer
 
 # Install PhpStorm
-RUN wget -q https://download-cdn.jetbrains.com/webide/PhpStorm-2022.1.tar.gz -O /tmp/phpstorm.tar.gz && \
+RUN wget -q https://download-cdn.jetbrains.com/webide/PhpStorm-2022.1.3.tar.gz -O /tmp/phpstorm.tar.gz && \
   mkdir /opt/phpstorm && \
   tar -xzf /tmp/phpstorm.tar.gz -C /opt/phpstorm --strip-components=1 && \
   printf '#!/usr/bin/env bash\n/opt/phpstorm/bin/phpstorm.sh $@ &> /dev/null &' > /usr/local/bin/phpstorm && \
