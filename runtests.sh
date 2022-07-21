@@ -34,13 +34,13 @@ docker-compose up -d
 # Create working initial Magento install
 $HN composer create-project --repository=https://mage-os.hypernode.com/mirror/ magento/project-community-edition /data/web/magento2
 echo "Waiting for MySQL to be available on the Hypernode container"
-$HN bash -c "until mysql -e 'select 1' 2> /dev/null ; do sleep 1; done"
+$HN bash -c "until mysql -e 'select 1' ; do sleep 1; done"
 install_magento
 
 # Copy env to the deploy container
 $HN /data/web/magento2/bin/magento app:config:dump scopes themes
 echo "Waiting for SSH to be available on the Hypernode container"
-$DP bash -c "until ssh app@hypernode echo UP! 2> /dev/null ; do sleep 1; done"
+$DP bash -c "until ssh app@hypernode echo UP! ; do sleep 1; done"
 $DP rsync -a app@hypernode:/data/web/magento2/ /web
 $DP rm /web/app/etc/env.php
 
@@ -68,5 +68,3 @@ $DP hypernode-deploy deploy production -f /deploy_simple.php
 
 # Check if another deployment was made
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 2
-
-
