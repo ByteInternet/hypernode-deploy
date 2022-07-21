@@ -27,7 +27,7 @@ function install_magento() {
 }
 
 # Clear up env
-# trap "docker-compose down -v" EXIT
+trap "docker-compose down -v" EXIT
 
 docker-compose up -d
 
@@ -39,9 +39,9 @@ install_magento
 
 # Copy env to the deploy container
 $HN /data/web/magento2/bin/magento app:config:dump scopes themes
-rm -rf /tmp/web || /bin/true
-docker-compose cp hypernode:/data/web/magento2 /tmp/web
-docker-compose cp /tmp/web/ deploy:/
+echo "Waiting for SSH to be available on the Hypernode container"
+$DP bash -c "until ssh app@hypernode echo UP! 2> /dev/null ; do sleep 1; done"
+$DP rsync -a app@hypernode:/data/web/magento2/ /web
 $DP rm /web/app/etc/env.php
 
 # Build
@@ -52,12 +52,6 @@ $HN mkdir -p /data/web/apps/magento2.komkommer.store/shared/app/etc/
 $HN cp /data/web/magento2/app/etc/env.php /data/web/apps/magento2.komkommer.store/shared/app/etc/env.php
 $HN chown -R app:app /data/web/apps/magento2.komkommer.store
 chmod 0600 ci/test/.ssh/id_rsa
-
-# Wait for service to come up
-echo "Waiting for Elasticsearch to be available on the Hypernode container"
-$HN bash -c "until curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"' ; do sleep 1; done"
-echo "Waiting for SSH to be available on the Hypernode container"
-$DP bash -c "until ssh app@hypernode echo UP! 2> /dev/null ; do sleep 1; done"
 
 ###################################
 # TESTS HAPPEN FROM THIS POINT ON #
