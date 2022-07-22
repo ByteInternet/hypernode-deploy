@@ -3,6 +3,9 @@
 set -e
 set -x
 
+make compile
+
+
 # Handy aliases
 export HN="docker-compose exec -T hypernode"
 export DP="docker-compose exec -T deploy"
