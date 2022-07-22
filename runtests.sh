@@ -29,6 +29,8 @@ function install_magento() {
 # Clear up env
 trap "docker-compose down -v" EXIT
 
+chmod 0600 ci/test/.ssh/id_rsa
+chmod 0600 ci/test/.ssh/authorized_keys
 docker-compose up -d
 
 # Create working initial Magento install
@@ -40,7 +42,6 @@ install_magento
 # Copy env to the deploy container
 $HN /data/web/magento2/bin/magento app:config:dump scopes themes
 echo "Waiting for SSH to be available on the Hypernode container"
-chmod 0600 ci/test/.ssh/id_rsa
 $HN cat /root/.ssh/authorized_keys
 $DP ssh-keygen -y -f /root/.ssh/id_rsa
 $DP stat /root/.ssh/id_rsa
