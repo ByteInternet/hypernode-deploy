@@ -5,7 +5,8 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    container: .distrobox/Dockerfile
+    container:
+      build: ".distrobox/Dockerfile"
     steps:
     - name: Checkout hypernode-deploy
       uses: actions/checkout@v3
