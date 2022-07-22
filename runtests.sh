@@ -42,9 +42,9 @@ $HN /data/web/magento2/bin/magento app:config:dump scopes themes
 echo "Waiting for SSH to be available on the Hypernode container"
 chmod 0600 ci/test/.ssh/id_rsa
 $HN cat /root/.ssh/authorized_keys
-$DP ssh-keygen -l -f /root/.ssh/id_rsa
+$DP ssh-keygen -y -f /root/.ssh/id_rsa
 $DP stat /root/.ssh/id_rsa
-$DP bash -c "until ssh hypernode echo UP! ; do sleep 1; done"
+$DP bash -c "until ssh -i /root/.ssh/id_rsa root@hypernode echo UP! ; do sleep 1; done"
 $DP rsync -a hypernode:/data/web/magento2/ /web
 $DP rm /web/app/etc/env.php
 
