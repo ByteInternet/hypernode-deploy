@@ -6,26 +6,5 @@ services:
     volumes:
       - ./ci/test/.ssh:/root/.ssh
       - ${MAGENTO_REPO:-../magento2.komkommer.store}:/banaan
-    networks:
-      - hn
-  deploy:
-    image: quay.io/hypernode/deploy:latest
-    # build:
-    #   context: .
-    #   dockerfile: ci/build/Dockerfile
-    #   # Match environment of magento2.komkommer.store
-    #   args:
-    #   - NODE_VERSION=16
-    #   - PHP_VERSION=8.1
-    command: "/bin/bash -c 'sleep 5000'"
-    working_dir: /web
-    volumes:
-      - ./ci/test/.ssh:/root/.ssh
-      - ./ci/test/magento/deploy.php:/deploy_simple.php
-    depends_on:
-    - hypernode
-    networks:
-      - hn
-networks:
-  hn:
-    driver: bridge
+    ports:
+      - "2222:22"
