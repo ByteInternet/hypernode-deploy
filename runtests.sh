@@ -23,7 +23,7 @@ wget https://raw.githubusercontent.com/composer/getcomposer.org/master/web/insta
 composer install --no-dev --optimize-autoloader
 make compile
 # IP=$(docker ps |& grep docker.hypernode.com | awk '{print$1}' | xargs docker inspect | jq -r ".[].NetworkSettings.Networks[].IPAddress")
-ssh -p 2222 root@localhost -i ci/test/.ssh/id_rsa hostname
+ssh -p 2222 -o StrictHostKeyChecking=no root@localhost -i ci/test/.ssh/id_rsa hostname
 
 function install_magento() {
     $HN mysql -e "DROP DATABASE IF EXISTS dummytag_preinstalled_magento"
