@@ -9,5 +9,5 @@ jobs:
     - name: Checkout hypernode-deploy
       uses: actions/checkout@v3
     - name: Run test script
-      run: MAGENTO_REPO=./magento2 script -e -c ./runtests.sh
+      run: MAGENTO_REPO=./magento2 ./runtests.sh
       shell: bash
