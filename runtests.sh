@@ -40,7 +40,10 @@ install_magento
 # Copy env to the deploy container
 $HN /data/web/magento2/bin/magento app:config:dump scopes themes
 echo "Waiting for SSH to be available on the Hypernode container"
+chmod 0600 ci/test/.ssh/id_rsa
 $HN cat /root/.ssh/authorized_keys
+$DP ssh-keygen -l -f /root/.ssh/id_rsa
+$DP stat /root/.ssh/id_rsa
 $DP bash -c "until ssh hypernode echo UP! ; do sleep 1; done"
 $DP rsync -a hypernode:/data/web/magento2/ /web
 $DP rm /web/app/etc/env.php
@@ -52,7 +55,6 @@ $DP hypernode-deploy build -f /deploy_simple.php
 $HN mkdir -p /data/web/apps/magento2.komkommer.store/shared/app/etc/
 $HN cp /data/web/magento2/app/etc/env.php /data/web/apps/magento2.komkommer.store/shared/app/etc/env.php
 $HN chown -R app:app /data/web/apps/magento2.komkommer.store
-chmod 0600 ci/test/.ssh/id_rsa
 
 ###################################
 # TESTS HAPPEN FROM THIS POINT ON #
