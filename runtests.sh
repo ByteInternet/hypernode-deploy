@@ -13,6 +13,8 @@ sudo apt update && sudo apt-get install -y build-essential cmake php8.1-bcmath p
 wget https://raw.githubusercontent.com/composer/getcomposer.org/master/web/installer -O - -q | php -- --quiet && \
   sudo mv composer.phar /usr/local/bin/composer
 
+mkdir -p vendor
+# composer install --no-dev --optimize-autoloader
 make compile
 
 
