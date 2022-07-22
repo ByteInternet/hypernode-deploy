@@ -3,6 +3,11 @@
 set -e
 set -x
 
+# Handy aliases
+HN="docker-compose exec -T hypernode"
+DP="docker-compose exec -T deploy"
+HNDP="/usr/local/bin/hypernode-deploy"
+
 sudo apt update && sudo apt-get install -y \
   apt-transport-https bash-completion ca-certificates curl git gpg gnupg htop locales lsb-release ripgrep rsync vim vim-nox wget zip
 
@@ -16,11 +21,9 @@ wget https://raw.githubusercontent.com/composer/getcomposer.org/master/web/insta
 mkdir -p vendor
 # composer install --no-dev --optimize-autoloader
 make compile
+$HNDP build --help
 
 
-# Handy aliases
-export HN="docker-compose exec -T hypernode"
-export DP="docker-compose exec -T deploy"
 
 function install_magento() {
     $HN mysql -e "DROP DATABASE IF EXISTS dummytag_preinstalled_magento"
