@@ -9,13 +9,14 @@ services:
     networks:
       - hn
   deploy:
-    build:
-      context: .
-      dockerfile: ci/build/Dockerfile
-      # Match environment of magento2.komkommer.store
-      args:
-      - NODE_VERSION=16
-      - PHP_VERSION=8.1
+    image: quay.io/hypernode/deploy:latest
+    # build:
+    #   context: .
+    #   dockerfile: ci/build/Dockerfile
+    #   # Match environment of magento2.komkommer.store
+    #   args:
+    #   - NODE_VERSION=16
+    #   - PHP_VERSION=8.1
     command: "/bin/bash -c 'sleep 5000'"
     working_dir: /web
     volumes:
