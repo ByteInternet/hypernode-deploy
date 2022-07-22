@@ -45,9 +45,10 @@ echo "Waiting for SSH to be available on the Hypernode container"
 $HN cat /root/.ssh/authorized_keys
 $DP ssh-keygen -y -f /root/.ssh/id_rsa
 $DP stat /root/.ssh/id_rsa
+$HN cat /etc/ssh/sshd_config
 # Allocate pseudotty because github actions doesn't support TTY
 # $DP bash -c "until ssh -tt -vvv -i /root/.ssh/id_rsa root@hypernode echo UP! ; do sleep 1; done"
-$DP bash -c 'eval $(ssh-agent) && ssh-add /root/.ssh/id_rsa && rsync -v -e "ssh -vvv -tt" -a hypernode:/data/web/magento2/ /web' || $HN cat /var/log/auth.log
+$DP bash -c 'eval $(ssh-agent) && ssh-add /root/.ssh/id_rsa && rsync -v -e "ssh -vvv" -a hypernode:/data/web/magento2/ /web'
 $DP rm /web/app/etc/env.php
 
 # Build
