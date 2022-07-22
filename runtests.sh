@@ -47,6 +47,7 @@ $DP ssh-keygen -y -f /root/.ssh/id_rsa
 $DP stat /root/.ssh/id_rsa
 # Allocate pseudotty because github actions doesn't support TTY
 # $DP bash -c "until ssh -tt -vvv -i /root/.ssh/id_rsa root@hypernode echo UP! ; do sleep 1; done"
+$DP ssh-add /root/.ssh/id_rsa
 $DP rsync -v -e "ssh -vvv -tt" -a hypernode:/data/web/magento2/ /web
 $DP rm /web/app/etc/env.php
 
