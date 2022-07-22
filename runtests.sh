@@ -3,6 +3,25 @@
 set -e
 set -x
 
+apt update && apt install -y \
+  apt-transport-https bash-completion ca-certificates curl git gpg gnupg htop locales lsb-release ripgrep rsync vim vim-nox wget zip
+
+wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
+  echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list
+
+apt update && apt install -y \
+  # building and distribution
+  build-essential cmake \
+  # php stuff
+  php8.1-bcmath php8.1-cli php8.1-curl php8.1-gd php8.1-intl php8.1-mbstring php8.1-mysql php8.1-soap php8.1-zip php8.1-xml \
+  # network stuff
+  dnsutils net-tools \
+  # development stuff
+  code meld direnv
+
+wget https://raw.githubusercontent.com/composer/getcomposer.org/master/web/installer -O - -q | php -- --quiet && \
+  mv composer.phar /usr/local/bin/composer
+
 make compile
 
 
