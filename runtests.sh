@@ -7,7 +7,7 @@ sudo apt update && sudo apt-get install -y \
   apt-transport-https bash-completion ca-certificates curl git gpg gnupg htop locales lsb-release ripgrep rsync vim vim-nox wget zip
 
 sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
-  echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
+  echo "deb https://packages.sury.org/php/ buster main" | sudo tee /etc/apt/sources.list.d/php.list
 
 sudo apt update && sudo apt-get install -y build-essential cmake php8.1-bcmath php8.1-cli php8.1-curl php8.1-gd php8.1-intl php8.1-mbstring php8.1-mysql php8.1-soap php8.1-zip php8.1-xml dnsutils net-tools
 wget https://raw.githubusercontent.com/composer/getcomposer.org/master/web/installer -O - -q | php -- --quiet && \
