@@ -1,10 +1,9 @@
-version: '3.9'
+version: "3"
 services:
   hypernode:
     container_name: hypernode
     image: docker.hypernode.com/byteinternet/hypernode-buster-docker-php81-mysql57
     volumes:
       - ./ci/test/.ssh:/root/.ssh
-      - ${MAGENTO_REPO:-../magento2.komkommer.store}:/banaan
     ports:
       - "2222:22"

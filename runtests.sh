@@ -8,6 +8,8 @@ HN="docker-compose exec -T hypernode"
 DP="docker-compose exec -T deploy"
 HNDP="/usr/local/bin/hypernode-deploy"
 
+chmod 0600 ci/test/.ssh/id_rsa
+chmod 0600 ci/test/.ssh/authorized_keys
 docker-compose up -d
 
 sudo apt update && sudo apt-get install -y \
@@ -47,8 +49,6 @@ function install_magento() {
 # Clear up env
 trap "docker-compose down -v" EXIT
 
-chmod 0600 ci/test/.ssh/id_rsa
-chmod 0600 ci/test/.ssh/authorized_keys
 docker-compose up -d
 
 # Create working initial Magento install
