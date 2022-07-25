@@ -11,14 +11,14 @@ fi
 
 if echo $INPUT_VERSION | egrep -q "(dev|rc|alpha|beta)"; then
     echo "Not publishing short semantic versions for dev, rc, alpha or beta tag"
-    #exit 0
+    exit 0
 fi
 
 function tag_and_publish () {
     SOURCE_TAG=$1
     TARGET_TAG=$2
-    echo docker tag "${SOURCE_TAG}" "${TARGET_TAG}"
-    echo docker push "${TARGET_TAG}"
+    docker tag "${SOURCE_TAG}" "${TARGET_TAG}"
+    docker push "${TARGET_TAG}"
 }
 
 if echo $INPUT_VERSION | grep -q "\."; then
