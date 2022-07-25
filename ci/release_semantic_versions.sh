@@ -9,9 +9,9 @@ if [ ! -n "${INPUT_VERSION}" ]; then
     exit 1
 fi
 
-if echo $INPUT_VERSION | egrep -q "(alpha|beta)"; then
-    echo "Not publishing short semantic versions for alpha or beta tag"
-    exit 0
+if echo $INPUT_VERSION | egrep -q "(dev|rc|alpha|beta)"; then
+    echo "Not publishing short semantic versions for dev, rc, alpha or beta tag"
+    #exit 0
 fi
 
 function tag_and_publish () {
