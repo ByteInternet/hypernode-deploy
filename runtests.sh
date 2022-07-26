@@ -4,8 +4,8 @@ set -e
 set -x
 
 # Handy aliases
-HN="docker-compose exec hypernode"
-DP="docker-compose exec deploy"
+HN="docker-compose exec -T hypernode"
+DP="docker-compose exec -T deploy"
 
 function install_magento() {
     $HN mysql -e "DROP DATABASE IF EXISTS dummytag_preinstalled_magento"
