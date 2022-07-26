@@ -6,26 +6,6 @@ set -x
 # Handy aliases
 HN="docker-compose exec -T hypernode"
 DP="docker-compose exec -T deploy"
-HNDP="/usr/local/bin/hypernode-deploy"
-
-chmod 0600 ci/test/.ssh/id_rsa
-chmod 0600 ci/test/.ssh/authorized_keys
-docker-compose up -d
-
-sudo apt update && sudo apt-get install -y \
-  apt-transport-https bash-completion ca-certificates curl git gpg gnupg htop locales lsb-release ripgrep rsync vim vim-nox wget zip
-
-sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg && \
-  echo "deb https://packages.sury.org/php/ buster main" | sudo tee /etc/apt/sources.list.d/php.list
-
-sudo apt update && sudo apt-get install -y build-essential cmake php8.1-bcmath php8.1-cli php8.1-curl php8.1-gd php8.1-intl php8.1-mbstring php8.1-mysql php8.1-soap php8.1-zip php8.1-xml dnsutils net-tools
-wget https://raw.githubusercontent.com/composer/getcomposer.org/master/web/installer -O - -q | php -- --quiet && \
-  sudo mv composer.phar /usr/local/bin/composer
-
-composer install --no-dev --optimize-autoloader
-make compile
-# IP=$(docker ps |& grep docker.hypernode.com | awk '{print$1}' | xargs docker inspect | jq -r ".[].NetworkSettings.Networks[].IPAddress")
-ssh -p 2222 -o StrictHostKeyChecking=no root@localhost -i ci/test/.ssh/id_rsa hostname
 
 function install_magento() {
     $HN mysql -e "DROP DATABASE IF EXISTS dummytag_preinstalled_magento"
@@ -49,6 +29,8 @@ function install_magento() {
 # Clear up env
 trap "docker-compose down -v" EXIT
 
+chmod 0600 ci/test/.ssh/id_rsa
+chmod 0600 ci/test/.ssh/authorized_keys
 docker-compose up -d
 
 # Create working initial Magento install
@@ -65,7 +47,7 @@ $DP ssh-keygen -y -f /root/.ssh/id_rsa
 $DP stat /root/.ssh/id_rsa
 $HN cat /etc/ssh/sshd_config
 # Allocate pseudotty because github actions doesn't support TTY
-# $DP bash -c "until ssh -tt -vvv -i /root/.ssh/id_rsa root@hypernode echo UP! ; do sleep 1; done"
+$DP bash -c "until ssh -tt -vvv -i /root/.ssh/id_rsa root@hypernode echo UP! ; do sleep 1; done"
 $DP bash -c 'eval $(ssh-agent) && ssh-add /root/.ssh/id_rsa && rsync -v -e "ssh -vvv" -a hypernode:/data/web/magento2/ /web'
 $DP rm /web/app/etc/env.php
 
