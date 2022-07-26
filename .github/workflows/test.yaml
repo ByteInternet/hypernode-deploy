@@ -1,0 +1,13 @@
+name: Test
+on:
+    pull_request:
+
+jobs:
+  run-tests:
+    runs-on: self-hosted
+    steps:
+    - name: Checkout hypernode-deploy
+      uses: actions/checkout@v3
+    - name: Run test script
+      run: MAGENTO_REPO=./magento2 ./runtests.sh
+      shell: bash
