@@ -50,8 +50,8 @@ $DP stat /root/.ssh/id_rsa
 $HN cat /etc/ssh/sshd_config
 chmod 0600 ci/test/.ssh/id_rsa
 chmod 0600 ci/test/.ssh/authorized_keys
-$DP bash -c "until ssh -vvv -i /root/.ssh/id_rsa root@hypernode echo UP! ; do sleep 1; done"
-$DP bash -c 'eval $(ssh-agent) && ssh-add /root/.ssh/id_rsa && rsync -v -e "ssh -vvv" -a hypernode:/data/web/magento2/ /web'
+$DP bash -c "until ssh -vvv -i /root/.ssh/id_rsa app@hypernode echo UP! ; do sleep 1; done"
+$DP bash -c 'eval $(ssh-agent) && ssh-add /root/.ssh/id_rsa && rsync -v -e "ssh -vvv" -a app@hypernode:/data/web/magento2/ /web'
 $DP rm /web/app/etc/env.php
 
 # Build
