@@ -2,7 +2,7 @@
 
 IMAGE=${IMAGE:-quay.io/hypernode/deploy}
 INPUT_VERSION=${INPUT_VERSION:-}
-TAG_SPECS="php8.1-node18"
+TAG_SPECS="php${PHP_VERSION}-node${NODE_VERSION}"
 
 if [ ! -n "${INPUT_VERSION}" ]; then
     echo "No input version provided, stopping".
