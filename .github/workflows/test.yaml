@@ -4,7 +4,7 @@ on:
 
 jobs:
   run-tests:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout hypernode-deploy
       uses: actions/checkout@v3
