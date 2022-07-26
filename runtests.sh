@@ -34,11 +34,9 @@ fi
 # Clear up env
 trap "docker-compose down -v" EXIT
 
-chmod 0600 ci/test/.ssh/id_rsa
-chmod 0600 ci/test/.ssh/authorized_keys
 docker-compose up -d
 
-# Create working initial Magento install
+# Create working initial Magento install on the Hypernode container
 $HN composer create-project --repository=https://mage-os.hypernode.com/mirror/ magento/project-community-edition /data/web/magento2
 echo "Waiting for MySQL to be available on the Hypernode container"
 $HN bash -c "until mysql -e 'select 1' ; do sleep 1; done"
@@ -47,14 +45,9 @@ install_magento
 # Copy env to the deploy container
 $HN /data/web/magento2/bin/magento app:config:dump scopes themes
 echo "Waiting for SSH to be available on the Hypernode container"
-$HN cat /root/.ssh/authorized_keys
-$DP ssh-keygen -y -f /root/.ssh/id_rsa
-$DP stat /root/.ssh/id_rsa
-$HN cat /etc/ssh/sshd_config
 chmod 0600 ci/test/.ssh/id_rsa
 chmod 0600 ci/test/.ssh/authorized_keys
-$DP bash -c "until ssh -vvv -i /root/.ssh/id_rsa app@hypernode echo UP! ; do sleep 1; done"
-$DP bash -c 'eval $(ssh-agent) && ssh-add /root/.ssh/id_rsa && rsync -v -e "ssh -vvv" -a app@hypernode:/data/web/magento2/ /web'
+$DP rsync -v -a app@hypernode:/data/web/magento2/ /web
 $DP rm /web/app/etc/env.php
 
 # Build
