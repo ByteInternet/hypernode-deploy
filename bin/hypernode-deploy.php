@@ -22,6 +22,11 @@ if (file_exists($customAutoLoadPath)) {
 
 require_once APPLICATION_ROOT . '/vendor/autoload.php';
 
+$calledBinary = basename($argv[0]);
+if ($calledBinary === 'hipex-deploy') {
+    fwrite(STDERR, "\n\e[33mDEPRECATED: Command 'hipex-deploy' was called, please call 'hypernode-deploy'. This fallback will be removed in future versions!\e[39m\n\n");
+}
+
 if (!getenv('SSH_AUTH_SOCK')) {
 
     $process = Process::fromShellCommandline(sprintf(
