@@ -26,7 +26,7 @@ function install_magento() {
     --timezone=America/Chicago --elasticsearch-host=localhost"
 }
 
-sudo apt-get install -y docker-compose
+pip install docker-compose
 
 # Clear up env
 trap "docker-compose down -v" EXIT
