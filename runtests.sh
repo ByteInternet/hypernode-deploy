@@ -4,8 +4,8 @@ set -e
 set -x
 
 # Handy aliases
-HN="docker-compose exec -T hypernode"
-DP="docker-compose exec -T deploy"
+HN="docker-compose exec hypernode"
+DP="docker-compose exec deploy"
 
 function install_magento() {
     $HN mysql -e "DROP DATABASE IF EXISTS dummytag_preinstalled_magento"
@@ -48,8 +48,9 @@ $HN cat /root/.ssh/authorized_keys
 $DP ssh-keygen -y -f /root/.ssh/id_rsa
 $DP stat /root/.ssh/id_rsa
 $HN cat /etc/ssh/sshd_config
-# Allocate pseudotty because github actions doesn't support TTY
-$DP bash -c "until ssh -tt -vvv -i /root/.ssh/id_rsa root@hypernode echo UP! ; do sleep 1; done"
+chmod 0600 ci/test/.ssh/id_rsa
+chmod 0600 ci/test/.ssh/authorized_keys
+$DP bash -c "until ssh -vvv -i /root/.ssh/id_rsa root@hypernode echo UP! ; do sleep 1; done"
 $DP bash -c 'eval $(ssh-agent) && ssh-add /root/.ssh/id_rsa && rsync -v -e "ssh -vvv" -a hypernode:/data/web/magento2/ /web'
 $DP rm /web/app/etc/env.php
 
