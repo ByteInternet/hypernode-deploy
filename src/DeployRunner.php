@@ -196,7 +196,7 @@ class DeployRunner
         $host->roles($server->getRoles());
         $host->set('domain', $stage->getDomain());
         $host->set('deploy_path', function () {
-            return run('realpath ~/apps/{{domain}}');
+            return run('mkdir -p ~/apps/{{domain}}/shared');
         });
         $host->set('configuration_stage', $stage);
 
