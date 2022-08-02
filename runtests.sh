@@ -68,6 +68,9 @@ $DP hypernode-deploy deploy production -f /deploy_simple.php
 # Check if deployment made only one release
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 1
 
+# Check if example location block was placed
+test -f /data/web/nginx/magento2.komkommer.store/server.example.conf
+
 # Deploy again
 $DP hypernode-deploy deploy production -f /deploy_simple.php
 
