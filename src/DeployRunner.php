@@ -132,6 +132,7 @@ class DeployRunner
         $configurations = array_merge(
             $mainConfig->getBuildCommands(),
             $mainConfig->getDeployCommands(),
+            $mainConfig->getPlatformConfigurations(),
             $mainConfig->getAfterDeployTasks()
         );
 
