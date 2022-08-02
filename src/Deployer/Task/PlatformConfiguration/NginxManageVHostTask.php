@@ -5,24 +5,20 @@ namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
-use function Deployer\after;
-use function Deployer\get;
-use function Deployer\set;
+use function Deployer\run;
 use function Deployer\task;
-use function Hypernode\Deploy\Deployer\before;
 
-class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
+class NginxManageVHostTask implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:nginx:';
+        return 'deploy:configuration:nginx:manage_vhost:';
     }
 
     public function configureTask(TaskConfigurationInterface $config): void
@@ -32,14 +28,6 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof NginxConfiguration;
-    }
-
-    public function registerAfter(): void
-    {
-        before('deploy:symlink', 'deploy:nginx');
-        foreach ($this->getRegisteredTasks() as $taskName) {
-            after('deploy:nginx:prepare', $taskName);
-        }
     }
 
     /**
@@ -52,15 +40,8 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
 
     public function configure(Configuration $config): void
     {
-        set('nginx/config_path', function () {
-            return '/tmp/nginx-config-' . get('hostname');
+        task('deploy:nginx:manage_vhost', function () {
+            run('hypernode-manage-vhosts {{hostname}} --webroot {{deploy_path}}/current');
         });
-
-        task('deploy:nginx', [
-            'deploy:nginx:prepare',
-            'deploy:nginx:manage_vhost',
-            'deploy:nginx:upload',
-            'deploy:nginx:cleanup',
-        ]);
     }
 }
