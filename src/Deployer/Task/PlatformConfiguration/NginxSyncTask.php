@@ -65,7 +65,7 @@ class NginxSyncTask implements ConfigurableTaskInterface
                 '--delete',
             ];
             $args = implode(' ', array_map('escapeshellarg', $args));
-            run("rsync {$args} {{nginx/config_path}}/ /data/web/nginx/{{hostname}}/");
+            run("rsync {$args} {{nginx/config_path}}/ /data/web/nginx/{{domain}}/");
         });
         fail('deploy:nginx:sync', 'deploy:nginx:cleanup');
     }
