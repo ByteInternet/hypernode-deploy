@@ -60,6 +60,7 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
             'deploy:nginx:prepare',
             'deploy:nginx:manage_vhost',
             'deploy:nginx:upload',
+            'deploy:nginx:sync',
             'deploy:nginx:cleanup',
         ]);
     }

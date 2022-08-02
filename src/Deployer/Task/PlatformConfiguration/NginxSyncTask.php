@@ -18,13 +18,13 @@ use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
 
-class NginxUploadTask implements ConfigurableTaskInterface
+class NginxSyncTask implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:nginx:upload:';
+        return 'deploy:configuration:nginx:sync:';
     }
 
     public function configureTask(TaskConfigurationInterface $config): void
@@ -41,24 +41,7 @@ class NginxUploadTask implements ConfigurableTaskInterface
      */
     public function build(TaskConfigurationInterface $config): ?Task
     {
-        $taskName = $this->getTaskName();
-        return task(
-            $taskName,
-            function () use ($config) {
-                $sourceDir = rtrim($config->getSourceFolder(), '/');
-
-                $args = [
-                    '--archive',
-                    '--recursive',
-                    '--verbose',
-                    '--ignore-errors',
-                    '--copy-links',
-                    '--delete',
-                ];
-                $args = array_map('escapeshellarg', $args);
-                upload($sourceDir . '/', '{{nginx/config_path}}/', ['options' => $args]);
-            }
-        )->onRoles($config->getServerRoles());
+        return null;
     }
 
     public function configure(Configuration $config): void
@@ -67,7 +50,23 @@ class NginxUploadTask implements ConfigurableTaskInterface
             return '/tmp/nginx-config-' . get('hostname');
         });
 
-        task('deploy:nginx:upload', function () {});
-        fail('deploy:nginx:upload', 'deploy:nginx:cleanup');
+        task('deploy:nginx:sync', function () {
+            if (!test('[ "$(ls -A {{nginx/config_path}})" ]')) {
+                writeln('No nginx configuration defined.');
+                return;
+            }
+
+            $args = [
+                '-azP',
+                '--recursive',
+                '--verbose',
+                '--ignore-errors',
+                '--copy-links',
+                '--delete',
+            ];
+            $args = implode(' ', array_map('escapeshellarg', $args));
+            run("rsync {$args} {{nginx/config_path}}/ /data/web/nginx/{{hostname}}/");
+        });
+        fail('deploy:nginx:sync', 'deploy:nginx:cleanup');
     }
 }
