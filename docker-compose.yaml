@@ -19,4 +19,4 @@ services:
     working_dir: /web
     volumes:
       - ./ci/test/.ssh:/root/.ssh
-      - ./ci/test/magento/deploy.php:/deploy_simple.php
+      - ./ci/test/magento:/config

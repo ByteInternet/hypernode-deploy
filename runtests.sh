@@ -47,11 +47,12 @@ $HN /data/web/magento2/bin/magento app:config:dump scopes themes
 echo "Waiting for SSH to be available on the Hypernode container"
 chmod 0600 ci/test/.ssh/id_rsa
 chmod 0600 ci/test/.ssh/authorized_keys
-$DP rsync -v -a app@hypernode:/data/web/magento2/ /web
+$DP rsync -a app@hypernode:/data/web/magento2/ /web
+$DP rsync -v -a /config/ /web
 $DP rm /web/app/etc/env.php
 
 # Build
-$DP hypernode-deploy build -f /deploy_simple.php
+$DP hypernode-deploy build -v
 
 # Prepare env
 $HN mkdir -p /data/web/apps/magento2.komkommer.store/shared/app/etc/
@@ -63,7 +64,7 @@ $HN chown -R app:app /data/web/apps/magento2.komkommer.store
 ###################################
 
 # SSH from deploy container to hypernode container
-$DP hypernode-deploy deploy production -f /deploy_simple.php
+$DP hypernode-deploy deploy production -v
 
 # Check if deployment made only one release
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 1
@@ -72,7 +73,7 @@ test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 1
 $HN test -f /data/web/nginx/magento2.komkommer.store/server.example.conf || ($HN ls -al /data/web/nginx && $HN ls -al /data/web/nginx/magento2.komkommer.store && exit 1)
 
 # Deploy again
-$DP hypernode-deploy deploy production -f /deploy_simple.php
+$DP hypernode-deploy deploy production
 
 # Check if another deployment was made
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 2
