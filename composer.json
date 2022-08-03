@@ -11,7 +11,7 @@
         "ext-json": "*",
         "ext-zlib": "*",
         "composer-runtime-api": "^2",
-        "deployer/deployer": "^6.8",
+        "deployer/deployer": "^7.0",
         "deployer/recipes": "dev-master",
         "doctrine/annotations": "^1.6",
         "hypernode/deploy-configuration": "dev-master",
