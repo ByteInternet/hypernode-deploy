@@ -11,7 +11,7 @@ namespace Hypernode\DeployConfiguration;
 $configuration = new ApplicationTemplate\Magento2('https://github.com/ByteInternet/hypernode-deploy-configuration.git', ['nl_NL'], ['en_GB', 'nl_NL']);
 
 $productionStage = $configuration->addStage('production', 'magento2.komkommer.store', 'app');
-$productionStage->addServer('hypernode', [], [], [
+$productionStage->addServer('hypernode', null, [], [
     'user' => 'app',
     'port' => 22,
 ]);
