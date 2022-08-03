@@ -72,8 +72,18 @@ test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 1
 # Check if example location block was placed
 $HN test -f /data/web/nginx/magento2.komkommer.store/server.example.conf || ($HN ls -al /data/web/nginx && $HN ls -al /data/web/nginx/magento2.komkommer.store && exit 1)
 
+###############
+# NEXT DEPLOY #
+###############
+
+# Remove example location
+$DP rm /web/etc/nginx/server.example.conf
+
 # Deploy again
 $DP hypernode-deploy deploy production
 
 # Check if another deployment was made
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 2
+
+# Verify example location block is removed
+$HN test ! -f /data/web/nginx/magento2.komkommer.store/server.example.conf || ($HN ls -al /data/web/nginx/magento2.komkommer.store && exit 1)
