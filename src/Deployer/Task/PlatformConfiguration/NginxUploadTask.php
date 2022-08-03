@@ -39,24 +39,22 @@ class NginxUploadTask implements ConfigurableTaskInterface
      */
     public function build(TaskConfigurationInterface $config): ?Task
     {
-        return null;
-    }
+        return task(
+            "deploy:nginx:upload",
+            function () use ($config) {
+                $sourceDir = rtrim($config->getSourceFolder(), '/');
 
-    public function upload(NginxConfiguration $config): void
-    {
-        $sourceDir = rtrim($config->getSourceFolder(), '/');
-        writeln("Uploading $sourceDir to {{nginx/config_path}}");
-
-        $args = [
-            '--archive',
-            '--recursive',
-            '--verbose',
-            '--ignore-errors',
-            '--copy-links',
-            '--delete',
-        ];
-        $args = array_map('escapeshellarg', $args);
-        upload($sourceDir . '/', '{{nginx/config_path}}/', ['options' => $args]);
+                $args = [
+                    '--archive',
+                    '--recursive',
+                    '--verbose',
+                    '--ignore-errors',
+                    '--copy-links'
+                ];
+                $args = array_map('escapeshellarg', $args);
+                upload($sourceDir . '/', '{{nginx/config_path}}/', ['options' => $args]);
+            }
+        );
     }
 
     public function configure(Configuration $config): void
@@ -65,14 +63,6 @@ class NginxUploadTask implements ConfigurableTaskInterface
             return '/tmp/nginx-config-' . get('hostname');
         });
 
-        task('deploy:nginx:upload', function () use ($config) {
-            // Upload all Nginx configs to the temp dir on the Hypernode
-            foreach ($config->getPlatformConfigurations() as $platformConfiguration) {
-                if ($platformConfiguration instanceof NginxConfiguration) {
-                    $this->upload($platformConfiguration);
-                }
-            }
-        });
         fail('deploy:nginx:upload', 'deploy:nginx:cleanup');
     }
 }
