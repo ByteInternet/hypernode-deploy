@@ -14,7 +14,7 @@
         "deployer/deployer": "^6.8",
         "deployer/recipes": "dev-master",
         "doctrine/annotations": "^1.6",
-        "hypernode/deploy-configuration": "dev-master",
+        "hypernode/deploy-configuration": "^1.0.0",
         "php-di/php-di": "^6.0",
         "psr/log": "^1.0",
         "sentry/sdk": "^2.0",
