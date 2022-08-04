@@ -2,8 +2,8 @@
 
 namespace Hypernode\Deploy;
 
-use Deployer\Console\Application;
-use Deployer\Console\Output\OutputWatcher;
+use Hypernode\Deploy\Console\Application;
+use Hypernode\Deploy\Console\Output\OutputWatcher;
 use Deployer\Deployer;
 use Deployer\Exception\Exception;
 use Deployer\Exception\GracefulShutdownException;

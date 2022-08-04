@@ -51,7 +51,7 @@ $DP rsync -v -a app@hypernode:/data/web/magento2/ /web
 $DP rm /web/app/etc/env.php
 
 # Build
-$DP hypernode-deploy build -f /deploy_simple.php
+$DP hypernode-deploy stage=build -f /deploy_simple.php
 
 # Prepare env
 $HN mkdir -p /data/web/apps/magento2.komkommer.store/shared/app/etc/
@@ -63,13 +63,13 @@ $HN chown -R app:app /data/web/apps/magento2.komkommer.store
 ###################################
 
 # SSH from deploy container to hypernode container
-$DP hypernode-deploy deploy production -f /deploy_simple.php
+$DP hypernode-deploy deploy stage=production -f /deploy_simple.php
 
 # Check if deployment made only one release
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 1
 
 # Deploy again
-$DP hypernode-deploy deploy production -f /deploy_simple.php
+$DP hypernode-deploy deploy stage=production -f /deploy_simple.php
 
 # Check if another deployment was made
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 2

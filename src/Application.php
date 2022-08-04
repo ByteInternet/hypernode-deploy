@@ -3,7 +3,7 @@
 namespace Hypernode\Deploy;
 
 use Composer\InstalledVersions;
-use Deployer\Console\Application as ConsoleApplication;
+use Hypernode\Deploy\Console\Application as ConsoleApplication;
 use DI\Container;
 use DI\ContainerBuilder;
 use Exception;
