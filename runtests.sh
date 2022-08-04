@@ -70,6 +70,7 @@ $DP hypernode-deploy deploy production -v
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 1
 
 # Check if example location block was placed
+$HN ls -al /data/web/nginx/magento2.komkommer.store/
 $HN test -f /data/web/nginx/magento2.komkommer.store/server.example.conf || ($HN ls -al /data/web/nginx && $HN ls -al /data/web/nginx/magento2.komkommer.store && exit 1)
 
 ###############
