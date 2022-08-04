@@ -12,9 +12,10 @@ class PrepareTask implements TaskInterface
 {
     public function configure(Configuration $config): void
     {
+        $role = ServerRole::APPLICATION;
         task('deploy:prepare_release', [
             'deploy:prepare',
             'deploy:release',
-        ])->onRoles(ServerRole::APPLICATION);
+        ])->select("role={$role}");
     }
 }

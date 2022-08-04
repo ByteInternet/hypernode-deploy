@@ -25,12 +25,13 @@ class DeployTask implements TaskInterface
     public function configure(Configuration $config): void
     {
         $this->loader->load('deploy/info.php');
+        $role = ServerRole::APPLICATION;
 
         task('deploy', [
             'deploy:upload',
             'deploy:link',
             'deploy:finalize',
-        ])->onRoles(ServerRole::APPLICATION);
+        ])->select("role={$role}");
 
         fail('deploy', 'deploy:failed');
     }

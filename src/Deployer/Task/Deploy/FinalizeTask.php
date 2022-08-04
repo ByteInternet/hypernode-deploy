@@ -25,12 +25,13 @@ class FinalizeTask implements TaskInterface
     public function configure(Configuration $config): void
     {
         $this->loader->load('deploy/info.php');
+        $role = ServerRole::APPLICATION;
 
         task('deploy:finalize', [
             'deploy:after',
-            'cleanup',
-            'success',
-        ])->onRoles(ServerRole::APPLICATION);
+            'deploy:cleanup',
+            'deploy:success',
+        ])->select("role={$role}");
 
         fail('deploy', 'deploy:failed');
     }

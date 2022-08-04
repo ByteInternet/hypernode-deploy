@@ -146,11 +146,12 @@ class DeployRunner
             $deployerTask = $task->build($taskConfig);
             if ($deployerTask) {
                 if ($taskConfig instanceof StageConfigurableInterface && $taskConfig->getStage()) {
-                    $deployerTask->onStage($taskConfig->getStage()->getName());
+                    $deployerTask->select("stage={$taskConfig->getStage()->getName()}");
                 }
 
                 if ($taskConfig instanceof ServerRoleConfigurableInterface && $taskConfig->getServerRoles()) {
-                    $deployerTask->onRoles($taskConfig->getServerRoles());
+                    $roles = implode("&", $taskConfig->getServerRoles());
+                    $deployerTask->select("roles={$roles}");
                 }
             }
         }
@@ -188,13 +189,13 @@ class DeployRunner
     {
         /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
         $host = host($stage->getName() . ':' . $server->getHostname());
-        $host->hostname($server->getHostname());
-        $host->port(22);
-        $host->stage($stage->getName());
-        $host->user('app');
-        $host->forwardAgent();
-        $host->multiplexing(true);
-        $host->roles($server->getRoles());
+        $host->setHostname($server->getHostname());
+        $host->setPort(22);
+        $host->set('labels', ['stage' => $stage->getName()]);
+        $host->setRemoteUser('app');
+        $host->setForwardAgent(true);
+        $host->setSshMultiplexing(true);
+        $host->set('roles', $server->getRoles());
         $host->set('domain', $stage->getDomain());
         $host->set('deploy_path', function () {
             // Ensure directory exists before returning it
@@ -207,8 +208,13 @@ class DeployRunner
             $host->set($optionName, $optionValue);
         }
 
+        $sshOptions = [];
         foreach ($server->getSshOptions() as $optionName => $optionValue) {
-            $host->addSshOption($optionName, $optionValue);
+            $sshOptions[] = "-o {$optionName}={$optionValue}";
+        }
+
+        if($sshOptions) {
+            $host->setSshArguments($sshOptions);
         }
     }
 
@@ -219,7 +225,7 @@ class DeployRunner
     {
         /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
         $host = localhost('build');
-        $host->stage('build');
+        $host->set('labels', ['stage' => 'build']);
         $host->set('bin/php', 'php');
     }
 
@@ -241,8 +247,8 @@ class DeployRunner
         try {
             $executor->run($tasks, $hosts);
         } catch (Throwable $exception) {
-            $deployer->logger->log('[' . \get_class($exception) . '] ' . $exception->getMessage());
-            $deployer->logger->log($exception->getTraceAsString());
+            $deployer->output->writeln('[' . \get_class($exception) . '] ' . $exception->getMessage());
+            $deployer->output->writeln($exception->getTraceAsString());
 
             if ($exception instanceof GracefulShutdownException) {
                 throw $exception;
@@ -291,7 +297,7 @@ class DeployRunner
     {
         /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
         $host = localhost('composer-prepare');
-        $host->stage('composer-prepare');
+        $host->set('labels', ['stage' => 'composer-prepare']);
         $host->set('bin/php', 'php');
 
         task('composer-prepare:install', function () {

@@ -99,12 +99,13 @@ class CachetoolTask implements TaskInterface, RegisterAfterInterface
         });
 
 
+        $role = ServerRole::APPLICATION;
         task('cachetool:clear:opcache')
-            ->onRoles(ServerRole::APPLICATION);
+            ->select("role={$role}");
 
         task('cachetool:cleanup', function () {
             run('cd {{deploy_path}} && rm -f current/{{bin/cachetool}}');
-        })->onRoles(ServerRole::APPLICATION);
+        })->select("role={$role}");
     }
 
     protected function getPhpVersion(): float

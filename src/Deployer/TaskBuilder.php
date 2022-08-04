@@ -2,12 +2,15 @@
 
 namespace Hypernode\Deploy\Deployer;
 
+use Deployer\Exception\Exception;
+use Deployer\Exception\RunException;
+use Deployer\Exception\TimeoutException;
 use Deployer\Task\Task;
-use Hypernode\DeployConfiguration\Command\Command;
 use Hypernode\DeployConfiguration\Command\DeployCommand;
 use Hypernode\DeployConfiguration\ServerRoleConfigurableInterface;
 use Hypernode\DeployConfiguration\StageConfigurableInterface;
 
+use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use function Deployer\parse;
 use function Deployer\run;
 use function Deployer\task;
@@ -17,8 +20,9 @@ use function Deployer\writeln;
 class TaskBuilder
 {
     /**
-     * @param Command[] $commands
+     * @param TaskConfigurationInterface[] $commands
      *
+     * @param string $namePrefix
      * @return string[]
      *
      * @psalm-return list<string>
@@ -29,30 +33,47 @@ class TaskBuilder
         foreach ($commands as $command) {
             $name = $namePrefix . ':' . \count($tasks);
 
-            $this->build($command, $name);
+            try {
+                $this->build($command, $name);
+            } catch (\Exception $e) {
+                return [];
+            }
             $tasks[] = $name;
         }
         return $tasks;
     }
 
-    private function build(Command $command, string $name): Task
+    /**
+     * @param TaskConfigurationInterface $command
+     * @param string $name
+     * @return Task
+     * @throws \Exception
+     */
+    private function build(TaskConfigurationInterface $command, string $name): Task
     {
         $task = task($name, function () use ($command) {
             $this->runCommandWithin($command);
         });
 
         if ($command instanceof StageConfigurableInterface && $command->getStage()) {
-            $task->onStage($command->getStage()->getName());
+            $task->select("stage={$command->getStage()->getName()}");
         }
 
         if ($command instanceof ServerRoleConfigurableInterface && $command->getServerRoles()) {
-            $task->onRoles($command->getServerRoles());
+            $roles = implode("&", $command->getServerRoles());
+            $task->select("roles={$roles}");
         }
 
         return $task;
     }
 
-    private function runCommandWithin(Command $command): void
+    /**
+     * @param TaskConfigurationInterface $command
+     * @throws Exception
+     * @throws RunException
+     * @throws TimeoutException
+     */
+    private function runCommandWithin(TaskConfigurationInterface $command): void
     {
         $directory = $command->getWorkingDirectory();
         if ($directory === null && $command instanceof DeployCommand) {
@@ -64,7 +85,13 @@ class TaskBuilder
         });
     }
 
-    private function runCommand(Command $command): void
+    /**
+     * @param TaskConfigurationInterface $command
+     * @throws Exception
+     * @throws RunException
+     * @throws TimeoutException
+     */
+    private function runCommand(TaskConfigurationInterface $command): void
     {
         $commandAction = $command->getCommand();
         if (\is_callable($commandAction)) {
