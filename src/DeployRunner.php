@@ -201,6 +201,9 @@ class DeployRunner
             run('mkdir -p ~/apps/{{domain}}/shared');
             return run('realpath ~/apps/{{domain}}');
         });
+        $host->set('current_path', '{{deploy_path}}/current');
+        $host->set('nginx_release_path', '{{release_path}}/nginx');
+        $host->set('nginx_current_path', '{{current_path}}/nginx');
         $host->set('configuration_stage', $stage);
 
         foreach ($server->getOptions() as $optionName => $optionValue) {
