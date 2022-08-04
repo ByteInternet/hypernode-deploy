@@ -53,7 +53,7 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
     public function configure(Configuration $config): void
     {
         set('nginx/config_path', function () {
-            return '/tmp/nginx-config-' . get('hostname');
+            return '/tmp/nginx-config-' . get('domain');
         });
 
         task('deploy:nginx', [
