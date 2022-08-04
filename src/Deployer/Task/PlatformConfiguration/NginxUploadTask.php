@@ -60,7 +60,7 @@ class NginxUploadTask implements ConfigurableTaskInterface
     public function configure(Configuration $config): void
     {
         set('nginx/config_path', function () {
-            return '/tmp/nginx-config-' . get('hostname');
+            return '/tmp/nginx-config-' . get('domain');
         });
 
         fail('deploy:nginx:upload', 'deploy:nginx:cleanup');
