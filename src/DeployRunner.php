@@ -129,11 +129,7 @@ class DeployRunner
      */
     private function initializeConfigurableTask(ConfigurableTaskInterface $task, Configuration $mainConfig): void
     {
-        $configurations = array_merge(
-            $mainConfig->getBuildCommands(),
-            $mainConfig->getDeployCommands(),
-            $mainConfig->getAfterDeployTasks()
-        );
+        $configurations = $mainConfig->getAfterDeployTasks();
 
         foreach ($configurations as $taskConfig) {
             if (!$task->supports($taskConfig)) {

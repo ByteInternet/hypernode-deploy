@@ -2,6 +2,7 @@
 
 namespace Hypernode\Deploy\Deployer;
 
+use Closure;
 use Deployer\Deployer;
 use Hypernode\DeployConfiguration\Exception\EnvironmentVariableNotDefinedException;
 
@@ -65,4 +66,12 @@ function getenvFallback(array $variables): string
     throw new EnvironmentVariableNotDefinedException(
         sprintf('None of the requested environment variables %s is defined', implode(', ', $variables))
     );
+}
+
+/**
+ * Returns a noop closure
+ */
+function noop(): \Closure
+{
+    return static function(): void {};
 }

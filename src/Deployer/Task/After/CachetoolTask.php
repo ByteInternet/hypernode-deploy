@@ -98,7 +98,6 @@ class CachetoolTask implements TaskInterface, RegisterAfterInterface
             run("cd {{release_path}} && {{bin/php}} {{bin/cachetool}} apcu:cache:clear {{cachetool_options}}");
         });
 
-
         task('cachetool:clear:opcache')
             ->onRoles(ServerRole::APPLICATION);
 
