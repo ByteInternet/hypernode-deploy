@@ -55,14 +55,15 @@ class SupervisorSyncTask implements ConfigurableTaskInterface, RegisterAfterInte
                 return;
             }
 
-            if (test('[ "$(test -d ~/supervisor)" ]')) {
-                if (!test('[ "$(rmdir ~/supervisor)" ]')) {
-                    throw new \RuntimeException('Supervisor is a non-empty directory. Please remove it before deploying.');
+            run("mkdir -p ~/supervisor");
+            if (test('[ "$(test -d ~/supervisor/{{domain}})" ]')) {
+                if (!test('[ "$(rmdir ~/supervisor/{{domain}})" ]')) {
+                    throw new \RuntimeException('Found a non-empty Supervisor directory. Please remove it before deploying.');
                 }
                 writeln("Removed empty supervisor directory to make place for the new symlink");
             }
 
-            run("ln -sf {{supervisor_current_path}} ~/supervisor");
+            run("ln -sf {{supervisor_current_path}} ~/supervisor/{{domain}}");
         });
         after('deploy:supervisor:sync', 'deploy:supervisor:reload');
         fail('deploy:supervisor:sync', 'deploy:supervisor:cleanup');
