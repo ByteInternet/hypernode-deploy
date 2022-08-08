@@ -1,31 +1,20 @@
 # Build args
 ARG PHP_VERSION
 
-
 # Install hypernode-deploy dependencies with target PHP version
 FROM php:${PHP_VERSION}-cli-buster
 
-COPY ./bin /hypernode/bin
-COPY ./ci /hypernode/ci
-COPY ./src /hypernode/src
-COPY ./composer.json /hypernode/composer.json
+ARG NODE_VERSION
+ARG PHP_VERSION
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         git zip unzip wget \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/composer \
-    && chmod +x /usr/local/bin/composer \
-    && composer install --no-dev --optimize-autoloader --working-dir=/hypernode
-
-RUN bash /hypernode/ci/compile.sh
-
-ARG NODE_VERSION
-ARG PHP_VERSION
-
-# Add docker repository
+# Add repositories
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         apt-transport-https \
@@ -63,6 +52,26 @@ RUN apt-get update && \
         zip \
         bc \
     && rm -rf /var/lib/apt/lists/*
+
+COPY ./.git /hypernode/.git
+COPY ./bin /hypernode/bin
+COPY ./ci /hypernode/ci
+COPY ./src /hypernode/src
+COPY ./box.json /hypernode/box.json
+COPY ./composer.json /hypernode/composer.json
+COPY ./ci/build/files /
+
+RUN curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer \
+    && chmod +x /usr/local/bin/composer \
+    && composer install --no-dev --optimize-autoloader --working-dir=/hypernode
+
+RUN bash /hypernode/ci/compile.sh
+
+# Setup hipex deploy command
+RUN cp /hypernode/build/hypernode-deploy.phar /bin/hypernode-deploy
+RUN chmod +x /bin/hypernode-deploy
+RUN ln -s /bin/hypernode-deploy /bin/hipex-deploy
 
 # Install php extensions
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
@@ -117,11 +126,6 @@ RUN rm -rvf \
         /usr/share/man \
         /var/lib/apt/lists/* \
     && apt-get autoremove -y
-
-# Setup hipex deploy command
-RUN cp /hypernode/bin/hypernode-deploy.phar /bin/hypernode-deploy
-RUN chmod +x /bin/hypernode-deploy
-RUN ln -s /bin/hypernode-deploy /bin/hipex-deploy
 
 # Setup default command
 CMD ["hypernode-deploy"]
