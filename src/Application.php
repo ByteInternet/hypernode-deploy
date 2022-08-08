@@ -27,7 +27,6 @@ class Application
           /____/_/                                                  /_/            /____/
 
     Deployer version: %s
-    Deployer Recipe version: %s
 
     NAME;
 
@@ -44,7 +43,6 @@ class Application
             sprintf(
                 self::APP_LOGO,
                 InstalledVersions::getVersion('deployer/deployer'),
-                InstalledVersions::getVersion('deployer/recipes')
             )
         );
         $application->setVersion('Version: ' . $this->getVersion());
