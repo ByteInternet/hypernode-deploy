@@ -51,7 +51,7 @@ $DP rsync -v -a app@hypernode:/data/web/magento2/ /web
 $DP rm /web/app/etc/env.php
 
 # Build
-$DP hypernode-deploy stage=build -f /deploy_simple.php
+$DP hypernode-deploy build -f /deploy_simple.php
 
 # Prepare env
 $HN mkdir -p /data/web/apps/magento2.komkommer.store/shared/app/etc/
