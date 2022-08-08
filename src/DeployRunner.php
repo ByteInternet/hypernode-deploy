@@ -2,7 +2,6 @@
 
 namespace Hypernode\Deploy;
 
-use Hypernode\Deploy\Console\Application;
 use Hypernode\Deploy\Console\Output\OutputWatcher;
 use Deployer\Deployer;
 use Deployer\Exception\Exception;
@@ -18,8 +17,11 @@ use Hypernode\DeployConfiguration\ServerRoleConfigurableInterface;
 use Hypernode\DeployConfiguration\Stage;
 use Hypernode\DeployConfiguration\StageConfigurableInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -74,7 +76,13 @@ class DeployRunner
         $console = new Application();
         $deployer = new Deployer($console);
         $deployer['output'] = new OutputWatcher($output);
-        $deployer['input'] = new ArrayInput([]);
+        $deployer['input'] = new ArrayInput(
+            [],
+            new InputDefinition([
+                new InputOption('limit'),
+                new InputOption('profile'),
+            ])
+        );
 
         try {
             $this->initializeDeployer($deployer);
@@ -191,7 +199,7 @@ class DeployRunner
         $host = host($stage->getName() . ':' . $server->getHostname());
         $host->setHostname($server->getHostname());
         $host->setPort(22);
-        $host->set('labels', ['stage' => $stage->getName()]);
+        $host->set('labels', ['stage' => $stage->getName(), 'roles' => $server->getRoles()]);
         $host->setRemoteUser('app');
         $host->setForwardAgent(true);
         $host->setSshMultiplexing(true);
@@ -210,7 +218,7 @@ class DeployRunner
 
         $sshOptions = [];
         foreach ($server->getSshOptions() as $optionName => $optionValue) {
-            $sshOptions[] = "-o {$optionName}={$optionValue}";
+            $sshOptions[] = "-o $optionName=$optionValue";
         }
 
         if($sshOptions) {
@@ -236,15 +244,20 @@ class DeployRunner
      */
     private function runStage(Deployer $deployer, string $stage, string $task = 'deploy'): void
     {
-        $hosts = $deployer->hostSelector->getHosts($stage);
+        $hosts = $deployer->selector->select("stage=$stage");
         if (empty($hosts)) {
             throw new \RuntimeException(sprintf('No host(s) found in stage %s', $stage));
         }
 
-        $tasks = $deployer->scriptManager->getTasks($task, $hosts);
-        $executor = $deployer->seriesExecutor;
+        $tasks = $deployer->scriptManager->getTasks($task);
+        $executor = $deployer->master;
 
         try {
+            /**
+             * Set the env variable to tell deployer to deploy the hosts sequentially instead of parallel.
+             * @see \Deployer\Executor\Master
+             */
+            putenv('DEPLOYER_LOCAL_WORKER=true');
             $executor->run($tasks, $hosts);
         } catch (Throwable $exception) {
             $deployer->output->writeln('[' . \get_class($exception) . '] ' . $exception->getMessage());
@@ -257,7 +270,7 @@ class DeployRunner
             // Check if we have tasks to execute on failure
             if ($deployer['fail']->has($task)) {
                 $taskName = $deployer['fail']->get($task);
-                $tasks = $deployer->scriptManager->getTasks($taskName, $hosts);
+                $tasks = $deployer->scriptManager->getTasks($taskName);
 
                 $executor->run($tasks, $hosts);
             }
@@ -277,12 +290,11 @@ class DeployRunner
         }
 
         $configuration = \call_user_func(function () use ($file) {
-            /** @noinspection PhpIncludeInspection */
             return require $file;
         });
 
         if (!$configuration instanceof Configuration) {
-            throw new \RuntimeException(sprintf('%s/deploy.php dit not return object of type %s', getcwd(), Configuration::class));
+            throw new \RuntimeException(sprintf('%s/deploy.php did not return object of type %s', getcwd(), Configuration::class));
         }
 
         return $configuration;

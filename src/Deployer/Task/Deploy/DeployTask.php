@@ -31,7 +31,7 @@ class DeployTask implements TaskInterface
             'deploy:upload',
             'deploy:link',
             'deploy:finalize',
-        ])->select("role={$role}");
+        ])->select("roles=$role");
 
         fail('deploy', 'deploy:failed');
     }

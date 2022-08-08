@@ -61,7 +61,7 @@ class TaskBuilder
 
         if ($command instanceof ServerRoleConfigurableInterface && $command->getServerRoles()) {
             $roles = implode("&", $command->getServerRoles());
-            $task->select("roles={$roles}");
+            $task->select("roles=$roles");
         }
 
         return $task;
@@ -80,7 +80,7 @@ class TaskBuilder
             $directory = '{{release_path}}';
         }
 
-        within($directory, function () use ($command) {
+        within($directory ?: '', function () use ($command) {
             $this->runCommand($command);
         });
     }

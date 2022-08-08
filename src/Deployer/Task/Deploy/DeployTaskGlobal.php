@@ -33,6 +33,6 @@ class DeployTaskGlobal implements TaskInterface
         }
 
 
-        task('deploy:deploy', $tasks)->select("role={$role}");
+        task('deploy:deploy', $tasks)->select("roles=$role");
     }
 }

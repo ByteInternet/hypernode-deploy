@@ -22,11 +22,11 @@ class CopyTask implements TaskInterface
             upload($packageFilepath, '{{release_path}}');
             run('cd {{release_path}} && tar -xf ' . $packageFilename);
             run('cd {{release_path}} && rm -f ' . $packageFilename);
-        })->select("role={$role}");
+        })->select("roles=$role");
 
         task('deploy:copy', [
             'deploy:copy:code',
             'deploy:shared',
-        ])->select("role={$role}");
+        ])->select("roles=$role");
     }
 }

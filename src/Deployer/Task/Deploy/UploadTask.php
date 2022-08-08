@@ -33,7 +33,7 @@ class UploadTask implements TaskInterface
             'deploy:prepare_release',
             'deploy:copy',
             'deploy:deploy',
-        ])->select("role={$role}");
+        ])->select("roles=$role");
 
         fail('deploy', 'deploy:failed');
     }

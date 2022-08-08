@@ -13,9 +13,19 @@ class PrepareTask implements TaskInterface
     public function configure(Configuration $config): void
     {
         $role = ServerRole::APPLICATION;
+
+        // Overridden from deploy:prepare in Deployer common.php recipe. We remove the deploy:update_code task.
+        task('deploy:prepare', [
+            'deploy:info',
+            'deploy:setup',
+            'deploy:lock',
+            'deploy:release',
+            'deploy:shared',
+            'deploy:writable',
+        ]);
         task('deploy:prepare_release', [
             'deploy:prepare',
             'deploy:release',
-        ])->select("role={$role}");
+        ])->select("roles=$role");
     }
 }

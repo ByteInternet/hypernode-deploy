@@ -63,13 +63,13 @@ $HN chown -R app:app /data/web/apps/magento2.komkommer.store
 ###################################
 
 # SSH from deploy container to hypernode container
-$DP hypernode-deploy deploy stage=production -f /deploy_simple.php
+$DP hypernode-deploy deploy production -f /deploy_simple.php
 
 # Check if deployment made only one release
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 1
 
 # Deploy again
-$DP hypernode-deploy deploy stage=production -f /deploy_simple.php
+$DP hypernode-deploy deploy production -f /deploy_simple.php
 
 # Check if another deployment was made
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 2

@@ -17,7 +17,6 @@ class RecipeLoader
                 continue;
             }
 
-            /** @noinspection PhpIncludeInspection */
             require $file;
             return;
         }
@@ -39,7 +38,6 @@ class RecipeLoader
         /** @psalm-suppress UndefinedConstant */
         return [
             APPLICATION_ROOT . '/vendor/deployer/deployer/recipe',
-            APPLICATION_ROOT . '/vendor/deployer/recipes/recipe',
         ];
     }
 }

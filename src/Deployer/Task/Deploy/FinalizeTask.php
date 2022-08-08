@@ -31,7 +31,7 @@ class FinalizeTask implements TaskInterface
             'deploy:after',
             'deploy:cleanup',
             'deploy:success',
-        ])->select("role={$role}");
+        ])->select("roles=$role");
 
         fail('deploy', 'deploy:failed');
     }

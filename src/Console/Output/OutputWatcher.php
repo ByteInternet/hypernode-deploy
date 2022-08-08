@@ -5,8 +5,9 @@ namespace Hypernode\Deploy\Console\Output;
 
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\Output;
 
-class OutputWatcher implements OutputInterface
+class OutputWatcher extends Output implements OutputInterface
 {
     /**
      * @var OutputInterface
@@ -23,7 +24,17 @@ class OutputWatcher implements OutputInterface
      */
     public function __construct(OutputInterface $output)
     {
+        parent::__construct();
         $this->output = $output;
+    }
+
+    protected function doWrite($message, $newline)
+    {
+        if ($newline) {
+            $this->output->writeln($message);
+        } else {
+            $this->output->write($message);
+        }
     }
 
     /**
