@@ -29,6 +29,7 @@ class FinalizeTask implements TaskInterface
 
         task('deploy:finalize', [
             'deploy:after',
+            'deploy:unlock',
             'deploy:cleanup',
             'deploy:success',
         ])->select("roles=$role");
