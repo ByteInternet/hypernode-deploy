@@ -19,6 +19,7 @@ $productionStage->addServer('hypernode', null, [], [
 $configuration->setPlatformConfigurations([
     new PlatformConfiguration\NginxConfiguration("etc/nginx"),
     new PlatformConfiguration\SupervisorConfiguration("etc/supervisor"),
+    new PlatformConfiguration\CronConfiguration("etc/cron"),
 ]);
 $configuration->setSharedFiles([
     'app/etc/env.php',

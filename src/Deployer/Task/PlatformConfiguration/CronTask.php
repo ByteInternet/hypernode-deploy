@@ -7,22 +7,21 @@ use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\DeployConfiguration\Configuration;
-use Hypernode\DeployConfiguration\PlatformConfiguration\SupervisorConfiguration;
+use Hypernode\DeployConfiguration\PlatformConfiguration\CronConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
-use function Deployer\after;
+use function Deployer\before;
 use function Deployer\get;
 use function Deployer\set;
 use function Deployer\task;
-use function Hypernode\Deploy\Deployer\before;
 
-class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterface
+class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
     use IncrementedTaskTrait;
 
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:supervisor:';
+        return 'deploy:configuration:crontab:';
     }
 
     public function configureTask(TaskConfigurationInterface $config): void
@@ -31,16 +30,16 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
 
     public function supports(TaskConfigurationInterface $config): bool
     {
-        return $config instanceof SupervisorConfiguration;
+        return $config instanceof CronConfiguration;
     }
 
     public function registerAfter(): void
     {
-        before('deploy:symlink', 'deploy:supervisor');
+        before('deploy:symlink', 'deploy:cron');
     }
 
     /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
+     * @param TaskConfigurationInterface|CronConfiguration $config
      */
     public function build(TaskConfigurationInterface $config): ?Task
     {
@@ -49,16 +48,15 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
 
     public function configure(Configuration $config): void
     {
-        set('supervisor/config_path', function () {
-            return '/tmp/supervisor-config-' . get('domain');
+        set('cron/config_path', function () {
+            return '/tmp/cron-config-' . get('domain');
         });
 
-        task('deploy:supervisor', [
-            'deploy:supervisor:prepare',
-            'deploy:supervisor:upload',
-            'deploy:supervisor:sync',
-            'deploy:supervisor:cleanup',
+        task('deploy:cron', [
+            'deploy:cron:prepare',
+            'deploy:cron:upload',
+            'deploy:cron:sync',
+            'deploy:cron:cleanup',
         ]);
-
     }
 }

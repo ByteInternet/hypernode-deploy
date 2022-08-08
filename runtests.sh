@@ -82,6 +82,11 @@ $HN test $($HN readlink -f /data/web/supervisor/magento2.komkommer.store) = /dat
 # Test this once we enable supervisor in the hypernode docker image
 # $HN supervisorctl status | grep example | grep -v FATAL || ($HN supervisorctl status && exit 1)
 
+# Check the content of the crontab block
+$HN crontab -l | grep "### BEGIN magento2.komkommer.store ###"
+$HN crontab -l | grep "### END magento2.komkommer.store ###"
+$HN crontab -l | sed -n -e '/### BEGIN magento2.komkommer.store ###/,/### END magento2.komkommer.store ###/ p' | grep "banaan"
+
 ###############
 # NEXT DEPLOY #
 ###############

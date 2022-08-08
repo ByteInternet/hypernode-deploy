@@ -37,9 +37,6 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
     public function registerAfter(): void
     {
         before('deploy:symlink', 'deploy:nginx');
-        foreach ($this->getRegisteredTasks() as $taskName) {
-            after('deploy:nginx:prepare', $taskName);
-        }
     }
 
     /**

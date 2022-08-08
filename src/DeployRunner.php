@@ -149,6 +149,7 @@ class DeployRunner
                 continue;
             }
 
+            $this->log->warning("Configuring task " . get_class($task) . " for config " . get_class($taskConfig));
             $task->configureTask($taskConfig);
 
             $deployerTask = $task->build($taskConfig);
