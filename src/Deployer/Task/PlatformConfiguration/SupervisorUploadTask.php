@@ -56,9 +56,8 @@ class SupervisorUploadTask implements ConfigurableTaskInterface, RegisterAfterIn
                     '--ignore-errors',
                     '--copy-links'
                 ];
-                $args = array_map('escapeshellarg', $args);
-                upload($sourceDir . '/', '{{supervisor/config_path}}/', ['options' => $args]);
-                $args = implode(' ', $args);
+                upload($sourceDir . '/', '{{supervisor/config_path}}/');
+                $args = implode(' ', array_map('escapeshellarg', $args));
                 run("rsync {$args} {{supervisor/config_path}}/ {{supervisor_release_path}}/");
             }
         );
