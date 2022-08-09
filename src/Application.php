@@ -16,8 +16,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
-use function Sentry\init as sentryInit;
-
 class Application
 {
     private const APP_LOGO = <<<NAME
@@ -29,7 +27,6 @@ class Application
           /____/_/                                                  /_/            /____/
 
     Deployer version: %s
-    Deployer Recipe version: %s
 
     NAME;
 
@@ -46,7 +43,6 @@ class Application
             sprintf(
                 self::APP_LOGO,
                 InstalledVersions::getVersion('deployer/deployer'),
-                InstalledVersions::getVersion('deployer/recipes')
             )
         );
         $application->setVersion('Version: ' . $this->getVersion());
