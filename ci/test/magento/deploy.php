@@ -16,7 +16,11 @@ $productionStage->addServer('hypernode', null, [], [
     'port' => 22,
 ]);
 
-$configuration->setPlatformConfigurations([new PlatformConfiguration\NginxConfiguration("etc/nginx")]);
+$configuration->setPlatformConfigurations([
+    new PlatformConfiguration\NginxConfiguration("etc/nginx"),
+    new PlatformConfiguration\SupervisorConfiguration("etc/supervisor"),
+    new PlatformConfiguration\CronConfiguration("etc/cron"),
+]);
 $configuration->setSharedFiles([
     'app/etc/env.php',
     'pub/errors/local.xml',
