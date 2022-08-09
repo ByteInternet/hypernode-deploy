@@ -37,9 +37,6 @@ class SupervisorCleanupTask implements ConfigurableTaskInterface, RegisterAfterI
     {
     }
 
-    /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;

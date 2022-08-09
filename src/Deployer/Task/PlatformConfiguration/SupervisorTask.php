@@ -42,9 +42,6 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
         }
     }
 
-    /**
-     * @param TaskConfigurationInterface $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;

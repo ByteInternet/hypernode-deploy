@@ -8,6 +8,7 @@ use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
+use Webmozart\Assert\Assert;
 
 use function Deployer\fail;
 use function Deployer\get;
@@ -33,11 +34,10 @@ class NginxUploadTask implements ConfigurableTaskInterface
         return $config instanceof NginxConfiguration;
     }
 
-    /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
+        Assert::isInstanceOf($config, NginxConfiguration::class);
+
         return task(
             "deploy:nginx:upload",
             function () use ($config) {

@@ -10,6 +10,7 @@ use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\PlatformConfiguration\CronConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Twig\Environment;
+use Webmozart\Assert\Assert;
 
 use function Deployer\get;
 use function Deployer\set;
@@ -60,11 +61,10 @@ class CronRenderTask implements ConfigurableTaskInterface, RegisterAfterInterfac
         );
     }
 
-    /**
-     * @param TaskConfigurationInterface|CronConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
+        Assert::isInstanceOf($config, CronConfiguration::class);
+
         return task(
             "deploy:cron:render",
             function () use ($config) {

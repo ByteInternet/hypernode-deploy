@@ -77,9 +77,6 @@ class CronSyncTask implements ConfigurableTaskInterface, RegisterAfterInterface
         }
     }
 
-    /**
-     * @param TaskConfigurationInterface|CronConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;

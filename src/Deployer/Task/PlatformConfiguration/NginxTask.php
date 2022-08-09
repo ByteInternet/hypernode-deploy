@@ -42,9 +42,6 @@ class NginxTask implements ConfigurableTaskInterface, RegisterAfterInterface
         }
     }
 
-    /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;
