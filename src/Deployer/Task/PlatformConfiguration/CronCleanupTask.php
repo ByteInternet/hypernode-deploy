@@ -21,7 +21,7 @@ class CronCleanupTask implements ConfigurableTaskInterface, RegisterAfterInterfa
 
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:crontab:cleanup:';
+        return 'deploy:configuration:cron:cleanup:';
     }
 
     public function configureTask(TaskConfigurationInterface $config): void
@@ -52,7 +52,7 @@ class CronCleanupTask implements ConfigurableTaskInterface, RegisterAfterInterfa
         });
 
         task('deploy:cron:cleanup', function () {
-            run('if [ -d {{crontab/config_path}} ]; then rm -Rf {{crontab/config_path}}; fi');
+            run('if [ -d {{cron/config_path}} ]; then rm -Rf {{cron/config_path}}; fi');
         });
     }
 }

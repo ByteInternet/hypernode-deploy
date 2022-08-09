@@ -22,7 +22,7 @@ class CronUploadTask implements ConfigurableTaskInterface, RegisterAfterInterfac
 
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:crontab:upload:';
+        return 'deploy:configuration:cron:upload:';
     }
 
     public function configureTask(TaskConfigurationInterface $config): void
@@ -46,7 +46,7 @@ class CronUploadTask implements ConfigurableTaskInterface, RegisterAfterInterfac
         return task(
             "deploy:cron:upload",
             function () use ($config) {
-                $sourceDir = rtrim($config->getSourceFile(), '/');
+                $sourceFile = rtrim($config->getSourceFile(), '/');
 
                 $args = [
                     '--archive',
@@ -56,7 +56,7 @@ class CronUploadTask implements ConfigurableTaskInterface, RegisterAfterInterfac
                     '--copy-links'
                 ];
                 $args = array_map('escapeshellarg', $args);
-                upload($sourceDir . '/', '{{cron/config_path}}/', ['options' => $args]);
+                upload($sourceFile, '{{cron/config_path}}', ['options' => $args]);
             }
         );
     }

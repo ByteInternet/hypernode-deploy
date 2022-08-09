@@ -37,6 +37,9 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
     public function registerAfter(): void
     {
         before('deploy:symlink', 'deploy:supervisor');
+        foreach ($this->getRegisteredTasks() as $taskName) {
+            after('deploy:supervisor:prepare', $taskName);
+        }
     }
 
     /**

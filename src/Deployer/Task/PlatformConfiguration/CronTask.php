@@ -14,6 +14,7 @@ use function Deployer\before;
 use function Deployer\get;
 use function Deployer\set;
 use function Deployer\task;
+use function Deployer\writeln;
 
 class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
@@ -21,7 +22,7 @@ class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
 
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:crontab:';
+        return 'deploy:configuration:cron:';
     }
 
     public function configureTask(TaskConfigurationInterface $config): void

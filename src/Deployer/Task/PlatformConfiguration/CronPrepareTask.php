@@ -22,7 +22,7 @@ class CronPrepareTask implements ConfigurableTaskInterface, RegisterAfterInterfa
 
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:crontab:prepare:';
+        return 'deploy:configuration:cron:prepare:';
     }
 
     public function configureTask(TaskConfigurationInterface $config): void
@@ -53,8 +53,8 @@ class CronPrepareTask implements ConfigurableTaskInterface, RegisterAfterInterfa
         });
 
         task('deploy:cron:prepare', function () {
-            run('if [ -d {{crontab/config_path}} ]; then rm -Rf {{crontab/config_path}}; fi');
-            run('mkdir -p {{crontab/config_path}}');
+            run('if [ -d {{cron/config_path}} ]; then rm -Rf {{cron/config_path}}; fi');
+            run('mkdir -p {{cron/config_path}}');
         });
         fail('deploy:cron:prepare', 'deploy:cron:cleanup');
     }

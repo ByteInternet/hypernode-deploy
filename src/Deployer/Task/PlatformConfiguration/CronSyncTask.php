@@ -17,13 +17,13 @@ use function Deployer\fail;
 use function Deployer\task;
 use function Deployer\writeln;
 
-class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
+class CronSyncTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
     use IncrementedTaskTrait;
 
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:crontab:sync:';
+        return 'deploy:configuration:cron:sync:';
     }
 
     public function configureTask(TaskConfigurationInterface $config): void
