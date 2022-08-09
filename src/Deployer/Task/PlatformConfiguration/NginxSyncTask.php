@@ -73,7 +73,6 @@ class NginxSyncTask implements ConfigurableTaskInterface
             run("rsync {$args} {{nginx/config_path}}/ {{nginx_release_path}}/");
             run("ln -sf {{nginx_current_path}} /data/web/nginx/{{domain}}");
         });
-        after("deploy:nginx:sync", "deploy:nginx:reload");
         fail('deploy:nginx:sync', 'deploy:nginx:cleanup');
     }
 }
