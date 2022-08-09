@@ -65,7 +65,7 @@ class CronSyncTask implements ConfigurableTaskInterface, RegisterAfterInterface
         $beginOld = "### BEGIN " . get("domain") . " ###";
         $endOld = "### END " . get("domain") . " ###";
         $currentCrontab = $this->getCurrentCrontab();
-        
+
         # Check if begin and end of old block are present
         if (strpos($currentCrontab, $beginOld) === false || strpos($currentCrontab, $endOld) === false) {
             writeln("Appending new cron block for {{domain}} in crontab");
@@ -73,7 +73,7 @@ class CronSyncTask implements ConfigurableTaskInterface, RegisterAfterInterface
             return $newCrontab;
         } else {
             writeln("Replacing cron block for {{domain}}");
-            return preg_replace('/^' .$beginOld . '$.*^' . $endOld . '$/ms', $newCronBlock, $currentCrontab);
+            return preg_replace('/^' . $beginOld . '$.*^' . $endOld . '$/ms', $newCronBlock, $currentCrontab);
         }
     }
 

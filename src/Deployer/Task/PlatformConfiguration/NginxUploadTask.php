@@ -3,17 +3,17 @@
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
 use Deployer\Task\Task;
-use function Deployer\fail;
-use function Deployer\get;
-use function Deployer\set;
-use function Deployer\task;
-use function Deployer\upload;
-
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
+
+use function Deployer\fail;
+use function Deployer\get;
+use function Deployer\set;
+use function Deployer\task;
+use function Deployer\upload;
 
 class NginxUploadTask implements ConfigurableTaskInterface
 {
