@@ -42,16 +42,7 @@ class NginxUploadTask implements ConfigurableTaskInterface
             "deploy:nginx:upload",
             function () use ($config) {
                 $sourceDir = rtrim($config->getSourceFolder(), '/');
-
-                $args = [
-                    '--archive',
-                    '--recursive',
-                    '--verbose',
-                    '--ignore-errors',
-                    '--copy-links'
-                ];
-                $args = array_map('escapeshellarg', $args);
-                upload($sourceDir . '/', '{{nginx/config_path}}/', ['options' => $args]);
+                upload($sourceDir . '/', '{{nginx/config_path}}/');
             }
         );
     }
