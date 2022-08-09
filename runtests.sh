@@ -34,7 +34,7 @@ if ! [ -x "$(command -v docker-compose)" ]; then
 fi
 
 # Clear up env
-trap "docker-compose down -v" EXIT
+# trap "docker-compose down -v" EXIT
 
 docker-compose up -d
 
@@ -49,11 +49,12 @@ $HN /data/web/magento2/bin/magento app:config:dump scopes themes
 echo "Waiting for SSH to be available on the Hypernode container"
 chmod 0600 ci/test/.ssh/id_rsa
 chmod 0600 ci/test/.ssh/authorized_keys
-$DP rsync -v -a app@hypernode:/data/web/magento2/ /web
+$DP rsync -a app@hypernode:/data/web/magento2/ /web
+$DP rsync -v -a /config/ /web
 $DP rm /web/app/etc/env.php
 
 # Build
-$DP hypernode-deploy build -f /deploy_simple.php
+$DP hypernode-deploy build -v
 
 # Prepare env
 $HN mkdir -p /data/web/apps/magento2.komkommer.store/shared/app/etc/
@@ -65,13 +66,43 @@ $HN chown -R app:app /data/web/apps/magento2.komkommer.store
 ###################################
 
 # SSH from deploy container to hypernode container
-$DP hypernode-deploy deploy production -f /deploy_simple.php
+$DP hypernode-deploy deploy production -v
 
 # Check if deployment made only one release
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 1
 
+# Check if example location block was placed
+$HN ls -al /data/web/nginx/magento2.komkommer.store/
+$HN ls -al /data/web/apps/magento2.komkommer.store/current/
+$HN ls -al /data/web/apps/magento2.komkommer.store/current/nginx/
+$HN test -f /data/web/nginx/magento2.komkommer.store/server.example.conf || ($HN ls -al /data/web/nginx && $HN ls -al /data/web/nginx/magento2.komkommer.store && exit 1)
+$HN test $($HN readlink -f /data/web/nginx/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/1/nginx
+
+$HN test -f /data/web/supervisor/magento2.komkommer.store/example.conf || ($HN ls -al /data/web/supervisor/ && exit 1)
+$HN test $($HN readlink -f /data/web/supervisor/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/1/supervisor
+
+# Test this once we enable supervisor in the hypernode docker image
+# $HN supervisorctl status | grep example | grep -v FATAL || ($HN supervisorctl status && exit 1)
+
+# Check the content of the crontab block
+$HN crontab -l -u app | grep "### BEGIN magento2.komkommer.store ###"
+$HN crontab -l -u app | grep "### END magento2.komkommer.store ###"
+$HN crontab -l -u app | sed -n -e '/### BEGIN magento2.komkommer.store ###/,/### END magento2.komkommer.store ###/ p' | grep "banaan"
+
+###############
+# NEXT DEPLOY #
+###############
+
+# Remove example location
+$DP rm /web/etc/nginx/server.example.conf
+
 # Deploy again
-$DP hypernode-deploy deploy production -f /deploy_simple.php
+$DP hypernode-deploy deploy production
 
 # Check if another deployment was made
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 2
+$HN test $($HN readlink -f /data/web/nginx/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/2/nginx
+$HN test $($HN readlink -f /data/web/supervisor/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/2/supervisor
+
+# Verify example location block is removed
+$HN test ! -f /data/web/nginx/magento2.komkommer.store/server.example.conf || ($HN ls -al /data/web/nginx/magento2.komkommer.store && exit 1)
