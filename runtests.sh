@@ -32,7 +32,7 @@ if ! [ -x "$(command -v docker-compose)" ]; then
 fi
 
 # Clear up env
-trap "docker-compose down -v" EXIT
+# trap "docker-compose down -v" EXIT
 
 docker-compose up -d
 
@@ -83,9 +83,9 @@ $HN test $($HN readlink -f /data/web/supervisor/magento2.komkommer.store) = /dat
 # $HN supervisorctl status | grep example | grep -v FATAL || ($HN supervisorctl status && exit 1)
 
 # Check the content of the crontab block
-$HN crontab -l | grep "### BEGIN magento2.komkommer.store ###"
-$HN crontab -l | grep "### END magento2.komkommer.store ###"
-$HN crontab -l | sed -n -e '/### BEGIN magento2.komkommer.store ###/,/### END magento2.komkommer.store ###/ p' | grep "banaan"
+$HN crontab -l -u app | grep "### BEGIN magento2.komkommer.store ###"
+$HN crontab -l -u app | grep "### END magento2.komkommer.store ###"
+$HN crontab -l -u app | sed -n -e '/### BEGIN magento2.komkommer.store ###/,/### END magento2.komkommer.store ###/ p' | grep "banaan"
 
 ###############
 # NEXT DEPLOY #
