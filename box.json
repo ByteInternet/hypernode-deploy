@@ -5,6 +5,7 @@
     "git-version": "git_version",
     "main": "bin/hypernode-deploy.php",
     "check-requirements": false,
+    "dump-autoload": false,
     "directories": [
         "vendor",
         "src",

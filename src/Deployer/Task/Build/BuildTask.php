@@ -29,6 +29,6 @@ class BuildTask implements TaskInterface
             'prepare:ssh',
             'build:compile',
             'build:package',
-        ])->onStage('build');
+        ])->select("stage=build");
     }
 }

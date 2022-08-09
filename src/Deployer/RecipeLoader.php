@@ -17,7 +17,6 @@ class RecipeLoader
                 continue;
             }
 
-            /** @noinspection PhpIncludeInspection */
             require $file;
             return;
         }

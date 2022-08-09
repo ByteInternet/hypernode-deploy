@@ -14,6 +14,7 @@ class CopyTask implements TaskInterface
 {
     public function configure(Configuration $config): void
     {
+        $role = ServerRole::APPLICATION;
         task('deploy:copy:code', function () use ($config) {
             $packageFilepath = $config->getBuildArchiveFile();
             $packageFilename = pathinfo($packageFilepath, PATHINFO_BASENAME);
@@ -21,11 +22,11 @@ class CopyTask implements TaskInterface
             upload($packageFilepath, '{{release_path}}');
             run('cd {{release_path}} && tar -xf ' . $packageFilename);
             run('cd {{release_path}} && rm -f ' . $packageFilename);
-        })->onRoles(ServerRole::APPLICATION);
+        })->select("roles=$role");
 
         task('deploy:copy', [
             'deploy:copy:code',
             'deploy:shared',
-        ])->onRoles(ServerRole::APPLICATION);
+        ])->select("roles=$role");
     }
 }

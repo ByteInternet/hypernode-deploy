@@ -14,10 +14,11 @@ class LinkTask implements TaskInterface
 {
     public function configure(Configuration $config): void
     {
+        $role = ServerRole::APPLICATION;
         task('deploy:link', [
             'deploy:symlink',
             'deploy:public_link',
-        ])->onRoles(ServerRole::APPLICATION);
+        ])->select("roles=$role");
 
         // Symlink public_html folder
         task('deploy:public_link', function () {
@@ -30,7 +31,7 @@ class LinkTask implements TaskInterface
                 }
             }
 
-            run('ln -s {{deploy_path}}/current/{{public_folder}} /data/web/public');
-        })->onRoles(ServerRole::APPLICATION);
+            run('ln -s {{deploy_path}}/current/app/{{public_folder}} /data/web/public');
+        })->select("roles=$role");
     }
 }
