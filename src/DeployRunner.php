@@ -111,6 +111,7 @@ class DeployRunner
 
         foreach ($tasks as $task) {
             $task->configure($config);
+            $this->log->warning("Running configure for task " . get_class($task));
 
             if ($task instanceof ConfigurableTaskInterface) {
                 $this->initializeConfigurableTask($task, $config);
