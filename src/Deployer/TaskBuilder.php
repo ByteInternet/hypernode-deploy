@@ -33,11 +33,8 @@ class TaskBuilder
         foreach ($commands as $command) {
             $name = $namePrefix . ':' . \count($tasks);
 
-            try {
-                $this->build($command, $name);
-            } catch (\Exception $e) {
-                return [];
-            }
+            $this->build($command, $name);
+
             $tasks[] = $name;
         }
         return $tasks;
