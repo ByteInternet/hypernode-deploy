@@ -9,20 +9,32 @@ use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\PlatformConfiguration\CronConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
+use Twig\Environment;
 
 use function Deployer\get;
 use function Deployer\set;
 use function Deployer\run;
 use function Deployer\fail;
 use function Deployer\task;
+use function Deployer\writeln;
 
-class CronPrepareTask implements ConfigurableTaskInterface, RegisterAfterInterface
+class CronRenderTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
     use IncrementedTaskTrait;
 
+    /**
+     * @var Environment
+     */
+    private $twig;
+
+    public function __construct(Environment $twig)
+    {
+        $this->twig = $twig;
+    }
+
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:cron:prepare:';
+        return 'deploy:configuration:cron:render:';
     }
 
     public function configureTask(TaskConfigurationInterface $config): void
@@ -38,24 +50,32 @@ class CronPrepareTask implements ConfigurableTaskInterface, RegisterAfterInterfa
     {
     }
 
+    public function render(string $newCronBlock): string
+    {
+        return $this->twig->load('cron.twig')->render(
+            [
+                'domain' => get("domain"),
+                'crontab' => $newCronBlock,
+            ]
+        );
+    }
+
     /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
+     * @param TaskConfigurationInterface|CronConfiguration $config
      */
     public function build(TaskConfigurationInterface $config): ?Task
     {
-        return null;
+        return task(
+            "deploy:cron:render",
+            function () use ($config) {
+                $sourceFile = rtrim($config->getSourceFile(), '/');
+                $newCronBlock = $this->render(file_get_contents($sourceFile));
+                set("new_crontab", $newCronBlock);
+            }
+        );
     }
 
     public function configure(Configuration $config): void
     {
-        set('cron/config_path', function () {
-            return '/tmp/cron-config-' . get('domain');
-        });
-
-        task('deploy:cron:prepare', function () {
-            run('if [ -d {{cron/config_path}} ]; then rm -Rf {{cron/config_path}}; fi');
-            run('mkdir -p {{cron/config_path}}');
-        });
-        fail('deploy:cron:prepare', 'deploy:cron:cleanup');
     }
 }

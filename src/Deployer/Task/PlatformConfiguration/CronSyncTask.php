@@ -9,6 +9,7 @@ use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\PlatformConfiguration\CronConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
+use Twig\Environment;
 
 use function Deployer\get;
 use function Deployer\set;
@@ -20,6 +21,16 @@ use function Deployer\writeln;
 class CronSyncTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
     use IncrementedTaskTrait;
+
+    /**
+     * @var Environment
+     */
+    private $twig;
+
+    public function __construct(Environment $twig)
+    {
+        $this->twig = $twig;
+    }
 
     protected function getIncrementalNamePrefix(): string
     {
@@ -66,16 +77,6 @@ class CronSyncTask implements ConfigurableTaskInterface, RegisterAfterInterface
         }
     }
 
-    public function render(): string
-    {
-        return $this->twig->load('cron.twig')->render(
-            [
-                'domain' => get("domain"),
-                'crontab' => file_get_contents(get("cron/config_path")),
-            ]
-        );
-    }
-
     /**
      * @param TaskConfigurationInterface|CronConfiguration $config
      */
@@ -86,15 +87,9 @@ class CronSyncTask implements ConfigurableTaskInterface, RegisterAfterInterface
 
     public function configure(Configuration $config): void
     {
-        set('cron/config_path', function () {
-            return '/tmp/cron-config-' . get('domain');
-        });
-
         task('deploy:cron:sync', function () {
-            $newCronBlock = $this->render();
-            $newCrontab = $this->replaceExistingCronBlocks($newCronBlock);
+            $newCrontab = $this->replaceExistingCronBlocks(get("new_crontab"));
             $this->setCrontab($newCrontab);
         });
-        fail('deploy:cron:prepare', 'deploy:cron:cleanup');
     }
 }

@@ -49,15 +49,9 @@ class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
 
     public function configure(Configuration $config): void
     {
-        set('cron/config_path', function () {
-            return '/tmp/cron-config-' . get('domain');
-        });
-
         task('deploy:cron', [
-            'deploy:cron:prepare',
-            'deploy:cron:upload',
+            'deploy:cron:render',
             'deploy:cron:sync',
-            'deploy:cron:cleanup',
         ]);
     }
 }
