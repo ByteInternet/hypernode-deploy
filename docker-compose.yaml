@@ -2,7 +2,7 @@ version: "3"
 services:
   hypernode:
     container_name: hypernode
-    image: docker.hypernode.com/byteinternet/hypernode-buster-docker-php81-mysql57
+    image: docker.hypernode.com/byteinternet/hypernode-buster-docker-php${PHP_VERSION_SHORT:-81}-mysql57
     volumes:
       - ./ci/test/.ssh:/root/.ssh
     ports:
@@ -14,7 +14,7 @@ services:
       # Match environment of magento2.komkommer.store
       args:
       - NODE_VERSION=16
-      - PHP_VERSION=8.1
+      - PHP_VERSION=${PHP_VERSION:-8.1}
     command: "/bin/bash -c 'sleep 5000'"
     working_dir: /web
     volumes:
