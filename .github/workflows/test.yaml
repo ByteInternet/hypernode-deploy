@@ -1,9 +1,12 @@
 name: Test
 on:
-    pull_request:
+  pull_request:
 
 jobs:
   run-tests:
+    strategy:
+      matrix:
+        php_version: [7.4, 8.1]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout hypernode-deploy
@@ -11,3 +14,5 @@ jobs:
     - name: Run test script
       run: MAGENTO_REPO=./magento2 ./runtests.sh
       shell: bash
+      env:
+        PHP_VERSION: ${{ matrix.php_version }}

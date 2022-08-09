@@ -3,6 +3,8 @@
 set -e
 set -x
 
+export PHP_VERSION_SHORT=$(echo "${PHP_VERSION:-8.1}" | sed 's/\.//')
+
 # Handy aliases
 HN="docker-compose exec -T hypernode"
 DP="docker-compose exec -T deploy"

@@ -96,13 +96,6 @@ RUN cp /hypernode/build/hypernode-deploy.phar /bin/hypernode-deploy
 RUN chmod +x /bin/hypernode-deploy
 RUN ln -s /bin/hypernode-deploy /bin/hipex-deploy
 
-# Install solr for PHP < 8.1, because solr hasn't been made available for 8.1 on pecl.
-# Source: https://github.com/mlocati/docker-php-extension-installer/issues/549
-RUN export PHP_VERSION_MAJOR_MINOR=$(echo ${PHP_VERSION} | cut -d'.' -f1,2) && \
-    export PHP_VERSION_SOLR_COMPAT_COMMAND="$(echo "${PHP_VERSION_MAJOR_MINOR} < 8.1")" && \
-    export PHP_VERSION_SOLR_COMPAT_RESULT=$(echo "${PHP_VERSION_SOLR_COMPAT_COMMAND}" | bc -l) && \
-    if [ "${PHP_VERSION_SOLR_COMPAT_RESULT}" -eq "1" ]; then install-php-extensions solr; else echo "not installing solr"; fi
-
 # Install composer 1
 RUN curl -sS https://getcomposer.org/installer | php -- --1 --filename=composer1 && mv composer1 /usr/local/bin/ && chmod +x /usr/local/bin/composer1
 # Install composer 2
