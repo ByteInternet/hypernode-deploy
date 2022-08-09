@@ -132,6 +132,7 @@ class DeployRunner
         $configurations = array_merge(
             $mainConfig->getBuildCommands(),
             $mainConfig->getDeployCommands(),
+            $mainConfig->getPlatformConfigurations(),
             $mainConfig->getAfterDeployTasks()
         );
 
@@ -196,6 +197,8 @@ class DeployRunner
         $host->roles($server->getRoles());
         $host->set('domain', $stage->getDomain());
         $host->set('deploy_path', function () {
+            // Ensure directory exists before returning it
+            run('mkdir -p ~/apps/{{domain}}/shared');
             return run('realpath ~/apps/{{domain}}');
         });
         $host->set('configuration_stage', $stage);
