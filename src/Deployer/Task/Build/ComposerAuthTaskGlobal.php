@@ -22,7 +22,7 @@ class ComposerAuthTaskGlobal implements TaskInterface, RegisterAfterInterface
                 $auth = base64_decode($auth);
                 run(sprintf('echo %s > auth.json', escapeshellarg($auth)));
             }
-        })->onStage('build');
+        })->select("stage=build");
     }
 
     public function registerAfter(): void
