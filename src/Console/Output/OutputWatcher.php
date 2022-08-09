@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Hypernode\Deploy\Console\Output;
 
@@ -28,7 +29,7 @@ class OutputWatcher extends Output implements OutputInterface
         $this->output = $output;
     }
 
-    protected function doWrite($message, $newline)
+    protected function doWrite(string $message, bool $newline): void
     {
         if ($newline) {
             $this->output->writeln($message);
@@ -40,24 +41,24 @@ class OutputWatcher extends Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function write($messages, $newline = false, $type = self::OUTPUT_NORMAL)
+    public function write($messages, $newline = false, int $options = self::OUTPUT_NORMAL): void
     {
         $this->wasWritten = true;
-        $this->output->write($messages, $newline, $type);
+        $this->output->write($messages, $newline, $options);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function writeln($messages, $type = self::OUTPUT_NORMAL)
+    public function writeln($messages, int $options = self::OUTPUT_NORMAL): void
     {
-        $this->write($messages, true, $type);
+        $this->write($messages, true, $options);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setVerbosity($level)
+    public function setVerbosity($level): void
     {
         $this->output->setVerbosity($level);
     }
@@ -65,7 +66,7 @@ class OutputWatcher extends Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function getVerbosity()
+    public function getVerbosity(): int
     {
         return $this->output->getVerbosity();
     }
@@ -73,7 +74,7 @@ class OutputWatcher extends Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function setDecorated($decorated)
+    public function setDecorated($decorated): void
     {
         $this->output->setDecorated($decorated);
     }
@@ -81,7 +82,7 @@ class OutputWatcher extends Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function isDecorated()
+    public function isDecorated(): bool
     {
         return $this->output->isDecorated();
     }
@@ -89,7 +90,7 @@ class OutputWatcher extends Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function setFormatter(OutputFormatterInterface $formatter)
+    public function setFormatter(OutputFormatterInterface $formatter): void
     {
         $this->output->setFormatter($formatter);
     }
@@ -97,7 +98,7 @@ class OutputWatcher extends Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function getFormatter()
+    public function getFormatter(): OutputFormatterInterface
     {
         return $this->output->getFormatter();
     }
@@ -105,7 +106,7 @@ class OutputWatcher extends Output implements OutputInterface
     /**
      * @param boolean $wasWritten
      */
-    public function setWasWritten($wasWritten)
+    public function setWasWritten(bool $wasWritten): void
     {
         $this->wasWritten = $wasWritten;
     }
@@ -121,7 +122,7 @@ class OutputWatcher extends Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function isQuiet()
+    public function isQuiet(): bool
     {
         return self::VERBOSITY_QUIET === $this->getVerbosity();
     }
@@ -129,7 +130,7 @@ class OutputWatcher extends Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function isVerbose()
+    public function isVerbose(): bool
     {
         return self::VERBOSITY_VERBOSE <= $this->getVerbosity();
     }
@@ -137,7 +138,7 @@ class OutputWatcher extends Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function isVeryVerbose()
+    public function isVeryVerbose(): bool
     {
         return self::VERBOSITY_VERY_VERBOSE <= $this->getVerbosity();
     }
@@ -145,7 +146,7 @@ class OutputWatcher extends Output implements OutputInterface
     /**
      * {@inheritdoc}
      */
-    public function isDebug()
+    public function isDebug(): bool
     {
         return self::VERBOSITY_DEBUG <= $this->getVerbosity();
     }
