@@ -74,6 +74,13 @@ $HN ls -al /data/web/nginx/magento2.komkommer.store/
 $HN ls -al /data/web/apps/magento2.komkommer.store/current/
 $HN ls -al /data/web/apps/magento2.komkommer.store/current/nginx/
 $HN test -f /data/web/nginx/magento2.komkommer.store/server.example.conf || ($HN ls -al /data/web/nginx && $HN ls -al /data/web/nginx/magento2.komkommer.store && exit 1)
+$HN test $($HN readlink -f /data/web/nginx/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/1/nginx
+
+$HN test -f /data/web/supervisor/magento2.komkommer.store/example.conf || ($HN ls -al /data/web/supervisor/ && exit 1)
+$HN test $($HN readlink -f /data/web/supervisor/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/1/supervisor
+
+# Test this once we enable supervisor in the hypernode docker image
+# $HN supervisorctl status | grep example | grep -v FATAL || ($HN supervisorctl status && exit 1)
 
 ###############
 # NEXT DEPLOY #
@@ -87,6 +94,8 @@ $DP hypernode-deploy deploy production
 
 # Check if another deployment was made
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 2
+$HN test $($HN readlink -f /data/web/nginx/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/2/nginx
+$HN test $($HN readlink -f /data/web/supervisor/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/2/supervisor
 
 # Verify example location block is removed
 $HN test ! -f /data/web/nginx/magento2.komkommer.store/server.example.conf || ($HN ls -al /data/web/nginx/magento2.komkommer.store && exit 1)
