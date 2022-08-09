@@ -31,7 +31,7 @@ class LinkTask implements TaskInterface
                 }
             }
 
-            run('ln -s {{deploy_path}}/current/app/{{public_folder}} /data/web/public');
+            run('ln -s {{app_current_path}}/{{public_folder}} /data/web/public');
         })->select("roles=$role");
     }
 }
