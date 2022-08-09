@@ -41,7 +41,7 @@ class NginxManageVHostTask implements ConfigurableTaskInterface
     public function configure(Configuration $config): void
     {
         task('deploy:nginx:manage_vhost', function () {
-            run('hypernode-manage-vhosts {{domain}} --webroot {{deploy_path}}/current/{{public_folder}} --no');
+            run('hypernode-manage-vhosts {{domain}} --webroot {{app_current_path}}/{{public_folder}} --no');
         });
     }
 }
