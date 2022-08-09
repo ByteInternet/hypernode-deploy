@@ -55,8 +55,8 @@ class NginxSyncTask implements ConfigurableTaskInterface
                 writeln('No nginx configuration defined.');
                 return;
             }
-            if (!test('[ "$(test -d /data/web/nginx/{{domain}})" ]')) {
-                writeln('/data/web/nginx/{{domain}} is a directory. Removing this.');
+            if (test('test ! -L /data/web/nginx/{{domain}}')) {
+                writeln('/data/web/nginx/{{domain}} is not a symlink. Removing this.');
                 // TODO: Raise error instead of removing dir?
                 run('rm -Rf /data/web/nginx/{{domain}}');
             }
