@@ -31,8 +31,9 @@ class AfterTaskGlobal implements TaskInterface
             };
         }
 
+        $role = ServerRole::APPLICATION;
         task('deploy:after', $tasks)
             ->once()
-            ->onRoles(ServerRole::APPLICATION);
+            ->select("roles=$role");
     }
 }

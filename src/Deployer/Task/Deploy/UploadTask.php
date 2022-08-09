@@ -25,6 +25,7 @@ class UploadTask implements TaskInterface
     public function configure(Configuration $config): void
     {
         $this->loader->load('deploy/info.php');
+        $role = ServerRole::APPLICATION;
 
         task('deploy:upload', [
             'deploy:info',
@@ -32,7 +33,7 @@ class UploadTask implements TaskInterface
             'deploy:prepare_release',
             'deploy:copy',
             'deploy:deploy',
-        ])->onRoles(ServerRole::APPLICATION);
+        ])->select("roles=$role");
 
         fail('deploy', 'deploy:failed');
     }

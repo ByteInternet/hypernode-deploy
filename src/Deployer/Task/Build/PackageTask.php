@@ -27,7 +27,7 @@ class PackageTask implements TaskInterface
         task('build:package', function () {
             run('tar {{tar/exclude}} --directory={{tar/working-directory}} -czf {{tar/filepath}} .', ['timeout' => 3600]);
             run('ls -alh {{tar/filepath}}');
-        })->onStage('build');
+        })->select("stage=build");
     }
 
     private function getTarExclude(Configuration $config): string

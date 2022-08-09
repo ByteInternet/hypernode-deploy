@@ -50,7 +50,7 @@ class SlackTask implements ConfigurableTaskInterface, RegisterAfterInterface
     public function registerAfter(): void
     {
         before('deploy', 'slack:notify');
-        after('success', 'slack:notify:success');
+        after('deploy:success', 'slack:notify:success');
         after('deploy:failed', 'slack:notify:failure');
     }
 

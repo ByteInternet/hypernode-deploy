@@ -20,7 +20,13 @@ if (file_exists($customAutoLoadPath)) {
     require_once $customAutoLoadPath;
 }
 
-require_once APPLICATION_ROOT . '/vendor/autoload.php';
+/** @var \Composer\Autoload\ClassLoader $loader */
+$loader = require_once APPLICATION_ROOT . '/vendor/autoload.php';
+if (!array_key_exists('Deployer\\', $loader->getPrefixesPsr4())) {
+    $loader->setPsr4('Deployer\\', APPLICATION_ROOT . '/vendor/deployer/deployer/src');
+    require_once APPLICATION_ROOT . '/vendor/deployer/deployer/src/functions.php';
+    require_once APPLICATION_ROOT . '/vendor/deployer/deployer/src/Support/helpers.php';
+}
 
 $calledBinary = basename($argv[0]);
 if ($calledBinary === 'hipex-deploy') {
@@ -28,7 +34,6 @@ if ($calledBinary === 'hipex-deploy') {
 }
 
 if (!getenv('SSH_AUTH_SOCK')) {
-
     $process = Process::fromShellCommandline(sprintf(
         'eval "$(ssh-agent -s) " && %s %s',
         PHP_BINARY,
@@ -54,7 +59,7 @@ if (!getenv('SSH_AUTH_SOCK')) {
     exit($process->getExitCode());
 }
 
-$app = new Application();
+$app = new Bootstrap();
 try {
     exit($app->run());
 } catch (Exception $e) {
