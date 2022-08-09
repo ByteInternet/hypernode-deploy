@@ -108,7 +108,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --1 --filename=composer1
 # Install composer 2
 RUN curl -sS https://getcomposer.org/installer | php -- --2 --filename=composer2 && mv composer2 /usr/local/bin/ && chmod +x /usr/local/bin/composer2
 # Use version 1 for main composer binary
-RUN rm -f /usr/local/bin/composer2; ln -s /usr/local/bin/composer2 /usr/local/bin/composer
+RUN rm -f /usr/local/bin/composer; ln -s /usr/local/bin/composer2 /usr/local/bin/composer
 
 # Copy container files
 COPY ./ci/build/files /
