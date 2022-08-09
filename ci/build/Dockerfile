@@ -1,8 +1,4 @@
-# Build args
-ARG PHP_VERSION
-
-# Install hypernode-deploy dependencies with target PHP version
-FROM php:${PHP_VERSION}-cli-buster
+FROM debian:buster
 
 ARG NODE_VERSION
 ARG PHP_VERSION
@@ -24,6 +20,8 @@ RUN apt-get update \
         gnupg \
         software-properties-common \
     && rm -rf /var/lib/apt/lists/* \
+    && curl -sSL http://debian.hypernode.com/repo.key | apt-key add - \
+    && echo "deb http://debian.hypernode.com buster main hypernode" | tee /etc/apt/sources.list.d/hypernode.list \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
     && echo "deb http://deb.nodesource.com/node_${NODE_VERSION}.x buster main" | tee /etc/apt/sources.list.d/nodesource.list \
     && echo \
@@ -51,6 +49,31 @@ RUN apt-get update && \
         gnupg \
         zip \
         bc \
+    && apt install -y --no-install-recommends \
+        php${PHP_VERSION} \
+        php${PHP_VERSION}-bcmath \
+        php${PHP_VERSION}-bz2  \
+        php${PHP_VERSION}-cli  \
+        php${PHP_VERSION}-common  \
+        php${PHP_VERSION}-curl \
+        php${PHP_VERSION}-gd \
+        php${PHP_VERSION}-igbinary \
+        php${PHP_VERSION}-imagick \
+        php${PHP_VERSION}-imap \
+        php${PHP_VERSION}-intl \
+        php${PHP_VERSION}-ldap \
+        php${PHP_VERSION}-mbstring \
+        php${PHP_VERSION}-mysql \
+        php${PHP_VERSION}-odbc \
+        php${PHP_VERSION}-opcache \
+        php${PHP_VERSION}-pgsql \
+        php${PHP_VERSION}-pspell \
+        php${PHP_VERSION}-readline \
+        php${PHP_VERSION}-redis \
+        php${PHP_VERSION}-soap \
+        php${PHP_VERSION}-tidy \
+        php${PHP_VERSION}-xml \
+        php${PHP_VERSION}-zip \
     && rm -rf /var/lib/apt/lists/*
 
 COPY ./.git /hypernode/.git
@@ -72,29 +95,6 @@ RUN bash /hypernode/ci/compile.sh
 RUN cp /hypernode/build/hypernode-deploy.phar /bin/hypernode-deploy
 RUN chmod +x /bin/hypernode-deploy
 RUN ln -s /bin/hypernode-deploy /bin/hipex-deploy
-
-# Install php extensions
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
-
-RUN install-php-extensions \
-        pcntl \
-        dom \
-        bcmath \
-        gd \
-        intl \
-        ldap \
-        mbstring \
-        mysqli \
-        opcache \
-        pdo_mysql \
-        soap \
-        xsl \
-        zip \
-        pcntl \
-        sockets \
-        yaml \
-        imagick \
-        calendar
 
 # Install solr for PHP < 8.1, because solr hasn't been made available for 8.1 on pecl.
 # Source: https://github.com/mlocati/docker-php-extension-installer/issues/549
