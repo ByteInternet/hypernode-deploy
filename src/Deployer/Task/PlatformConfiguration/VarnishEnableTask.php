@@ -50,6 +50,6 @@ class VarnishEnableTask implements ConfigurableTaskInterface, RegisterAfterInter
             run('hypernode-manage-vhosts {{domain}} --varnish');
         });
 
-        fail('deploy:configuration:varnish:enable', 'deploy:configuration:varnish:cleanup');
+        fail($this->getTaskName(), 'deploy:varnish:cleanup');
     }
 }
