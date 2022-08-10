@@ -39,9 +39,6 @@ class SupervisorSyncTask implements ConfigurableTaskInterface, RegisterAfterInte
     {
     }
 
-    /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;
@@ -58,7 +55,9 @@ class SupervisorSyncTask implements ConfigurableTaskInterface, RegisterAfterInte
             run("mkdir -p ~/supervisor");
             if (test('[ "$(test -d ~/supervisor/{{domain}})" ]')) {
                 if (!test('[ "$(rmdir ~/supervisor/{{domain}})" ]')) {
-                    throw new \RuntimeException('Found a non-empty Supervisor directory. Please remove it before deploying.');
+                    throw new \RuntimeException(
+                        'Found a non-empty Supervisor directory. Please remove it before deploying.'
+                    );
                 }
                 writeln("Removed empty supervisor directory to make place for the new symlink");
             }

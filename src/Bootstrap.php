@@ -108,7 +108,7 @@ class Bootstrap
         $finder->in(__DIR__ . DIRECTORY_SEPARATOR . 'Command');
         $finder->subclassOff(Command::class);
 
-        foreach ($finder as $class) {
+        foreach ($finder->getClasses() as $class) {
             /** @var Command $command */
             $command = $container->get($class);
             $application->add($command);

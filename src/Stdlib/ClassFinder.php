@@ -9,19 +9,19 @@ use Symfony\Component\Finder\Finder;
 class ClassFinder extends Finder
 {
     /**
-     * @var string
+     * @var class-string|null
      */
-    protected $implements;
+    protected ?string $implements = null;
+
+    /**
+     * @var class-string|null
+     */
+    protected ?string $subclassOff = null;
 
     /**
      * @var string
      */
-    protected $subclassOff;
-
-    /**
-     * @var string
-     */
-    protected $namespace;
+    protected string $namespace;
 
     public function __construct(string $namespace)
     {
@@ -34,6 +34,7 @@ class ClassFinder extends Finder
     }
 
     /**
+     * @param class-string $interface
      * @return $this
      */
     public function implements(string $interface): self
@@ -43,6 +44,7 @@ class ClassFinder extends Finder
     }
 
     /**
+     * @param class-string $class
      * @return $this
      */
     public function subclassOff(string $class): self
@@ -51,7 +53,7 @@ class ClassFinder extends Finder
         return $this;
     }
 
-    public function getIterator()
+    public function getClasses(): \Generator
     {
         foreach (parent::getIterator() as $file) {
             $className = $file->getRelativePathname();
@@ -60,6 +62,7 @@ class ClassFinder extends Finder
             $className = rtrim($this->namespace, '\\') . '\\' . $className;
 
             try {
+                /** @var class-string $className */
                 $reflection = new ReflectionClass($className);
             } catch (ReflectionException $e) {
                 continue;

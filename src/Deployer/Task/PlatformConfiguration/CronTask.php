@@ -39,9 +39,6 @@ class CronTask implements ConfigurableTaskInterface, RegisterAfterInterface
         before('deploy:symlink', 'deploy:cron');
     }
 
-    /**
-     * @param TaskConfigurationInterface|CronConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;

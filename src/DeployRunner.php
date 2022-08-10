@@ -229,7 +229,7 @@ class DeployRunner
             $sshOptions[] = "-o $optionName=$optionValue";
         }
 
-        if($sshOptions) {
+        if ($sshOptions) {
             $host->setSshArguments($sshOptions);
         }
     }
