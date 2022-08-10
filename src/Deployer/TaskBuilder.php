@@ -6,11 +6,12 @@ use Deployer\Exception\Exception;
 use Deployer\Exception\RunException;
 use Deployer\Exception\TimeoutException;
 use Deployer\Task\Task;
+use Hypernode\DeployConfiguration\Command\Command;
 use Hypernode\DeployConfiguration\Command\DeployCommand;
 use Hypernode\DeployConfiguration\ServerRoleConfigurableInterface;
 use Hypernode\DeployConfiguration\StageConfigurableInterface;
-
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
+
 use function Deployer\parse;
 use function Deployer\run;
 use function Deployer\task;
@@ -33,6 +34,7 @@ class TaskBuilder
         foreach ($commands as $command) {
             $name = $namePrefix . ':' . \count($tasks);
 
+            /** @var Command $command */
             $this->build($command, $name);
 
             $tasks[] = $name;
@@ -41,12 +43,12 @@ class TaskBuilder
     }
 
     /**
-     * @param TaskConfigurationInterface $command
+     * @param Command $command
      * @param string $name
      * @return Task
      * @throws \Exception
      */
-    private function build(TaskConfigurationInterface $command, string $name): Task
+    private function build(Command $command, string $name): Task
     {
         $task = task($name, function () use ($command) {
             $this->runCommandWithin($command);
@@ -65,12 +67,12 @@ class TaskBuilder
     }
 
     /**
-     * @param TaskConfigurationInterface $command
+     * @param Command $command
      * @throws Exception
      * @throws RunException
      * @throws TimeoutException
      */
-    private function runCommandWithin(TaskConfigurationInterface $command): void
+    private function runCommandWithin(Command $command): void
     {
         $directory = $command->getWorkingDirectory();
         if ($directory === null && $command instanceof DeployCommand) {
@@ -83,12 +85,12 @@ class TaskBuilder
     }
 
     /**
-     * @param TaskConfigurationInterface $command
+     * @param Command $command
      * @throws Exception
      * @throws RunException
      * @throws TimeoutException
      */
-    private function runCommand(TaskConfigurationInterface $command): void
+    private function runCommand(Command $command): void
     {
         $commandAction = $command->getCommand();
         if (\is_callable($commandAction)) {
