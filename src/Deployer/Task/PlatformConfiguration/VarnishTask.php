@@ -7,21 +7,20 @@ use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\DeployConfiguration\Configuration;
-use Hypernode\DeployConfiguration\PlatformConfiguration\SupervisorConfiguration;
+use Hypernode\DeployConfiguration\PlatformConfiguration\VarnishConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
-use function Deployer\get;
-use function Deployer\set;
-use function Deployer\run;
+use function Deployer\after;
 use function Deployer\task;
+use function Hypernode\Deploy\Deployer\before;
 
-class SupervisorCleanupTask implements ConfigurableTaskInterface, RegisterAfterInterface
+class VarnishTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
     use IncrementedTaskTrait;
 
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:supervisor:cleanup:';
+        return 'deploy:configuration:varnish:';
     }
 
     public function configureTask(TaskConfigurationInterface $config): void
@@ -30,16 +29,17 @@ class SupervisorCleanupTask implements ConfigurableTaskInterface, RegisterAfterI
 
     public function supports(TaskConfigurationInterface $config): bool
     {
-        return $config instanceof SupervisorConfiguration;
+        return $config instanceof VarnishConfiguration;
     }
 
     public function registerAfter(): void
     {
+        before('deploy:symlink', $this->getTaskName());
+        foreach ($this->getRegisteredTasks() as $taskName) {
+            after('deploy:varnish:prepare', $taskName);
+        }
     }
 
-    /**
-     * @param TaskConfigurationInterface|SupervisorConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;
@@ -47,12 +47,14 @@ class SupervisorCleanupTask implements ConfigurableTaskInterface, RegisterAfterI
 
     public function configure(Configuration $config): void
     {
-        set('supervisor/config_path', function () {
-            return '/tmp/supervisor-config-' . get('domain');
-        });
+        task('deploy:varnish', [
+            'deploy:varnish:enable',
+            'deploy:varnish:prepare',
+            'deploy:varnish:upload',
+            'deploy:varnish:sync',
+            'deploy:varnish:cleanup',
+        ]);
 
-        task('deploy:supervisor:cleanup', function () {
-            run('if [ -d {{supervisor/config_path}} ]; then rm -Rf {{supervisor/config_path}}; fi');
-        });
     }
 }
+
