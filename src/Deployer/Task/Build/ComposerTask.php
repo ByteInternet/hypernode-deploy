@@ -40,7 +40,6 @@ class ComposerTask implements ConfigurableTaskInterface
      */
     public function configureTask(TaskConfigurationInterface $config): void
     {
-        set('bin/composer', get('bin/composer', 'composer2'));
         set('composer/install_arguments', implode(' ', $config->getInstallArguments()));
     }
 

@@ -1,56 +1,16 @@
-# Build args
+FROM debian:buster
+
 ARG NODE_VERSION
 ARG PHP_VERSION
 
-# Ref node image for later copy usage
-FROM node:${NODE_VERSION}-buster as node-image
-
-# Install hypernode-deploy dependencies with target PHP version
-FROM php:${PHP_VERSION}-cli-buster as build-vendor
-
-COPY ./src /hypernode/src
-COPY ./composer.json /hypernode/composer.json
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        git zip unzip \
+        git zip unzip wget \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/composer \
-    && chmod +x /usr/local/bin/composer \
-    && composer install --no-dev --optimize-autoloader --working-dir=/hypernode
-
-# Compile hipex-deploy PHAR binary with box using PHP 8.1
-FROM php:8.1-cli-buster as build
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        git \
-        zip \
-        unzip \
-    && rm -rf /var/lib/apt/lists/*
-
-# We can't use .dockerignore here.
-COPY ./src /hypernode/src
-COPY ./ci/compile.sh /hypernode/ci/compile.sh
-COPY ./.git /hypernode/.git
-COPY ./build /hypernode/build
-COPY ./bin /hypernode/bin
-COPY ./box.json /hypernode/box.json
-COPY ./composer.json /hypernode/composer.json
-COPY ./ci/build/files /
-COPY --from=build-vendor /hypernode/vendor /hypernode/vendor
-
-# Install composer
-RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer
-
-RUN sh /hypernode/ci/compile.sh
-
-# Finish the rest of the image build
-FROM php:${PHP_VERSION}-cli-buster
-
-# Add docker repository
+# Add repositories
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         apt-transport-https \
@@ -60,11 +20,14 @@ RUN apt-get update \
         gnupg \
         software-properties-common \
     && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - \
-    && add-apt-repository \
-          "deb [arch=amd64] https://download.docker.com/linux/debian \
-          $(lsb_release -cs) \
-          stable"
+    && curl -sSL http://debian.hypernode.com/repo.key | apt-key add - \
+    && echo "deb http://debian.hypernode.com buster main hypernode" | tee /etc/apt/sources.list.d/hypernode.list \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
+    && echo "deb http://deb.nodesource.com/node_${NODE_VERSION}.x buster main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && echo \
+          "Package: * \
+          Pin origin deb.nodesource.com \
+          Pin-Priority: 1001" > /etc/apt/preferences.d/nodejs
 
 # Install dependencies
 RUN apt-get update && \
@@ -82,54 +45,63 @@ RUN apt-get update && \
         autoconf \
         make \
         libtool \
-        docker \
+        nodejs \
         gnupg \
         zip \
-        docker-ce-cli \
         bc \
+    && apt install -y --no-install-recommends \
+        php${PHP_VERSION} \
+        php${PHP_VERSION}-bcmath \
+        php${PHP_VERSION}-bz2  \
+        php${PHP_VERSION}-cli  \
+        php${PHP_VERSION}-common  \
+        php${PHP_VERSION}-curl \
+        php${PHP_VERSION}-gd \
+        php${PHP_VERSION}-igbinary \
+        php${PHP_VERSION}-imagick \
+        php${PHP_VERSION}-imap \
+        php${PHP_VERSION}-intl \
+        php${PHP_VERSION}-ldap \
+        php${PHP_VERSION}-mbstring \
+        php${PHP_VERSION}-mysql \
+        php${PHP_VERSION}-odbc \
+        php${PHP_VERSION}-opcache \
+        php${PHP_VERSION}-pgsql \
+        php${PHP_VERSION}-pspell \
+        php${PHP_VERSION}-readline \
+        php${PHP_VERSION}-redis \
+        php${PHP_VERSION}-soap \
+        php${PHP_VERSION}-tidy \
+        php${PHP_VERSION}-xml \
+        php${PHP_VERSION}-zip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install php extensions
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
+COPY ./.git /hypernode/.git
+COPY ./bin /hypernode/bin
+COPY ./ci /hypernode/ci
+COPY ./src /hypernode/src
+COPY ./box.json /hypernode/box.json
+COPY ./composer.json /hypernode/composer.json
+COPY ./ci/build/files /
 
-RUN install-php-extensions \
-        pcntl \
-        dom \
-        bcmath \
-        gd \
-        intl \
-        ldap \
-        mbstring \
-        mysqli \
-        opcache \
-        pdo_mysql \
-        soap \
-        xsl \
-        zip \
-        pcntl \
-        sockets \
-        yaml \
-        imagick \
-        calendar
+RUN curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer \
+    && chmod +x /usr/local/bin/composer \
+    && composer install --no-dev --optimize-autoloader --working-dir=/hypernode
 
-# Install solr for PHP < 8.1, because solr hasn't been made available for 8.1 on pecl.
-# Source: https://github.com/mlocati/docker-php-extension-installer/issues/549
-RUN export PHP_VERSION_MAJOR_MINOR=$(echo ${PHP_VERSION} | cut -d'.' -f1,2) && \
-    export PHP_VERSION_SOLR_COMPAT_COMMAND="$(echo "${PHP_VERSION_MAJOR_MINOR} < 8.1")" && \
-    export PHP_VERSION_SOLR_COMPAT_RESULT=$(echo "${PHP_VERSION_SOLR_COMPAT_COMMAND}" | bc -l) && \
-    if [ "${PHP_VERSION_SOLR_COMPAT_RESULT}" -eq "1" ]; then install-php-extensions solr; else echo "not installing solr"; fi
+RUN bash /hypernode/ci/compile.sh
 
-# Install node
-COPY --from=node-image /opt /opt
-COPY --from=node-image /usr/local/lib /usr/local/lib
-COPY --from=node-image /usr/local/bin /usr/local/bin
+# Setup hipex deploy command
+RUN cp /hypernode/build/hypernode-deploy.phar /bin/hypernode-deploy
+RUN chmod +x /bin/hypernode-deploy
+RUN ln -s /bin/hypernode-deploy /bin/hipex-deploy
 
 # Install composer 1
 RUN curl -sS https://getcomposer.org/installer | php -- --1 --filename=composer1 && mv composer1 /usr/local/bin/ && chmod +x /usr/local/bin/composer1
 # Install composer 2
 RUN curl -sS https://getcomposer.org/installer | php -- --2 --filename=composer2 && mv composer2 /usr/local/bin/ && chmod +x /usr/local/bin/composer2
 # Use version 1 for main composer binary
-RUN ln -s /usr/local/bin/composer1 /usr/local/bin/composer
+RUN rm -f /usr/local/bin/composer; ln -s /usr/local/bin/composer2 /usr/local/bin/composer
 
 # Copy container files
 COPY ./ci/build/files /
@@ -147,11 +119,6 @@ RUN rm -rvf \
         /usr/share/man \
         /var/lib/apt/lists/* \
     && apt-get autoremove -y
-
-# Setup hipex deploy command
-COPY --from=build /hypernode/build/hypernode-deploy.phar /bin/hypernode-deploy
-RUN chmod +x /bin/hypernode-deploy
-RUN ln -s /bin/hypernode-deploy /bin/hipex-deploy
 
 # Setup default command
 CMD ["hypernode-deploy"]

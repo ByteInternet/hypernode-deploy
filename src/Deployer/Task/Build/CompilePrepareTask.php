@@ -17,7 +17,7 @@ class CompilePrepareTask implements TaskInterface, RegisterAfterInterface
         task('build:compile:prepare', function () {
             run('rm -Rf build');
             run('mkdir -p build');
-        })->onStage('build');
+        })->select("stage=build");
     }
 
     public function registerAfter(): void

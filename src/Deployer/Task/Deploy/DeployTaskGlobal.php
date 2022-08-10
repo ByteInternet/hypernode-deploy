@@ -14,6 +14,7 @@ class DeployTaskGlobal implements TaskInterface
     public function configure(Configuration $config): void
     {
         $tasks = $config->getDeployTasks();
+        $role = ServerRole::APPLICATION;
 
         if (count($tasks)) {
             task('deploy:deploy', $tasks);
@@ -21,6 +22,6 @@ class DeployTaskGlobal implements TaskInterface
             task('deploy:deploy', noop());
         }
 
-        task('deploy:deploy', $tasks)->onRoles(ServerRole::APPLICATION);
+        task('deploy:deploy', $tasks)->select("roles=$role");
     }
 }

@@ -19,10 +19,10 @@ class CompileTaskGlobal implements TaskInterface
             foreach ($dirs as $dir) {
                 run(sprintf('rm -rf %s', $dir));
             }
-        })->onStage('build');
+        })->select("stage=build");
 
         $tasks = $config->getBuildTasks();
         array_unshift($tasks, 'build:compile:prepare');
-        task('build:compile', $tasks)->onStage('build');
+        task('build:compile', $tasks)->select("stage=build");
     }
 }
