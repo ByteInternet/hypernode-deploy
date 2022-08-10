@@ -59,7 +59,6 @@ class VarnishSyncTask implements ConfigurableTaskInterface, RegisterAfterInterfa
 
             if (test('[ "$(test -e {{varnish/vcl_dir}}/varnish.vcl)" ]')) {
                 run("unlink {{varnish/vcl_dir}}/varnish.vcl");
-
                 writeln("Removed varnish link with previous release to make place for the new symlink");
             }
 

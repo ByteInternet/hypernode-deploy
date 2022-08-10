@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ce9a7788c2e4cc7aaa307b3e4f1b544",
+    "content-hash": "0d3d73e5414061fa0b5e975d48eb9666",
     "packages": [
         {
             "name": "deployer/deployer",
@@ -332,16 +332,16 @@
         },
         {
             "name": "hypernode/deploy-configuration",
-            "version": "2.0.0-alpha",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-deploy-configuration.git",
-                "reference": "e480820ea835a97597f9bf0c1c2b3f9e04cb7fab"
+                "reference": "f9828fa594ff074cd203c0221879a0b0d5ccc3d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/e480820ea835a97597f9bf0c1c2b3f9e04cb7fab",
-                "reference": "e480820ea835a97597f9bf0c1c2b3f9e04cb7fab",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/f9828fa594ff074cd203c0221879a0b0d5ccc3d8",
+                "reference": "f9828fa594ff074cd203c0221879a0b0d5ccc3d8",
                 "shasum": ""
             },
             "require": {
@@ -368,9 +368,9 @@
             "description": "Hypernode deploy configuration files",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-deploy-configuration/issues",
-                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/2.0.0-alpha"
+                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/2.0.2"
             },
-            "time": "2022-08-03T14:35:34+00:00"
+            "time": "2022-08-10T10:11:00+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -6274,7 +6274,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "deployer/deployer": 20,
-        "hypernode/deploy-configuration": 15,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
@@ -6285,5 +6284,5 @@
         "composer-runtime-api": "^2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.0.0"
 }
