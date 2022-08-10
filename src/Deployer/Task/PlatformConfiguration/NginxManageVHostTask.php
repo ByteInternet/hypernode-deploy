@@ -30,9 +30,6 @@ class NginxManageVHostTask implements ConfigurableTaskInterface
         return $config instanceof NginxConfiguration;
     }
 
-    /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;

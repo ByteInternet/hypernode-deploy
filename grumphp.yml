@@ -8,5 +8,6 @@ grumphp:
             triggered_by: [php]
         psalm:
             config: psalm.xml
+            no_cache: true
         composer:
             file: ../composer.json

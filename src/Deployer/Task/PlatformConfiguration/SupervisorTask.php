@@ -42,9 +42,6 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
         }
     }
 
-    /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;
@@ -62,6 +59,5 @@ class SupervisorTask implements ConfigurableTaskInterface, RegisterAfterInterfac
             'deploy:supervisor:sync',
             'deploy:supervisor:cleanup',
         ]);
-
     }
 }

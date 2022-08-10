@@ -3,6 +3,12 @@
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
 use Deployer\Task\Task;
+use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
+use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
+use Hypernode\DeployConfiguration\Configuration;
+use Hypernode\DeployConfiguration\TaskConfigurationInterface;
+use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
+
 use function Deployer\after;
 use function Deployer\fail;
 use function Deployer\get;
@@ -11,12 +17,6 @@ use function Deployer\set;
 use function Deployer\task;
 use function Deployer\test;
 use function Deployer\writeln;
-
-use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
-use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
-use Hypernode\DeployConfiguration\Configuration;
-use Hypernode\DeployConfiguration\TaskConfigurationInterface;
-use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
 
 class NginxSyncTask implements ConfigurableTaskInterface
 {
@@ -36,9 +36,6 @@ class NginxSyncTask implements ConfigurableTaskInterface
         return $config instanceof NginxConfiguration;
     }
 
-    /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;

@@ -38,9 +38,6 @@ class SupervisorReloadTask implements ConfigurableTaskInterface, RegisterAfterIn
     {
     }
 
-    /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
-     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return null;

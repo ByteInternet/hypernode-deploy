@@ -35,7 +35,7 @@ class TaskFactory
         $classFinder->in(__DIR__);
 
         $tasks = [];
-        foreach ($classFinder as $class) {
+        foreach ($classFinder->getClasses() as $class) {
             if (!$this->container->has($class)) {
                 $this->log->error(sprintf('Found task %s but di can not configure', $class));
                 continue;

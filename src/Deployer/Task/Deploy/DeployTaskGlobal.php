@@ -29,7 +29,11 @@ class DeployTaskGlobal implements TaskInterface
         if (count($tasks)) {
             task('deploy:deploy', $tasks);
         } else {
-            task('deploy:deploy', function () {});
+            task(
+                'deploy:deploy',
+                function () {
+                }
+            );
         }
 
 
