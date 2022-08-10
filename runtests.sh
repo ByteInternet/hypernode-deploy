@@ -34,7 +34,7 @@ if ! [ -x "$(command -v docker-compose)" ]; then
 fi
 
 # Clear up env
-# trap "docker-compose down -v" EXIT
+trap "docker-compose down -v" EXIT
 
 docker-compose up -d
 

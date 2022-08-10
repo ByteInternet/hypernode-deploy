@@ -9,11 +9,12 @@ use function Deployer\task;
 
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
+use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Hypernode\DeployConfiguration\PlatformConfiguration\HypernodeSettingConfiguration;
 
-class HypernodeSettingTask implements ConfigurableTaskInterface
+class HypernodeSettingTask implements ConfigurableTaskInterface, RegisterAfterInterface
 {
     use IncrementedTaskTrait;
 
@@ -33,7 +34,7 @@ class HypernodeSettingTask implements ConfigurableTaskInterface
 
     public function registerAfter(): void
     {
-        after('deploy:prepare', 'deploy:hypernode:setting');
+        after('deploy:setup', 'deploy:hypernode:setting');
     }
 
     /**
@@ -41,18 +42,22 @@ class HypernodeSettingTask implements ConfigurableTaskInterface
      */
     public function build(TaskConfigurationInterface $config): ?Task
     {
-        return task(
-            "deploy:hypernode:setting",
-            function () use ($config) {
-                $attribute = $config->getAttribute();
-                $value = $config->getValue();
-
-                run("hypernode-systemctl settings {$attribute} {$value}");
-            }
-        );
+        return null;
     }
 
     public function configure(Configuration $config): void
     {
+        $tasks = [];
+        foreach ($config->getPlatformConfigurations() as $platformConfiguration) {
+            if ($platformConfiguration instanceof HypernodeSettingConfiguration) {
+                $attribute = $platformConfiguration->getAttribute();
+                $value = $platformConfiguration->getValue();
+                $task = task("deploy:hypernode:setting:{$attribute}", function () use ($attribute, $value) {
+                    run("hypernode-systemctl settings {$attribute} {$value}");
+                });
+                $tasks[] = $task->getName();
+            }
+        }
+        task('deploy:hypernode:setting', $tasks);
     }
 }

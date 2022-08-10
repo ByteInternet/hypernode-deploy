@@ -13,7 +13,7 @@
         "composer-runtime-api": "^2",
         "deployer/deployer": "^7.0",
         "doctrine/annotations": "^1.6",
-        "hypernode/deploy-configuration": "2.0.0-alpha",
+        "hypernode/deploy-configuration": "2.0.1",
         "php-di/php-di": "^6.0",
         "psr/log": "^1.0",
         "symfony/console": "^4.1",
