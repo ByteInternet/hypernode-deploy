@@ -2,8 +2,7 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 
 use function Hypernode\Deploy\Deployer\after;
@@ -11,7 +10,7 @@ use function Deployer\run;
 use function Deployer\task;
 use function Deployer\test;
 
-class ComposerAuthTaskGlobal implements TaskInterface, RegisterAfterInterface
+class ComposerAuthTaskGlobal extends TaskBase
 {
     public function configure(Configuration $config): void
     {
@@ -25,7 +24,7 @@ class ComposerAuthTaskGlobal implements TaskInterface, RegisterAfterInterface
         })->select("stage=build");
     }
 
-    public function registerAfter(): void
+    public function register(): void
     {
         after('build:compile:prepare', 'deploy:vendors:auth');
     }

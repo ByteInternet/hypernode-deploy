@@ -2,14 +2,14 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Deploy;
 
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\ServerRole;
 
 use function Deployer\task;
 use function Hypernode\Deploy\Deployer\noop;
 
-class DeployTaskGlobal implements TaskInterface
+class DeployTaskGlobal extends TaskBase
 {
     public function configure(Configuration $config): void
     {

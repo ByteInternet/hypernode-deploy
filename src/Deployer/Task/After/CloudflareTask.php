@@ -5,16 +5,15 @@ namespace Hypernode\Deploy\Deployer\Task\After;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\AfterDeployTask\Cloudflare;
-use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
 use function Hypernode\Deploy\Deployer\after;
 use function Deployer\get;
 use function Deployer\set;
 
-class CloudflareTask implements ConfigurableTaskInterface, RegisterAfterInterface
+class CloudflareTask extends TaskBase implements ConfigurableTaskInterface
 {
     /**
      * @var RecipeLoader
@@ -31,20 +30,10 @@ class CloudflareTask implements ConfigurableTaskInterface, RegisterAfterInterfac
         return $config instanceof Cloudflare;
     }
 
-    public function build(TaskConfigurationInterface $config): ?Task
-    {
-        return null;
-    }
-
-    public function registerAfter(): void
-    {
-        after('deploy:symlink', 'deploy:cloudflare');
-    }
-
     /**
      * @param TaskConfigurationInterface|Cloudflare $config
      */
-    public function configureTask(TaskConfigurationInterface $config): void
+    public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
         $this->recipeLoader->load('cloudflare.php');
 
@@ -52,9 +41,12 @@ class CloudflareTask implements ConfigurableTaskInterface, RegisterAfterInterfac
             'service_key' => $config->getServiceKey(),
             'domain' => get('domain'),
         ]);
+
+        return null;
     }
 
-    public function configure(Configuration $config): void
+    public function register(): void
     {
+        after('deploy:symlink', 'deploy:cloudflare');
     }
 }

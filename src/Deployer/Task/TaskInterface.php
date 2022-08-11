@@ -13,4 +13,10 @@ interface TaskInterface
      * @return void
      */
     public function configure(Configuration $config): void;
+
+    /**
+     * Use this method to register your task before or after another task
+     * i.e. after('taska', 'taskb'), before('taska', 'taskb')
+     */
+    public function register(): void;
 }

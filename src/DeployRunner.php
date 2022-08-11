@@ -126,9 +126,7 @@ class DeployRunner
         }
 
         foreach ($tasks as $task) {
-            if ($task instanceof RegisterAfterInterface) {
-                $task->registerAfter();
-            }
+            $task->register();
         }
     }
 
@@ -148,9 +146,7 @@ class DeployRunner
                 continue;
             }
 
-            $task->configureTask($taskConfig);
-
-            $deployerTask = $task->build($taskConfig);
+            $deployerTask = $task->configureWithTaskConfig($taskConfig);
             if ($deployerTask) {
                 if ($taskConfig instanceof StageConfigurableInterface && $taskConfig->getStage()) {
                     $deployerTask->select("stage={$taskConfig->getStage()->getName()}");
