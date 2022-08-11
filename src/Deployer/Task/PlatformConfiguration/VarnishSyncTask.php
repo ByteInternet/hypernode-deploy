@@ -42,16 +42,13 @@ class VarnishSyncTask implements ConfigurableTaskInterface, RegisterAfterInterfa
 
     public function build(TaskConfigurationInterface $config): ?Task
     {
-        return null;
-    }
-
-    public function configure(Configuration $config): void
-    {
         set('varnish/vcl_dir', function () {
             return '/data/web/varnish/{{domain}}';
         });
 
-        task($this->getTaskName(), function () {
+        fail($this->getTaskName(), 'deploy:varnish:cleanup');
+
+        return task($this->getTaskName(), function () {
             if (!test('[ "$(test -d {{varnish/vcl_dir}})" ]')) {
                 run("mkdir -p {{varnish/vcl_dir}}");
                 writeln("Created varnish directory for {{domain}}");
@@ -63,8 +60,10 @@ class VarnishSyncTask implements ConfigurableTaskInterface, RegisterAfterInterfa
             }
 
             run("ln -sf {{varnish_current_path}}/varnish.vcl {{varnish/vcl_dir}}/varnish.vcl");
-        });
-        after($this->getTaskName(), 'deploy:varnish:reload');
-        fail($this->getTaskName(), 'deploy:varnish:cleanup');
+        })->addAfter('deploy:varnish:reload');
+    }
+
+    public function configure(Configuration $config): void
+    {
     }
 }

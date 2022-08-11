@@ -54,7 +54,5 @@ class VarnishTask implements ConfigurableTaskInterface, RegisterAfterInterface
             'deploy:varnish:sync',
             'deploy:varnish:cleanup',
         ]);
-
     }
 }
-
