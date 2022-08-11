@@ -2,14 +2,14 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Deploy;
 
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\Deploy\Deployer\TaskBuilder;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\ServerRole;
 
 use function Deployer\task;
 
-class DeployTaskGlobal implements TaskInterface
+class DeployTaskGlobal extends TaskBase
 {
     /**
      * @var TaskBuilder
@@ -35,7 +35,6 @@ class DeployTaskGlobal implements TaskInterface
                 }
             );
         }
-
 
         task('deploy:deploy', $tasks)->select("roles=$role");
     }

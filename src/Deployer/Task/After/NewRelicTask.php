@@ -4,16 +4,14 @@ namespace Hypernode\Deploy\Deployer\Task\After;
 
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\RecipeLoader;
-use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\AfterDeployTask\NewRelic;
-use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
 use function Hypernode\Deploy\Deployer\after;
 use function Deployer\set;
 
-class NewRelicTask implements ConfigurableTaskInterface, RegisterAfterInterface
+class NewRelicTask extends TaskBase
 {
     /**
      * @var RecipeLoader
@@ -30,28 +28,21 @@ class NewRelicTask implements ConfigurableTaskInterface, RegisterAfterInterface
         return $config instanceof NewRelic;
     }
 
-    public function registerAfter(): void
-    {
-        after('deploy:symlink', 'newrelic:notify');
-    }
-
-    public function build(TaskConfigurationInterface $config): ?Task
-    {
-        return null;
-    }
-
     /**
      * @param TaskConfigurationInterface|NewRelic $config
      */
-    public function configureTask(TaskConfigurationInterface $config): void
+    public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
         $this->recipeLoader->load('newrelic.php');
 
         set('newrelic_app_id', $config->getAppId());
         set('newrelic_api_key', $config->getApiKey());
+
+        return null;
     }
 
-    public function configure(Configuration $config): void
+    public function register(): void
     {
+        after('deploy:symlink', 'newrelic:notify');
     }
 }

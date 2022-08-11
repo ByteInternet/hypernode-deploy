@@ -2,15 +2,15 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Deploy;
 
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\ServerRole;
 use Hypernode\Deploy\Deployer\RecipeLoader;
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
 
 use function Deployer\fail;
 use function Deployer\task;
 
-class DeployTask implements TaskInterface
+class DeployTask extends TaskBase
 {
     /**
      * @var RecipeLoader

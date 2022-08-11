@@ -2,14 +2,14 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\Deploy\Deployer\TaskBuilder;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 
 use function Deployer\run;
 use function Deployer\task;
 
-class CompileTaskGlobal implements TaskInterface
+class CompileTaskGlobal extends TaskBase
 {
     /**
      * @var TaskBuilder

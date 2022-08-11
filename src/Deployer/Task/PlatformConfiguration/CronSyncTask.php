@@ -5,49 +5,27 @@ namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
-use Hypernode\DeployConfiguration\Configuration;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\PlatformConfiguration\CronConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
-use Twig\Environment;
 
 use function Deployer\get;
-use function Deployer\set;
 use function Deployer\run;
-use function Deployer\fail;
 use function Deployer\task;
 use function Deployer\writeln;
 
-class CronSyncTask implements ConfigurableTaskInterface, RegisterAfterInterface
+class CronSyncTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    public function __construct(Environment $twig)
-    {
-        $this->twig = $twig;
-    }
 
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:cron:sync:';
     }
 
-    public function configureTask(TaskConfigurationInterface $config): void
-    {
-    }
-
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof CronConfiguration;
-    }
-
-    public function registerAfter(): void
-    {
     }
 
     public function getCurrentCrontab(): string
@@ -77,16 +55,13 @@ class CronSyncTask implements ConfigurableTaskInterface, RegisterAfterInterface
         }
     }
 
-    public function build(TaskConfigurationInterface $config): ?Task
-    {
-        return null;
-    }
-
-    public function configure(Configuration $config): void
+    public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
         task('deploy:cron:sync', function () {
             $newCrontab = $this->replaceExistingCronBlocks(get("new_crontab"));
             $this->setCrontab($newCrontab);
         });
+
+        return null;
     }
 }
