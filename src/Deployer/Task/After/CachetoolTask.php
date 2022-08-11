@@ -2,8 +2,8 @@
 
 namespace Hypernode\Deploy\Deployer\Task\After;
 
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\ServerRole;
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
 
@@ -16,7 +16,7 @@ use function Deployer\task;
 use function Deployer\within;
 use function Deployer\writeln;
 
-class CachetoolTask implements TaskInterface, RegisterAfterInterface
+class CachetoolTask extends TaskBase
 {
     /**
      * @var string[]
@@ -35,7 +35,7 @@ class CachetoolTask implements TaskInterface, RegisterAfterInterface
         4 => 'https://gordalina.github.io/cachetool/downloads/cachetool-4.1.1.phar',
     ];
 
-    public function registerAfter(): void
+    public function register(): void
     {
         after('deploy:symlink', 'cachetool:clear:opcache');
         after('cachetool:clear:opcache', 'cachetool:cleanup');

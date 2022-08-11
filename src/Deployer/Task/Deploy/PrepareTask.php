@@ -2,13 +2,13 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Deploy;
 
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\ServerRole;
 
 use function Deployer\task;
 
-class PrepareTask implements TaskInterface
+class PrepareTask extends TaskBase
 {
     public function configure(Configuration $config): void
     {

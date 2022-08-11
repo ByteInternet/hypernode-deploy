@@ -2,14 +2,14 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 
 use function Deployer\run;
 use function Deployer\set;
 use function Deployer\task;
 
-class PackageTask implements TaskInterface
+class PackageTask extends TaskBase
 {
     public function configure(Configuration $config): void
     {
