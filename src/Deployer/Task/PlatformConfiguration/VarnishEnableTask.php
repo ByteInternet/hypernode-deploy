@@ -36,6 +36,11 @@ class VarnishEnableTask implements ConfigurableTaskInterface, RegisterAfterInter
     {
     }
 
+    /**
+     * @param TaskConfigurationInterface|VarnishConfiguration $config
+     * @return Task|null
+     * @throws \Exception
+     */
     public function build(TaskConfigurationInterface $config): ?Task
     {
         return task($this->getTaskName(), function () use ($config) {
