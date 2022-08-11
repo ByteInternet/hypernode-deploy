@@ -61,17 +61,27 @@ $HN mkdir -p /data/web/apps/magento2.komkommer.store/shared/app/etc/
 $HN cp /data/web/magento2/app/etc/env.php /data/web/apps/magento2.komkommer.store/shared/app/etc/env.php
 $HN chown -R app:app /data/web/apps/magento2.komkommer.store
 
-###################################
-# TESTS HAPPEN FROM THIS POINT ON #
-###################################
-
+##########################################
+# DEPLOY WITHOUT PLATFORM CONFIGURATIONS #
+# This should pass, but not generate any #
+# Nginx/Supervisor/etc configs           #
+##########################################
 # SSH from deploy container to hypernode container
 $DP hypernode-deploy deploy production -f /web/deploy_without_platformconfig.php -v
 
 # Check if deployment made only one release
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 1
 
-# Deploy with platformconfig
+# Platform configs shouldn't be present yet
+$HN test ! -d /data/web/nginx/magento2.komkommer.store
+$HN test ! -d /data/web/supervisor/magento2.komkommer.store
+$HN crontab -l -u app | grep "### BEGIN magento2.komkommer.store ###" && exit 1
+
+##################################
+# DEPLOY PLATFORM CONFIGURATIONS #
+# Now we should get revisions of #
+# all platform configs.          #
+##################################
 $DP hypernode-deploy deploy production -v
 
 # Check if example location block was placed
@@ -92,10 +102,12 @@ $HN crontab -l -u app | grep "### BEGIN magento2.komkommer.store ###"
 $HN crontab -l -u app | grep "### END magento2.komkommer.store ###"
 $HN crontab -l -u app | sed -n -e '/### BEGIN magento2.komkommer.store ###/,/### END magento2.komkommer.store ###/ p' | grep "banaan"
 
-###############
-# NEXT DEPLOY #
-###############
-
+######################################
+# REMOVE A NGINX LOCATION            #
+# Create a new release but make sure #
+# that the file is removed in the    #
+# new release.                       #
+######################################
 # Remove example location
 $DP rm /web/etc/nginx/server.example.conf
 
