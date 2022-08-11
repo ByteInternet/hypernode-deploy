@@ -6,6 +6,7 @@ use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\PlatformConfiguration\VarnishConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
@@ -18,7 +19,7 @@ use function Deployer\task;
 use function Deployer\test;
 use function Deployer\writeln;
 
-class VarnishSyncTask implements ConfigurableTaskInterface, RegisterAfterInterface
+class VarnishSyncTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
@@ -27,28 +28,21 @@ class VarnishSyncTask implements ConfigurableTaskInterface, RegisterAfterInterfa
         return 'deploy:configuration:varnish:sync:';
     }
 
-    public function configureTask(TaskConfigurationInterface $config): void
-    {
-    }
-
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof VarnishConfiguration;
     }
 
-    public function registerAfter(): void
+    /**
+     * @param TaskConfigurationInterface|VarnishConfiguration $config
+     */
+    public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
-    }
-
-    public function build(TaskConfigurationInterface $config): ?Task
-    {
-        set('varnish/vcl_dir', function () {
+        set('varnish/vcl_dir', function () use ($config) {
             return '/data/web/varnish/{{domain}}';
         });
 
-        fail($this->getTaskName(), 'deploy:varnish:cleanup');
-
-        return task($this->getTaskName(), function () {
+        task($this->getTaskName(), function () {
             if (!test('[ "$(test -d {{varnish/vcl_dir}})" ]')) {
                 run("mkdir -p {{varnish/vcl_dir}}");
                 writeln("Created varnish directory for {{domain}}");
@@ -60,10 +54,11 @@ class VarnishSyncTask implements ConfigurableTaskInterface, RegisterAfterInterfa
             }
 
             run("ln -sf {{varnish_current_path}}/varnish.vcl {{varnish/vcl_dir}}/varnish.vcl");
-        })->addAfter('deploy:varnish:reload');
-    }
+        });
 
-    public function configure(Configuration $config): void
-    {
+        after($this->getTaskName(), 'deploy:varnish:reload');
+        fail($this->getTaskName(), 'deploy:varnish:cleanup');
+
+        return null;
     }
 }

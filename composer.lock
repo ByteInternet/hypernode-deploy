@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d3d73e5414061fa0b5e975d48eb9666",
+    "content-hash": "0fddf474903714fa90f3c142639dea54",
     "packages": [
         {
             "name": "deployer/deployer",
@@ -332,16 +332,16 @@
         },
         {
             "name": "hypernode/deploy-configuration",
-            "version": "2.0.2",
+            "version": "2.0.0-alpha3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-deploy-configuration.git",
-                "reference": "f9828fa594ff074cd203c0221879a0b0d5ccc3d8"
+                "reference": "12b03326e921ae852ce940d51a9a5010d1511646"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/f9828fa594ff074cd203c0221879a0b0d5ccc3d8",
-                "reference": "f9828fa594ff074cd203c0221879a0b0d5ccc3d8",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/12b03326e921ae852ce940d51a9a5010d1511646",
+                "reference": "12b03326e921ae852ce940d51a9a5010d1511646",
                 "shasum": ""
             },
             "require": {
@@ -368,9 +368,9 @@
             "description": "Hypernode deploy configuration files",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-deploy-configuration/issues",
-                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/2.0.2"
+                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/2.0.0-alpha3"
             },
-            "time": "2022-08-10T10:11:00+00:00"
+            "time": "2022-08-11T13:42:19+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -6274,6 +6274,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "deployer/deployer": 20,
+        "hypernode/deploy-configuration": 15,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,

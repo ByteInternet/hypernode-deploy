@@ -9,19 +9,19 @@ use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\PlatformConfiguration\VarnishConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
-use function Deployer\get;
-use function Deployer\set;
-use function Deployer\run;
-use function Deployer\task;
+use function Deployer\after;
 use function Deployer\fail;
+use function Deployer\run;
+use function Deployer\set;
+use function Deployer\task;
 
-class VarnishPrepareTask extends TaskBase implements ConfigurableTaskInterface
+class VarnishActivateTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:varnish:prepare:';
+        return 'deploy:configuration:varnish:activate:';
     }
 
     public function supports(TaskConfigurationInterface $config): bool
@@ -29,17 +29,27 @@ class VarnishPrepareTask extends TaskBase implements ConfigurableTaskInterface
         return $config instanceof VarnishConfiguration;
     }
 
+    /**
+     * @param TaskConfigurationInterface|VarnishConfiguration $config
+     */
     public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
-        set('varnish/config_path', function () {
-            return '/tmp/varnish-config-' . get('domain');
+        set('varnishadm_path', function () use ($config) {
+            if ($config->useSupervisor()) {
+                return "varnishadm -n /data/var/run/app/varnish/{{domain}}.{{release_name}}";
+            }
+            return "varnishadm";
+        });
+
+        set('varnish/vcl', function () {
+            return '/data/web/varnish/{{domain}}/varnish.vcl';
         });
 
         task($this->getTaskName(), function () {
-            run('if [ -d {{varnish/config_path}} ]; then rm -Rf {{varnish/config_path}}; fi');
-            run('mkdir -p {{varnish/config_path}}');
+            run('{{varnishadm_path}} vcl.use {{domain}}.{{release_name}}_varnish {{varnish/vcl}}');
         });
 
+        after('deploy:symlink', $this->getTaskName());
         fail($this->getTaskName(), 'deploy:varnish:cleanup');
 
         return null;
