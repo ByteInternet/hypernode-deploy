@@ -19,8 +19,6 @@ class SupervisorTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
-    private bool $configured = false;
-
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:supervisor:';
@@ -43,8 +41,6 @@ class SupervisorTask extends TaskBase implements ConfigurableTaskInterface
             'deploy:supervisor:sync',
             'deploy:supervisor:cleanup',
         ]);
-
-        $this->configured = true;
 
         before('deploy:symlink', 'deploy:supervisor');
         foreach ($this->getRegisteredTasks() as $taskName) {
