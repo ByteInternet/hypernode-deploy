@@ -9,7 +9,6 @@ use Hypernode\Deploy\Console\Output\OutputWatcher;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\Deploy\Deployer\Task\TaskFactory;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Server;
@@ -179,18 +178,17 @@ class DeployRunner
 
     private function configureStages(Configuration $config): void
     {
-        $this->initializeBuildStage();
+        $this->initializeBuildStage($config);
 
         foreach ($config->getStages() as $stage) {
             foreach ($stage->getServers() as $server) {
-                $this->configureStageServer($stage, $server);
+                $this->configureStageServer($stage, $server, $config);
             }
         }
     }
 
-    private function configureStageServer(Stage $stage, Server $server): void
+    private function configureStageServer(Stage $stage, Server $server, Configuration $config): void
     {
-        /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
         $host = host($stage->getName() . ':' . $server->getHostname());
         $host->setHostname($server->getHostname());
         $host->setPort(22);
@@ -213,6 +211,7 @@ class DeployRunner
         $host->set('supervisor_release_path', '{{release_path}}/supervisor');
         $host->set('supervisor_current_path', '{{current_path}}/supervisor');
         $host->set('configuration_stage', $stage);
+        $host->set('writable_mode', 'chmod');
 
         foreach ($server->getOptions() as $optionName => $optionValue) {
             $host->set($optionName, $optionValue);
@@ -226,17 +225,32 @@ class DeployRunner
         if ($sshOptions) {
             $host->setSshArguments($sshOptions);
         }
+
+        foreach ($config->getVariables() as $key => $value) {
+            $host->set($key, $value);
+        }
+        foreach ($config->getVariables('deploy') as $key => $value) {
+            $host->set($key, $value);
+        }
     }
 
     /**
      * Initialize build stage
      */
-    private function initializeBuildStage(): void
+    private function initializeBuildStage(Configuration $config): void
     {
         /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
         $host = localhost('build');
         $host->set('labels', ['stage' => 'build']);
         $host->set('bin/php', 'php');
+        $host->set('deploy_path', '.');
+        $host->set('release_or_current_path', '.');
+        foreach ($config->getVariables() as $key => $value) {
+            $host->set($key, $value);
+        }
+        foreach ($config->getVariables('build') as $key => $value) {
+            $host->set($key, $value);
+        }
     }
 
     /**
@@ -257,7 +271,7 @@ class DeployRunner
         try {
             /**
              * Set the env variable to tell deployer to deploy the hosts sequentially instead of parallel.
-             * @see \Deployer\Executor\Master
+             * @see \Deployer\Executor\Master::runTask()
              */
             putenv('DEPLOYER_LOCAL_WORKER=true');
             $executor->run($tasks, $hosts);
@@ -296,7 +310,9 @@ class DeployRunner
         });
 
         if (!$configuration instanceof Configuration) {
-            throw new \RuntimeException(sprintf('%s/deploy.php did not return object of type %s', getcwd(), Configuration::class));
+            throw new \RuntimeException(
+                sprintf('%s/deploy.php did not return object of type %s', getcwd(), Configuration::class)
+            );
         }
 
         return $configuration;
