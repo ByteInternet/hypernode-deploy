@@ -2,15 +2,14 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 
 use function Deployer\before;
 use function Deployer\run;
 use function Deployer\task;
 
-class CompilePrepareTask implements TaskInterface, RegisterAfterInterface
+class CompilePrepareTask extends TaskBase
 {
     public function configure(Configuration $config): void
     {
@@ -20,7 +19,7 @@ class CompilePrepareTask implements TaskInterface, RegisterAfterInterface
         })->select("stage=build");
     }
 
-    public function registerAfter(): void
+    public function register(): void
     {
         before('build:compile', 'build:compile:prepare');
     }

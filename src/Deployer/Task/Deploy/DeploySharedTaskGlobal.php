@@ -3,13 +3,13 @@
 namespace Hypernode\Deploy\Deployer\Task\Deploy;
 
 use Hypernode\Deploy\Deployer\RecipeLoader;
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 
 use function Deployer\get;
 use function Deployer\set;
 
-class DeploySharedTaskGlobal implements TaskInterface
+class DeploySharedTaskGlobal extends TaskBase
 {
     /**
      * @var RecipeLoader

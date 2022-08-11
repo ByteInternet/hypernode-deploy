@@ -2,15 +2,16 @@
 
 namespace Hypernode\Deploy\Deployer\Task\After;
 
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\Deploy\Deployer\TaskBuilder;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\ServerRole;
 
+use function count;
 use function Deployer\task;
 use function Deployer\writeln;
 
-class AfterTaskGlobal implements TaskInterface
+class AfterTaskGlobal extends TaskBase
 {
     /**
      * @var TaskBuilder
@@ -25,7 +26,7 @@ class AfterTaskGlobal implements TaskInterface
     public function configure(Configuration $config): void
     {
         $tasks = $this->taskBuilder->buildAll($config->getAfterDeployTasks(), 'deploy:after');
-        if (\count($tasks) === 0) {
+        if (count($tasks) === 0) {
             $tasks = function (): void {
                 writeln('No after deploy tasks defined');
             };

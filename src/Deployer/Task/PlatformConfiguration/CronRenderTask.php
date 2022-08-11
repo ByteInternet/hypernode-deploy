@@ -5,8 +5,7 @@ namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
-use Hypernode\DeployConfiguration\Configuration;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\PlatformConfiguration\CronConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Twig\Environment;
@@ -14,12 +13,9 @@ use Webmozart\Assert\Assert;
 
 use function Deployer\get;
 use function Deployer\set;
-use function Deployer\run;
-use function Deployer\fail;
 use function Deployer\task;
-use function Deployer\writeln;
 
-class CronRenderTask implements ConfigurableTaskInterface, RegisterAfterInterface
+class CronRenderTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
@@ -38,17 +34,9 @@ class CronRenderTask implements ConfigurableTaskInterface, RegisterAfterInterfac
         return 'deploy:configuration:cron:render:';
     }
 
-    public function configureTask(TaskConfigurationInterface $config): void
-    {
-    }
-
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof CronConfiguration;
-    }
-
-    public function registerAfter(): void
-    {
     }
 
     public function render(string $newCronBlock): string
@@ -61,7 +49,7 @@ class CronRenderTask implements ConfigurableTaskInterface, RegisterAfterInterfac
         );
     }
 
-    public function build(TaskConfigurationInterface $config): ?Task
+    public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
         Assert::isInstanceOf($config, CronConfiguration::class);
 
@@ -73,9 +61,5 @@ class CronRenderTask implements ConfigurableTaskInterface, RegisterAfterInterfac
                 set("new_crontab", $newCronBlock);
             }
         );
-    }
-
-    public function configure(Configuration $config): void
-    {
     }
 }

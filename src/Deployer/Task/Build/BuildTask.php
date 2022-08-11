@@ -3,12 +3,12 @@
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
 use Hypernode\Deploy\Deployer\RecipeLoader;
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 
 use function Deployer\task;
 
-class BuildTask implements TaskInterface
+class BuildTask extends TaskBase
 {
     /**
      * @var RecipeLoader
