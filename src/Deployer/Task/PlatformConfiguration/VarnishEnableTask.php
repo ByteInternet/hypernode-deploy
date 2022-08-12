@@ -34,14 +34,14 @@ class VarnishEnableTask extends TaskBase implements ConfigurableTaskInterface
     {
         if ($config->useSupervisor()) {
             task($this->getTaskName(), function () use ($config) {
-                run("hypernode-systemctl --block settings varnish_version {$config->getVersion()}");
-                run("hypernode-systemctl --block settings supervisor_enabled True");
+                run("hypernode-systemctl settings varnish_version {$config->getVersion()} --block");
+                run("hypernode-systemctl settings supervisor_enabled True --block");
                 run("hypernode-manage-supervisor {{domain}}.{{release_name}} --service varnish --ram {$config->getMemory()}");
             });
         } else {
             task($this->getTaskName(), function () use ($config) {
-                run("hypernode-systemctl --block settings varnish_enabled True");
-                run("hypernode-systemctl --block settings varnish_version {$config->getVersion()}");
+                run("hypernode-systemctl settings varnish_enabled True --block");
+                run("hypernode-systemctl settings varnish_version {$config->getVersion()} --block");
                 run('hypernode-manage-vhosts {{domain}} --varnish');
             });
         }

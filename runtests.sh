@@ -84,6 +84,9 @@ $HN test $($HN readlink -f /data/web/supervisor/magento2.komkommer.store) = /dat
 # Test this once we enable supervisor in the hypernode docker image
 # $HN supervisorctl status | grep example | grep -v FATAL || ($HN supervisorctl status && exit 1)
 
+# Test if varnish vcl has been placed
+$HN test $($HN readlink -f /data/web/varnish/magento2.komkommer.store/varnish.vcl) = /data/web/apps/magento2.komkommer.store/releases/1/varnish/varnish.vcl
+
 # Check the content of the crontab block
 $HN crontab -l -u app | grep "### BEGIN magento2.komkommer.store ###"
 $HN crontab -l -u app | grep "### END magento2.komkommer.store ###"
