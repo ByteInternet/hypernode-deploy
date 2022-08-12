@@ -17,6 +17,8 @@ class VarnishEnableTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
+    private const TASK_NAME = 'deploy:varnish:enable:';
+
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:varnish:enable:';
@@ -33,19 +35,19 @@ class VarnishEnableTask extends TaskBase implements ConfigurableTaskInterface
     public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
         if ($config->useSupervisor()) {
-            task($this->getTaskName(), function () use ($config) {
+            task(self::TASK_NAME, function () use ($config) {
                 run("hypernode-systemctl settings varnish_version {$config->getVersion()} --block");
                 run("hypernode-systemctl settings supervisor_enabled True --block");
                 run("hypernode-manage-supervisor {{domain}}.{{release_name}} --service varnish --ram {$config->getMemory()}");
             });
         } else {
-            task($this->getTaskName(), function () use ($config) {
+            task(self::TASK_NAME, function () use ($config) {
                 run("hypernode-systemctl settings varnish_enabled True --block");
                 run("hypernode-systemctl settings varnish_version {$config->getVersion()} --block");
                 run('hypernode-manage-vhosts {{domain}} --varnish');
             });
         }
-        fail($this->getTaskName(), 'deploy:varnish:cleanup');
+        fail(self::TASK_NAME, 'deploy:varnish:cleanup');
 
         return null;
     }

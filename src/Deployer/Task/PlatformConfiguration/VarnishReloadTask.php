@@ -18,6 +18,8 @@ class VarnishReloadTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
+    private const TASK_NAME = 'deploy:varnish:reload:';
+
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:varnish:reload:';
@@ -44,11 +46,11 @@ class VarnishReloadTask extends TaskBase implements ConfigurableTaskInterface
             return '/data/web/varnish/{{domain}}/varnish.vcl';
         });
 
-        task($this->getTaskName(), function () {
+        task(self::TASK_NAME, function () {
             run('{{varnishadm_path}} vcl.load {{domain}}.{{release_name}}_varnish {{varnish/vcl}}');
         });
 
-        fail($this->getTaskName(), 'deploy:varnish:cleanup');
+        fail(self::TASK_NAME, 'deploy:varnish:cleanup');
 
         return null;
     }

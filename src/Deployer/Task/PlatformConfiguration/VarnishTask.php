@@ -17,6 +17,8 @@ class VarnishTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
+    private const TASK_NAME = 'deploy:varnish:';
+
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:varnish:';
@@ -38,7 +40,7 @@ class VarnishTask extends TaskBase implements ConfigurableTaskInterface
             'deploy:varnish:cleanup',
         ]);
 
-        before('deploy:symlink', $this->getTaskName());
+        before('deploy:symlink', self::TASK_NAME);
         foreach ($this->getRegisteredTasks() as $taskName) {
             after('deploy:varnish:prepare', $taskName);
         }

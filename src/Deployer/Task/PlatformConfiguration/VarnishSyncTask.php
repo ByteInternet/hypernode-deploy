@@ -23,6 +23,8 @@ class VarnishSyncTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
+    private const TASK_NAME = 'deploy:varnish:sync:';
+
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:varnish:sync:';
@@ -42,7 +44,7 @@ class VarnishSyncTask extends TaskBase implements ConfigurableTaskInterface
             return '/data/web/varnish/{{domain}}';
         });
 
-        task($this->getTaskName(), function () {
+        task(self::TASK_NAME, function () {
             if (!test('[ "$(test -d {{varnish/vcl_dir}})" ]')) {
                 run("mkdir -p {{varnish/vcl_dir}}");
                 writeln("Created varnish directory for {{domain}}");
@@ -56,8 +58,8 @@ class VarnishSyncTask extends TaskBase implements ConfigurableTaskInterface
             run("ln -sf {{varnish_current_path}}/varnish.vcl {{varnish/vcl_dir}}/varnish.vcl");
         });
 
-        after($this->getTaskName(), 'deploy:varnish:reload');
-        fail($this->getTaskName(), 'deploy:varnish:cleanup');
+        after(self::TASK_NAME, 'deploy:varnish:reload');
+        fail(self::TASK_NAME, 'deploy:varnish:cleanup');
 
         return null;
     }

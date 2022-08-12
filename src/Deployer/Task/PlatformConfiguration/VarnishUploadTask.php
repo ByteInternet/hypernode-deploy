@@ -17,6 +17,8 @@ class VarnishUploadTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
+    private const TASK_NAME = 'deploy:varnish:upload:';
+
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:varnish:upload:';
@@ -32,11 +34,11 @@ class VarnishUploadTask extends TaskBase implements ConfigurableTaskInterface
      */
     public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
-        task($this->getTaskName(), function () use ($config) {
+        task(self::TASK_NAME, function () use ($config) {
             upload($config->getConfigFile(), "{{varnish_release_path}}/varnish.vcl");
         });
 
-        fail($this->getTaskName(), 'deploy:varnish:cleanup');
+        fail(self::TASK_NAME, 'deploy:varnish:cleanup');
 
         return null;
     }

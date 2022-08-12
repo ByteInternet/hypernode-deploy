@@ -18,6 +18,8 @@ class VarnishCleanupTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
+    private const TASK_NAME = 'deploy:varnish:cleanup:';
+
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:varnish:cleanup:';
@@ -34,7 +36,7 @@ class VarnishCleanupTask extends TaskBase implements ConfigurableTaskInterface
             return '/tmp/varnish-config-' . get('domain');
         });
 
-        task($this->getTaskName(), function () {
+        task(self::TASK_NAME, function () {
             run('if [ -d {{varnish/config_path}} ]; then rm -Rf {{varnish/config_path}}; fi');
         });
 

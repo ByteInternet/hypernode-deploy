@@ -19,6 +19,8 @@ class VarnishActivateTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
+    private const TASK_NAME = 'deploy:varnish:activate:';
+
     protected function getIncrementalNamePrefix(): string
     {
         return 'deploy:configuration:varnish:activate:';
@@ -45,12 +47,12 @@ class VarnishActivateTask extends TaskBase implements ConfigurableTaskInterface
             return '/data/web/varnish/{{domain}}/varnish.vcl';
         });
 
-        task($this->getTaskName(), function () {
+        task(self::TASK_NAME, function () {
             run('{{varnishadm_path}} vcl.use {{domain}}.{{release_name}}_varnish {{varnish/vcl}}');
         });
 
-        after('deploy:symlink', $this->getTaskName());
-        fail($this->getTaskName(), 'deploy:varnish:cleanup');
+        after('deploy:symlink', self::TASK_NAME);
+        fail(self::TASK_NAME, 'deploy:varnish:cleanup');
 
         return null;
     }
