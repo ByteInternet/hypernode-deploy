@@ -106,6 +106,7 @@ $DP hypernode-deploy deploy production
 test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 2
 $HN test $($HN readlink -f /data/web/nginx/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/2/nginx
 $HN test $($HN readlink -f /data/web/supervisor/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/2/supervisor
+$HN test $($HN readlink -f /data/web/varnish/magento2.komkommer.store/varnish.vcl) = /data/web/apps/magento2.komkommer.store/releases/2/varnish/varnish.vcl
 
 # Verify example location block is removed
 $HN test ! -f /data/web/nginx/magento2.komkommer.store/server.example.conf || ($HN ls -al /data/web/nginx/magento2.komkommer.store && exit 1)
