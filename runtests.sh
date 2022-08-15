@@ -8,6 +8,8 @@ export PHP_VERSION_SHORT=$(echo "${PHP_VERSION:-8.1}" | sed 's/\.//')
 # Handy aliases
 HN="docker-compose exec -T hypernode"
 DP="docker-compose exec -T deploy"
+DP1="docker-compose exec --workdir=/web1 -T deploy"
+DP2="docker-compose exec --workdir=/web2 -T deploy"
 
 function install_magento() {
     $HN mysql -e "DROP DATABASE IF EXISTS dummytag_preinstalled_magento"
@@ -18,7 +20,7 @@ function install_magento() {
     pw=$(echo $pw | tr -d '\r')
 
     $HN bash -c "/data/web/magento2/bin/magento setup:install  \
-    --base-url=http://magento2.komkommer.store  \
+    --base-url=http://banaan1.store  \
     --db-host=mysqlmaster.dummytag.hypernode.io  \
     --db-name=dummytag_preinstalled_magento --db-user=app  \
     --db-password=$pw  \
@@ -53,13 +55,20 @@ $DP rsync -a app@hypernode:/data/web/magento2/ /web
 $DP rsync -v -a /config/ /web
 $DP rm /web/app/etc/env.php
 
-# Build
-$DP hypernode-deploy build -v
+# Create second app
+$DP cp -ra /web /web1
+$DP cp -ra /web /web2
+
+# Build both apps
+$DP1 hypernode-deploy build -v -f /web1/deploy1.php
+$DP2 hypernode-deploy build -v -f /web2/deploy2.php
 
 # Prepare env
-$HN mkdir -p /data/web/apps/magento2.komkommer.store/shared/app/etc/
-$HN cp /data/web/magento2/app/etc/env.php /data/web/apps/magento2.komkommer.store/shared/app/etc/env.php
-$HN chown -R app:app /data/web/apps/magento2.komkommer.store
+$HN mkdir -p /data/web/apps/banaan1.store/shared/app/etc/
+$HN cp /data/web/magento2/app/etc/env.php /data/web/apps/banaan1.store/shared/app/etc/env.php
+$HN mkdir -p /data/web/apps/banaan2.store/shared/app/etc/
+$HN cp /data/web/magento2/app/etc/env.php /data/web/apps/banaan2.store/shared/app/etc/env.php
+$HN chown -R app:app /data/web/apps
 
 ##########################################
 # DEPLOY WITHOUT PLATFORM CONFIGURATIONS #
@@ -67,40 +76,54 @@ $HN chown -R app:app /data/web/apps/magento2.komkommer.store
 # Nginx/Supervisor/etc configs           #
 ##########################################
 # SSH from deploy container to hypernode container
-$DP hypernode-deploy deploy production -f /web/deploy_without_platformconfig.php -v
+$DP1 hypernode-deploy deploy production -f /web1/deploy1_without_platformconfig.php -v
 
-# Check if deployment made only one release
-test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 1
+# Check if deployment made only one release for store1
+test $($HN ls /data/web/apps/banaan1.store/releases/ | wc -l) = 1
 
 # Platform configs shouldn't be present yet
-$HN test ! -d /data/web/nginx/magento2.komkommer.store
-$HN test ! -d /data/web/supervisor/magento2.komkommer.store
-$HN crontab -l -u app | grep "### BEGIN magento2.komkommer.store ###" && exit 1
+$HN test ! -d /data/web/nginx/banaan1.store
+$HN test ! -d /data/web/supervisor/banaan1.store
+$HN crontab -l -u app | grep "### BEGIN banaan1.store ###" && exit 1
+
+##################
+# DEPLOY STORE 2 #
+##################
+# Store 2
+$DP2 hypernode-deploy deploy production -f /web2/deploy2.php -v
+
+# Check if deployment made only one release for store2
+test $($HN ls /data/web/apps/banaan2.store/releases/ | wc -l) = 1
+$HN ls -al /data/web/nginx/banaan2.store/
+$HN ls -al /data/web/apps/banaan2.store/current/
+$HN ls -al /data/web/apps/banaan2.store/current/nginx/
+$HN test -f /data/web/nginx/banaan2.store/server.example.conf || ($HN ls -al /data/web/nginx && $HN ls -al /data/web/nginx/banaan2.store && exit 1)
+$HN test $($HN readlink -f /data/web/nginx/banaan2.store) = /data/web/apps/banaan2.store/releases/1/nginx
 
 ##################################
 # DEPLOY PLATFORM CONFIGURATIONS #
 # Now we should get revisions of #
 # all platform configs.          #
 ##################################
-$DP hypernode-deploy deploy production -v
+$DP1 hypernode-deploy deploy production -v -f /web1/deploy1.php
 
 # Check if example location block was placed
-$HN ls -al /data/web/nginx/magento2.komkommer.store/
-$HN ls -al /data/web/apps/magento2.komkommer.store/current/
-$HN ls -al /data/web/apps/magento2.komkommer.store/current/nginx/
-$HN test -f /data/web/nginx/magento2.komkommer.store/server.example.conf || ($HN ls -al /data/web/nginx && $HN ls -al /data/web/nginx/magento2.komkommer.store && exit 1)
-$HN test $($HN readlink -f /data/web/nginx/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/2/nginx
+$HN ls -al /data/web/nginx/banaan1.store/
+$HN ls -al /data/web/apps/banaan1.store/current/
+$HN ls -al /data/web/apps/banaan1.store/current/nginx/
+$HN test -f /data/web/nginx/banaan1.store/server.example.conf || ($HN ls -al /data/web/nginx && $HN ls -al /data/web/nginx/banaan1.store && exit 1)
+$HN test $($HN readlink -f /data/web/nginx/banaan1.store) = /data/web/apps/banaan1.store/releases/2/nginx
 
-$HN test -f /data/web/supervisor/magento2.komkommer.store/example.conf || ($HN ls -al /data/web/supervisor/ && exit 1)
-$HN test $($HN readlink -f /data/web/supervisor/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/2/supervisor
+$HN test -f /data/web/supervisor/banaan1.store/example.conf || ($HN ls -al /data/web/supervisor/ && exit 1)
+$HN test $($HN readlink -f /data/web/supervisor/banaan1.store) = /data/web/apps/banaan1.store/releases/2/supervisor
 
 # Test this once we enable supervisor in the hypernode docker image
 # $HN supervisorctl status | grep example | grep -v FATAL || ($HN supervisorctl status && exit 1)
 
 # Check the content of the crontab block
-$HN crontab -l -u app | grep "### BEGIN magento2.komkommer.store ###"
-$HN crontab -l -u app | grep "### END magento2.komkommer.store ###"
-$HN crontab -l -u app | sed -n -e '/### BEGIN magento2.komkommer.store ###/,/### END magento2.komkommer.store ###/ p' | grep "banaan"
+$HN crontab -l -u app | grep "### BEGIN banaan1.store ###"
+$HN crontab -l -u app | grep "### END banaan1.store ###"
+$HN crontab -l -u app | sed -n -e '/### BEGIN banaan1.store ###/,/### END banaan1.store ###/ p' | grep "banaan"
 
 ######################################
 # REMOVE A NGINX LOCATION            #
@@ -109,15 +132,23 @@ $HN crontab -l -u app | sed -n -e '/### BEGIN magento2.komkommer.store ###/,/###
 # new release.                       #
 ######################################
 # Remove example location
-$DP rm /web/etc/nginx/server.example.conf
+$DP rm /web1/etc/nginx/server.example.conf
 
 # Deploy again
-$DP hypernode-deploy deploy production
+$DP1 hypernode-deploy deploy production -f /web1/deploy1.php
 
 # Check if another deployment was made
-test $($HN ls /data/web/apps/magento2.komkommer.store/releases/ | wc -l) = 3
-$HN test $($HN readlink -f /data/web/nginx/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/3/nginx
-$HN test $($HN readlink -f /data/web/supervisor/magento2.komkommer.store) = /data/web/apps/magento2.komkommer.store/releases/3/supervisor
+test $($HN ls /data/web/apps/banaan1.store/releases/ | wc -l) = 3
+$HN test $($HN readlink -f /data/web/nginx/banaan1.store) = /data/web/apps/banaan1.store/releases/3/nginx
+$HN test $($HN readlink -f /data/web/supervisor/banaan1.store) = /data/web/apps/banaan1.store/releases/3/supervisor
 
 # Verify example location block is removed
-$HN test ! -f /data/web/nginx/magento2.komkommer.store/server.example.conf || ($HN ls -al /data/web/nginx/magento2.komkommer.store && exit 1)
+$HN test ! -f /data/web/nginx/banaan1.store/server.example.conf || ($HN ls -al /data/web/nginx/banaan1.store && exit 1)
+
+# Check if the second application is still working as intended
+test $($HN ls /data/web/apps/banaan2.store/releases/ | wc -l) = 1
+$HN ls -al /data/web/nginx/banaan2.store/
+$HN ls -al /data/web/apps/banaan2.store/current/
+$HN ls -al /data/web/apps/banaan2.store/current/nginx/
+$HN test -f /data/web/nginx/banaan2.store/server.example.conf || ($HN ls -al /data/web/nginx && $HN ls -al /data/web/nginx/banaan2.store && exit 1)
+$HN test $($HN readlink -f /data/web/nginx/banaan2.store) = /data/web/apps/banaan2.store/releases/1/nginx

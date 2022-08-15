@@ -10,17 +10,12 @@ namespace Hypernode\DeployConfiguration;
  */
 $configuration = new ApplicationTemplate\Magento2('https://github.com/ByteInternet/hypernode-deploy-configuration.git', ['nl_NL'], ['en_GB', 'nl_NL']);
 
-$productionStage = $configuration->addStage('production', 'magento2.komkommer.store', 'app');
+$productionStage = $configuration->addStage('production', 'banaan1.store', 'app');
 $productionStage->addServer('hypernode', null, [], [
     'user' => 'app',
     'port' => 22,
 ]);
 
-$configuration->setPlatformConfigurations([
-    new PlatformConfiguration\NginxConfiguration("etc/nginx"),
-    new PlatformConfiguration\SupervisorConfiguration("etc/supervisor"),
-    new PlatformConfiguration\CronConfiguration("etc/cron"),
-]);
 $configuration->setSharedFiles([
     'app/etc/env.php',
     'pub/errors/local.xml',
