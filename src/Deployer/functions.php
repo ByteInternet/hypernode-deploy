@@ -73,5 +73,6 @@ function getenvFallback(array $variables): string
  */
 function noop(): \Closure
 {
-    return static function(): void {};
+    return static function (): void {
+    };
 }
