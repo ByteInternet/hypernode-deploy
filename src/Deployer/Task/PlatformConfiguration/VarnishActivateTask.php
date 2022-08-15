@@ -43,12 +43,8 @@ class VarnishActivateTask extends TaskBase implements ConfigurableTaskInterface
             return "varnishadm";
         });
 
-        set('varnish/vcl', function () {
-            return '/data/web/varnish/{{domain}}/varnish.vcl';
-        });
-
         task(self::TASK_NAME, function () {
-            run('{{varnishadm_path}} vcl.use {{domain}}.{{release_name}}_varnish {{varnish/vcl}}');
+            run('{{varnishadm_path}} vcl.use {{domain}}.{{release_name}}_varnish');
         });
 
         after('deploy:symlink', self::TASK_NAME);
