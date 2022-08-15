@@ -8,9 +8,9 @@ namespace Hypernode\DeployConfiguration;
  * The magento 2 configuration contains some default configuration for shared folders / files and running installers
  * @see ApplicationTemplate\Magento2::initializeDefaultConfiguration
  */
-$configuration = new ApplicationTemplate\Magento2('https://github.com/ByteInternet/hypernode-deploy-configuration.git', ['nl_NL'], ['en_GB', 'nl_NL']);
+$configuration = new ApplicationTemplate\Magento2(['en_US', 'nl_NL']);
 
-$productionStage = $configuration->addStage('production', 'magento2.komkommer.store', 'app');
+$productionStage = $configuration->addStage('production', 'banaan2.store', 'app');
 $productionStage->addServer('hypernode', null, [], [
     'user' => 'app',
     'port' => 22,
@@ -20,8 +20,6 @@ $configuration->setPlatformConfigurations([
     new PlatformConfiguration\NginxConfiguration("etc/nginx"),
     new PlatformConfiguration\SupervisorConfiguration("etc/supervisor"),
     new PlatformConfiguration\CronConfiguration("etc/cron"),
-    new PlatformConfiguration\HypernodeSettingConfiguration("php_version", "8.1"),
-    new PlatformConfiguration\HypernodeSettingConfiguration("rabbitmq_enabled", "True"),
 ]);
 $configuration->setSharedFiles([
     'app/etc/env.php',

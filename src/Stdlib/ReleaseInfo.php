@@ -7,7 +7,7 @@ use Hypernode\DeployConfiguration\Stage;
 use function Deployer\get;
 use function Deployer\parse;
 use function Deployer\runLocally;
-use function Deployer\write;
+use function Deployer\output;
 
 class ReleaseInfo
 {
@@ -55,7 +55,7 @@ class ReleaseInfo
         $gitLogOutput = runLocally('git log --merges -n 1');
 
         if (!preg_match(self::MERGE_PATTERN, $gitLogOutput, $matches)) {
-            write('No merge commit found');
+            output()->write('No merge commit found');
             return [];
         }
 

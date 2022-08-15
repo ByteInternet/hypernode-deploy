@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Hypernode\Deploy\Deployer\Task\Common;
 
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\Deploy\Stdlib\CpuCoreInfo;
 use Hypernode\Deploy\Stdlib\ReleaseInfo;
 use Hypernode\DeployConfiguration\Configuration;
 
 use function Deployer\set;
 
-class DefaultsTaskGlobal implements TaskInterface
+class DefaultsTaskGlobal extends TaskBase
 {
     /**
      * @var CpuCoreInfo

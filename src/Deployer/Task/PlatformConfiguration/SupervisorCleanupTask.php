@@ -5,7 +5,7 @@ namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\PlatformConfiguration\SupervisorConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
@@ -15,7 +15,7 @@ use function Deployer\set;
 use function Deployer\run;
 use function Deployer\task;
 
-class SupervisorCleanupTask implements ConfigurableTaskInterface, RegisterAfterInterface
+class SupervisorCleanupTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
@@ -24,28 +24,12 @@ class SupervisorCleanupTask implements ConfigurableTaskInterface, RegisterAfterI
         return 'deploy:configuration:supervisor:cleanup:';
     }
 
-    public function configureTask(TaskConfigurationInterface $config): void
-    {
-    }
-
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof SupervisorConfiguration;
     }
 
-    public function registerAfter(): void
-    {
-    }
-
-    /**
-     * @param TaskConfigurationInterface|NginxConfiguration $config
-     */
-    public function build(TaskConfigurationInterface $config): ?Task
-    {
-        return null;
-    }
-
-    public function configure(Configuration $config): void
+    public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
         set('supervisor/config_path', function () {
             return '/tmp/supervisor-config-' . get('domain');
@@ -54,5 +38,7 @@ class SupervisorCleanupTask implements ConfigurableTaskInterface, RegisterAfterI
         task('deploy:supervisor:cleanup', function () {
             run('if [ -d {{supervisor/config_path}} ]; then rm -Rf {{supervisor/config_path}}; fi');
         });
+
+        return null;
     }
 }

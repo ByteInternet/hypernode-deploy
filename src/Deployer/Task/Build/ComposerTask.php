@@ -2,7 +2,7 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\ServerRole;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\RecipeLoader;
@@ -11,14 +11,9 @@ use Hypernode\DeployConfiguration\Command\Build\Composer;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
-use function Deployer\before;
-use function Deployer\get;
-use function Deployer\run;
 use function Deployer\set;
-use function Deployer\task;
-use function Deployer\test;
 
-class ComposerTask implements ConfigurableTaskInterface
+class ComposerTask extends TaskBase implements ConfigurableTaskInterface
 {
     /**
      * @var RecipeLoader
@@ -35,21 +30,18 @@ class ComposerTask implements ConfigurableTaskInterface
         $this->recipeLoader->load('composer.php');
     }
 
-    /**
-     * @param TaskConfigurationInterface|Composer $config
-     */
-    public function configureTask(TaskConfigurationInterface $config): void
-    {
-        set('composer/install_arguments', implode(' ', $config->getInstallArguments()));
-    }
-
     public function supports(TaskConfigurationInterface $config): bool
     {
         return $config instanceof Composer;
     }
 
-    public function build(TaskConfigurationInterface $config): ?Task
+    /**
+     * @param TaskConfigurationInterface|Composer $config
+     */
+    public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
+        set('composer/install_arguments', implode(' ', $config->getInstallArguments()));
+
         return null;
     }
 }
