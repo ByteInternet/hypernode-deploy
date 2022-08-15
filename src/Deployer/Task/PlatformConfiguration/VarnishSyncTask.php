@@ -58,7 +58,6 @@ class VarnishSyncTask extends TaskBase implements ConfigurableTaskInterface
             run("ln -sf {{varnish_current_path}}/varnish.vcl {{varnish/vcl_dir}}/varnish.vcl");
         });
 
-        after(self::TASK_NAME, 'deploy:varnish:reload');
         fail(self::TASK_NAME, 'deploy:varnish:cleanup');
 
         return null;

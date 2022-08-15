@@ -14,15 +14,15 @@ use function Deployer\run;
 use function Deployer\set;
 use function Deployer\task;
 
-class VarnishReloadTask extends TaskBase implements ConfigurableTaskInterface
+class VarnishLoadTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
-    private const TASK_NAME = 'deploy:varnish:reload:';
+    private const TASK_NAME = 'deploy:varnish:load:';
 
     protected function getIncrementalNamePrefix(): string
     {
-        return 'deploy:configuration:varnish:reload:';
+        return 'deploy:configuration:varnish:load:';
     }
 
     public function supports(TaskConfigurationInterface $config): bool

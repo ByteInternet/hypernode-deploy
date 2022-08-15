@@ -36,6 +36,7 @@ class VarnishTask extends TaskBase implements ConfigurableTaskInterface
             'deploy:varnish:prepare',
             'deploy:varnish:upload',
             'deploy:varnish:sync',
+            'deploy:varnish:load',
             'deploy:varnish:activate',
             'deploy:varnish:cleanup',
         ]);
