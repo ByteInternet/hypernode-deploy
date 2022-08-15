@@ -10,7 +10,7 @@ namespace Hypernode\DeployConfiguration;
  */
 $configuration = new ApplicationTemplate\Magento2(['en_US', 'nl_NL']);
 
-$productionStage = $configuration->addStage('production', 'magento2.komkommer.store');
+$productionStage = $configuration->addStage('production', 'banaan2.store', 'app');
 $productionStage->addServer('hypernode', null, [], [
     'user' => 'app',
     'port' => 22,
