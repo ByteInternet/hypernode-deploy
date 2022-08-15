@@ -120,7 +120,11 @@ $HN test $($HN readlink -f /data/web/supervisor/banaan1.store) = /data/web/apps/
 # Test this once we enable supervisor in the hypernode docker image
 # $HN supervisorctl status | grep example | grep -v FATAL || ($HN supervisorctl status && exit 1)
 
-# Test if varnish vcl has been placed
+# Test if varnish dirs exists and vcl has been placed
+$HN ls -al /data/web/varnish/banaan1.store/
+$HN ls -al /data/web/apps/banaan1.store/current/varnish/
+
+$HN test -f /data/web/varnish/banaan1.store/varnish.vcl || ($HN ls -al /data/web/varnish/ && exit 1)
 $HN test $($HN readlink -f /data/web/varnish/banaan1.store/varnish.vcl) = /data/web/apps/banaan1.store/releases/2/varnish/varnish.vcl
 
 # Check the content of the crontab block
