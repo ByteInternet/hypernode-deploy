@@ -18,7 +18,7 @@ class VarnishCleanupTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
-    private const TASK_NAME = 'deploy:varnish:cleanup:';
+    private const TASK_NAME = 'deploy:varnish:cleanup';
 
     protected function getIncrementalNamePrefix(): string
     {

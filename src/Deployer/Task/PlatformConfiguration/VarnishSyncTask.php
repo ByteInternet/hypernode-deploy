@@ -5,14 +5,11 @@ namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
-use Hypernode\Deploy\Deployer\Task\RegisterAfterInterface;
 use Hypernode\Deploy\Deployer\Task\TaskBase;
-use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\PlatformConfiguration\VarnishConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
 use function Deployer\set;
-use function Deployer\after;
 use function Deployer\fail;
 use function Deployer\run;
 use function Deployer\task;
@@ -23,7 +20,7 @@ class VarnishSyncTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
-    private const TASK_NAME = 'deploy:varnish:sync:';
+    private const TASK_NAME = 'deploy:varnish:sync';
 
     protected function getIncrementalNamePrefix(): string
     {

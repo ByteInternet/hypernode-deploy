@@ -18,7 +18,7 @@ class VarnishLoadTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
-    private const TASK_NAME = 'deploy:varnish:load:';
+    private const TASK_NAME = 'deploy:varnish:load';
 
     protected function getIncrementalNamePrefix(): string
     {

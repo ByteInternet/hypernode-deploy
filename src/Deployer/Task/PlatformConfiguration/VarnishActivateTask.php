@@ -19,7 +19,7 @@ class VarnishActivateTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
-    private const TASK_NAME = 'deploy:varnish:activate:';
+    private const TASK_NAME = 'deploy:varnish:activate';
 
     protected function getIncrementalNamePrefix(): string
     {

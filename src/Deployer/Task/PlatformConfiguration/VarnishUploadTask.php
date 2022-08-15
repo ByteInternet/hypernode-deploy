@@ -17,7 +17,7 @@ class VarnishUploadTask extends TaskBase implements ConfigurableTaskInterface
 {
     use IncrementedTaskTrait;
 
-    private const TASK_NAME = 'deploy:varnish:upload:';
+    private const TASK_NAME = 'deploy:varnish:upload';
 
     protected function getIncrementalNamePrefix(): string
     {
