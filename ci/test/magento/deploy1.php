@@ -20,7 +20,7 @@ $configuration->setPlatformConfigurations([
     new PlatformConfiguration\NginxConfiguration("etc/nginx"),
     new PlatformConfiguration\SupervisorConfiguration("etc/supervisor"),
     new PlatformConfiguration\CronConfiguration("etc/cron"),
-    new PlatformConfiguration\VarnishConfiguration()
+    new PlatformConfiguration\VarnishConfiguration(),
 ]);
 $configuration->setSharedFiles([
     'app/etc/env.php',

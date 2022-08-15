@@ -85,6 +85,7 @@ test $($HN ls /data/web/apps/banaan1.store/releases/ | wc -l) = 1
 $HN test ! -d /data/web/nginx/banaan1.store
 $HN test ! -d /data/web/supervisor/banaan1.store
 $HN crontab -l -u app | grep "### BEGIN banaan1.store ###" && exit 1
+$HN test ! -d /data/web/varnish/banaan1.store
 
 ##################
 # DEPLOY STORE 2 #
