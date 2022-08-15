@@ -110,7 +110,7 @@ class DeployRunner
 
         foreach ($tasks as $task) {
             $task->configure($config);
-            $this->log->warning("Running configure for task " . get_class($task));
+            $this->log->debug("Running configure for task " . get_class($task));
 
             if ($task instanceof ConfigurableTaskInterface) {
                 $this->initializeConfigurableTask($task, $config);
@@ -227,9 +227,15 @@ class DeployRunner
         }
 
         foreach ($config->getVariables() as $key => $value) {
+            $this->log->debug(
+                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
+            );
             $host->set($key, $value);
         }
         foreach ($config->getVariables('deploy') as $key => $value) {
+            $this->log->debug(
+                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
+            );
             $host->set($key, $value);
         }
     }
@@ -239,16 +245,23 @@ class DeployRunner
      */
     private function initializeBuildStage(Configuration $config): void
     {
-        /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
         $host = localhost('build');
         $host->set('labels', ['stage' => 'build']);
         $host->set('bin/php', 'php');
         $host->set('deploy_path', '.');
         $host->set('release_or_current_path', '.');
+
         foreach ($config->getVariables() as $key => $value) {
+            $this->log->debug(
+                sprintf('Setting var "%s" to %s for stage "build"', $key, json_encode($value))
+            );
             $host->set($key, $value);
         }
+
         foreach ($config->getVariables('build') as $key => $value) {
+            $this->log->debug(
+                sprintf('Setting var "%s" to %s for stage "build"', $key, json_encode($value))
+            );
             $host->set($key, $value);
         }
     }
