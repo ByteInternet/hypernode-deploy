@@ -10,7 +10,9 @@ use Hypernode\DeployConfiguration\PlatformConfiguration\VarnishConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
 use function Deployer\fail;
+use function Deployer\run;
 use function Deployer\task;
+use function Deployer\test;
 use function Deployer\upload;
 
 class VarnishUploadTask extends TaskBase implements ConfigurableTaskInterface
@@ -35,6 +37,9 @@ class VarnishUploadTask extends TaskBase implements ConfigurableTaskInterface
     public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
         task(self::TASK_NAME, function () use ($config) {
+            if (!test('[ "$(test -d {{varnish_release_path}})" ]')) {
+                run("mkdir -p {{varnish_release_path}}");
+            }
             upload($config->getConfigFile(), "{{varnish_release_path}}/varnish.vcl");
         });
 
