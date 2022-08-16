@@ -210,6 +210,8 @@ class DeployRunner
         $host->set('nginx_current_path', '{{current_path}}/nginx');
         $host->set('supervisor_release_path', '{{release_path}}/supervisor');
         $host->set('supervisor_current_path', '{{current_path}}/supervisor');
+        $host->set('varnish_release_path', '{{release_path}}/varnish');
+        $host->set('varnish_current_path', '{{current_path}}/varnish');
         $host->set('configuration_stage', $stage);
         $host->set('writable_mode', 'chmod');
 

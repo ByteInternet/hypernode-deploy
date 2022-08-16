@@ -85,6 +85,7 @@ test $($HN ls /data/web/apps/banaan1.store/releases/ | wc -l) = 1
 $HN test ! -d /data/web/nginx/banaan1.store
 $HN test ! -d /data/web/supervisor/banaan1.store
 $HN crontab -l -u app | grep "### BEGIN banaan1.store ###" && exit 1
+$HN test ! -d /data/web/varnish/banaan1.store
 
 ##################
 # DEPLOY STORE 2 #
@@ -120,6 +121,13 @@ $HN test $($HN readlink -f /data/web/supervisor/banaan1.store) = /data/web/apps/
 # Test this once we enable supervisor in the hypernode docker image
 # $HN supervisorctl status | grep example | grep -v FATAL || ($HN supervisorctl status && exit 1)
 
+# Test if varnish dirs exists and vcl has been placed
+$HN ls -al /data/web/varnish/banaan1.store/
+$HN ls -al /data/web/apps/banaan1.store/current/varnish/
+
+$HN test -f /data/web/varnish/banaan1.store/varnish.vcl || ($HN ls -al /data/web/varnish/ && exit 1)
+$HN test $($HN readlink -f /data/web/varnish/banaan1.store/varnish.vcl) = /data/web/apps/banaan1.store/releases/2/varnish/varnish.vcl
+
 # Check the content of the crontab block
 $HN crontab -l -u app | grep "### BEGIN banaan1.store ###"
 $HN crontab -l -u app | grep "### END banaan1.store ###"
@@ -141,6 +149,7 @@ $DP1 hypernode-deploy deploy production -f /web1/deploy1.php
 test $($HN ls /data/web/apps/banaan1.store/releases/ | wc -l) = 3
 $HN test $($HN readlink -f /data/web/nginx/banaan1.store) = /data/web/apps/banaan1.store/releases/3/nginx
 $HN test $($HN readlink -f /data/web/supervisor/banaan1.store) = /data/web/apps/banaan1.store/releases/3/supervisor
+$HN test $($HN readlink -f /data/web/varnish/banaan1.store/varnish.vcl) = /data/web/apps/banaan1.store/releases/3/varnish/varnish.vcl
 
 # Verify example location block is removed
 $HN test ! -f /data/web/nginx/banaan1.store/server.example.conf || ($HN ls -al /data/web/nginx/banaan1.store && exit 1)
