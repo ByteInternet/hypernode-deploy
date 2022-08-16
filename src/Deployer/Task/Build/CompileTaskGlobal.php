@@ -2,7 +2,6 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Build;
 
-use Hypernode\Deploy\Deployer\TaskBuilder;
 use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 
@@ -11,16 +10,6 @@ use function Deployer\task;
 
 class CompileTaskGlobal extends TaskBase
 {
-    /**
-     * @var TaskBuilder
-     */
-    private $taskBuilder;
-
-    public function __construct(TaskBuilder $taskBuilder)
-    {
-        $this->taskBuilder = $taskBuilder;
-    }
-
     public function configure(Configuration $config): void
     {
         task('build:compile:prepare', function () {
@@ -32,7 +21,7 @@ class CompileTaskGlobal extends TaskBase
             }
         })->select("stage=build");
 
-        $tasks = $this->taskBuilder->buildAll($config->getBuildCommands(), 'build:compile');
+        $tasks = $config->getBuildTasks();
         array_unshift($tasks, 'build:compile:prepare');
         task('build:compile', $tasks)->select("stage=build");
     }
