@@ -44,7 +44,7 @@ class VarnishEnableTask extends TaskBase implements ConfigurableTaskInterface
             task(self::TASK_NAME, function () use ($config) {
                 run("hypernode-systemctl settings varnish_enabled True --block");
                 run("echo yes | hypernode-systemctl settings varnish_version {$config->getVersion()} --block");
-                run('hypernode-manage-vhosts {{domain}} --varnish');
+                run('hypernode-manage-vhosts {{domain}} --varnish --no');
             });
         }
         fail(self::TASK_NAME, 'deploy:varnish:cleanup');

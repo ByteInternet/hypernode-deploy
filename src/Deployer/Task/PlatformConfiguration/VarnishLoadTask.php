@@ -42,12 +42,8 @@ class VarnishLoadTask extends TaskBase implements ConfigurableTaskInterface
             return "varnishadm";
         });
 
-        set('varnish/vcl', function () {
-            return '/data/web/varnish/{{domain}}/varnish.vcl';
-        });
-
         task(self::TASK_NAME, function () {
-            run('{{varnishadm_path}} vcl.load {{domain}}.{{release_name}}_varnish {{varnish/vcl}}');
+            run('{{varnishadm_path}} vcl.load {{domain}}.{{release_name}}_varnish {{varnish_release_path}}/varnish.vcl');
         });
 
         fail(self::TASK_NAME, 'deploy:varnish:cleanup');
