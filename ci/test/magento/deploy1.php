@@ -20,6 +20,8 @@ $configuration->setPlatformConfigurations([
     new PlatformConfiguration\NginxConfiguration("etc/nginx"),
     new PlatformConfiguration\SupervisorConfiguration("etc/supervisor"),
     new PlatformConfiguration\CronConfiguration("etc/cron"),
+    new PlatformConfiguration\HypernodeSettingConfiguration("php_version", "8.1"),
+    new PlatformConfiguration\HypernodeSettingConfiguration("rabbitmq_enabled", "True"),
     new PlatformConfiguration\VarnishConfiguration(),
 ]);
 $configuration->setSharedFiles([
