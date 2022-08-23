@@ -336,12 +336,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-deploy-configuration.git",
-                "reference": "dd0b023de479d80843b4e63dcd6d5a6dcb01a84f"
+                "reference": "5d3540f51f7cd9a76b8c28f21e8aefe1243b16dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/dd0b023de479d80843b4e63dcd6d5a6dcb01a84f",
-                "reference": "dd0b023de479d80843b4e63dcd6d5a6dcb01a84f",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/5d3540f51f7cd9a76b8c28f21e8aefe1243b16dd",
+                "reference": "5d3540f51f7cd9a76b8c28f21e8aefe1243b16dd",
                 "shasum": ""
             },
             "require": {
@@ -370,7 +370,7 @@
                 "issues": "https://github.com/ByteInternet/hypernode-deploy-configuration/issues",
                 "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/v2"
             },
-            "time": "2022-08-15T09:02:52+00:00"
+            "time": "2022-08-16T11:52:04+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -6285,5 +6285,5 @@
         "composer-runtime-api": "^2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.0.0"
 }

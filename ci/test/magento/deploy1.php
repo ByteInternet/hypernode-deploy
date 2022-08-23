@@ -23,6 +23,7 @@ $configuration->setPlatformConfigurations([
     new PlatformConfiguration\HypernodeSettingConfiguration("php_version", "8.1"),
     new PlatformConfiguration\HypernodeSettingConfiguration("rabbitmq_enabled", "True"),
     new PlatformConfiguration\VarnishConfiguration(),
+    new PlatformConfiguration\RedisConfiguration(),
 ]);
 $configuration->setSharedFiles([
     'app/etc/env.php',

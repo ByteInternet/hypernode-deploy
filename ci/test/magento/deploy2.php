@@ -21,6 +21,7 @@ $configuration->setPlatformConfigurations([
     new PlatformConfiguration\SupervisorConfiguration("etc/supervisor"),
     new PlatformConfiguration\CronConfiguration("etc/cron"),
     new PlatformConfiguration\VarnishConfiguration(),
+    new PlatformConfiguration\RedisConfiguration(),
 ]);
 $configuration->setSharedFiles([
     'app/etc/env.php',
