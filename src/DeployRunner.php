@@ -5,11 +5,17 @@ namespace Hypernode\Deploy;
 use Deployer\Deployer;
 use Deployer\Exception\Exception;
 use Deployer\Exception\GracefulShutdownException;
+use Hypernode\Api\Exception\HypernodeApiClientException;
+use Hypernode\Api\Exception\HypernodeApiServerException;
+use Hypernode\Api\HypernodeClient;
+use Hypernode\Api\HypernodeClientFactory;
+use Hypernode\Api\Resource\Logbook\Flow;
 use Hypernode\Deploy\Console\Output\OutputWatcher;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\TaskFactory;
+use Hypernode\Deploy\Exception\TimeoutException;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Server;
 use Hypernode\DeployConfiguration\ServerRoleConfigurableInterface;
@@ -51,6 +57,8 @@ class DeployRunner
      */
     private $recipeLoader;
 
+    private HypernodeClient $hypernodeClient;
+
     public function __construct(
         TaskFactory $taskFactory,
         InputInterface $input,
@@ -61,6 +69,7 @@ class DeployRunner
         $this->input = $input;
         $this->log = $log;
         $this->recipeLoader = $recipeLoader;
+        $this->hypernodeClient = HypernodeClientFactory::create(getenv('HYPERNODE_API_TOKEN') ?: '');
     }
 
     /**
@@ -189,6 +198,8 @@ class DeployRunner
 
     private function configureStageServer(Stage $stage, Server $server, Configuration $config): void
     {
+        $this->maybeConfigureEphemeralServer($server);
+
         $host = host($stage->getName() . ':' . $server->getHostname());
         $host->setHostname($server->getHostname());
         $host->setPort(22);
@@ -239,6 +250,57 @@ class DeployRunner
                 sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
             );
             $host->set($key, $value);
+        }
+    }
+
+    private function maybeConfigureEphemeralServer(Server $server): void
+    {
+        $serverOptions = $server->getOptions();
+        $isEphemeral = $serverOptions[Server::OPTION_HN_EPHEMERAL] ?? false;
+        $parentApp = $serverOptions[Server::OPTION_HN_PARENT_APP] ?? null;
+        if ($isEphemeral && $parentApp) {
+            $this->log->info(sprintf('Creating an ephemeral Hypernode based on %s.', $parentApp));
+            $ephemeralApp = $this->hypernodeClient->ephemeralApp->create($parentApp);
+            $server->setHostname(sprintf("%s.hypernode.io", $ephemeralApp));
+            $this->log->info(sprintf('Successfully requested ephemeral Hypernode, name is %s.', $ephemeralApp));
+            $this->log->info('Waiting for ephemeral Hypernode to become available...');
+            $this->waitForEphemeralApp($ephemeralApp);
+            $this->log->info('Ephemeral Hypernode has become available!');
+        }
+    }
+
+    /**
+     * Poll and wait for ephemeral app to become available.
+     *
+     * @throws HypernodeApiClientException
+     * @throws HypernodeApiServerException
+     * @throws TimeoutException
+     */
+    private function waitForEphemeralApp(string $ephemeralApp, int $timeout = 900): void
+    {
+        $latest = microtime(true);
+        $timeElapsed = 0;
+        $resolved = false;
+
+        while ($timeElapsed < $timeout && !$resolved) {
+            $now = microtime(true);
+            $timeElapsed += $now - $latest;
+            $latest = $now;
+
+            $flows = $this->hypernodeClient->logbook->getList($ephemeralApp);
+            $remaining = array_filter($flows, fn (Flow $flow) => !$flow->isComplete());
+            if ($flows && !$remaining) {
+                $resolved = true;
+                break;
+            }
+
+            sleep(5);
+        }
+
+        if (!$resolved) {
+            throw new TimeoutException(
+                sprintf('Timed out waiting for ephemeral Hypernode %s to become available', $ephemeralApp)
+            );
         }
     }
 
