@@ -352,6 +352,7 @@ class DeployRunner
 
         $tasks = $deployer->scriptManager->getTasks($task);
         $executor = $deployer->master;
+        $failed = false;
 
         try {
             /**
@@ -363,6 +364,7 @@ class DeployRunner
         } catch (Throwable $exception) {
             $deployer->output->writeln('[' . \get_class($exception) . '] ' . $exception->getMessage());
             $deployer->output->writeln($exception->getTraceAsString());
+            $failed = true;
 
             if ($exception instanceof GracefulShutdownException) {
                 throw $exception;
@@ -377,9 +379,11 @@ class DeployRunner
             }
             throw $exception;
         } finally {
-            foreach ($this->ephemeralHypernodesRegistered as $ephemeralHypernode) {
-                $this->log->info(sprintf('Stopping ephemeral Hypernode %s...', $ephemeralHypernode));
-                $this->hypernodeClient->ephemeralApp->cancel($ephemeralHypernode);
+            if ($failed) {
+                foreach ($this->ephemeralHypernodesRegistered as $ephemeralHypernode) {
+                    $this->log->info(sprintf('Stopping ephemeral Hypernode %s...', $ephemeralHypernode));
+                    $this->hypernodeClient->ephemeralApp->cancel($ephemeralHypernode);
+                }
             }
         }
     }
