@@ -5,7 +5,7 @@ set -x
 
 # Handy aliases
 HN="ssh app@hndeployintegr8.hypernode.io -o StrictHostKeyChecking=no"
-DP="docker run -v /tmp/m2build:/web -e HYPERNODE_API_TOKEN -e SSH_PRIVATE_KEY hndeploy"
+DP="docker run -v /tmp/m2build:/web -e HYPERNODE_API_TOKEN -e SSH_PRIVATE_KEY -w /web hndeploy"
 
 # Build Docker image
 docker build \
