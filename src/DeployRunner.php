@@ -37,27 +37,21 @@ use function Deployer\task;
 
 class DeployRunner
 {
-    /**
-     * @var TaskFactory
-     */
-    private $taskFactory;
+    public const TASK_BUILD = 'build';
+    public const TASK_DEPLOY = 'deploy';
 
-    /**
-     * @var InputInterface
-     */
-    private $input;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
-
-    /**
-     * @var RecipeLoader
-     */
-    private $recipeLoader;
-
+    private TaskFactory $taskFactory;
+    private InputInterface $input;
+    private LoggerInterface $log;
+    private RecipeLoader $recipeLoader;
     private HypernodeClient $hypernodeClient;
+
+    /**
+     * Registered ephemeral Hypernodes to stop/cancel after running.
+     *
+     * @var string[]
+     */
+    private array $ephemeralHypernodesRegistered = [];
 
     public function __construct(
         TaskFactory $taskFactory,
@@ -79,7 +73,7 @@ class DeployRunner
      *
      * @return void
      */
-    public function run(OutputInterface $output, string $stage, string $task = 'deploy')
+    public function run(OutputInterface $output, string $stage, string $task = self::TASK_DEPLOY)
     {
         $console = new Application();
         $deployer = new Deployer($console);
@@ -93,7 +87,7 @@ class DeployRunner
         );
 
         try {
-            $this->initializeDeployer($deployer);
+            $this->initializeDeployer($deployer, $task);
         } catch (InvalidConfigurationException $e) {
             $output->write($e->getMessage());
             return;
@@ -109,13 +103,13 @@ class DeployRunner
      * @throws Throwable
      * @throws InvalidConfigurationException
      */
-    private function initializeDeployer(Deployer $deployer): void
+    private function initializeDeployer(Deployer $deployer, string $task): void
     {
         $this->recipeLoader->load('common.php');
         $tasks = $this->taskFactory->loadAll();
         $config = $this->getConfiguration($deployer);
         $config->setLogger($this->log);
-        $this->configureStages($config);
+        $this->configureStages($config, $task);
 
         foreach ($tasks as $task) {
             $task->configure($config);
@@ -185,13 +179,17 @@ class DeployRunner
         }
     }
 
-    private function configureStages(Configuration $config): void
+    private function configureStages(Configuration $config, string $task): void
     {
-        $this->initializeBuildStage($config);
+        if ($task === self::TASK_BUILD) {
+            $this->initializeBuildStage($config);
+        }
 
-        foreach ($config->getStages() as $stage) {
-            foreach ($stage->getServers() as $server) {
-                $this->configureStageServer($stage, $server, $config);
+        if ($task === self::TASK_DEPLOY) {
+            foreach ($config->getStages() as $stage) {
+                foreach ($stage->getServers() as $server) {
+                    $this->configureStageServer($stage, $server, $config);
+                }
             }
         }
     }
@@ -262,7 +260,9 @@ class DeployRunner
             $this->log->info(sprintf('Creating an ephemeral Hypernode based on %s.', $parentApp));
             $ephemeralApp = $this->hypernodeClient->ephemeralApp->create($parentApp);
             $server->setHostname(sprintf("%s.hypernode.io", $ephemeralApp));
+            $this->ephemeralHypernodesRegistered[] = $ephemeralApp;
             $this->log->info(sprintf('Successfully requested ephemeral Hypernode, name is %s.', $ephemeralApp));
+
             $this->log->info('Waiting for ephemeral Hypernode to become available...');
             $this->waitForEphemeralApp($ephemeralApp);
             $this->log->info('Ephemeral Hypernode has become available!');
@@ -376,6 +376,11 @@ class DeployRunner
                 $executor->run($tasks, $hosts);
             }
             throw $exception;
+        } finally {
+            foreach ($this->ephemeralHypernodesRegistered as $ephemeralHypernode) {
+                $this->log->info(sprintf('Stopping ephemeral Hypernode %s...', $ephemeralHypernode));
+                $this->hypernodeClient->ephemeralApp->cancel($ephemeralHypernode);
+            }
         }
     }
 
