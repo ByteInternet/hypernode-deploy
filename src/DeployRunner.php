@@ -287,11 +287,19 @@ class DeployRunner
             $timeElapsed += $now - $latest;
             $latest = $now;
 
-            $flows = $this->hypernodeClient->logbook->getList($ephemeralApp);
-            $remaining = array_filter($flows, fn (Flow $flow) => !$flow->isComplete());
-            if ($flows && !$remaining) {
-                $resolved = true;
-                break;
+            try {
+                $flows = $this->hypernodeClient->logbook->getList($ephemeralApp);
+                $remaining = array_filter($flows, fn (Flow $flow) => !$flow->isComplete());
+                if ($flows && !$remaining) {
+                    $resolved = true;
+                    break;
+                }
+            } catch (HypernodeApiClientException $e) {
+                // A 404 not found means there are no flows in the logbook yet, we should wait.
+                // Otherwise, there's an error, and it should be propagated.
+                if ($e->getCode() !== 404) {
+                    throw $e;
+                }
             }
 
             sleep(5);
