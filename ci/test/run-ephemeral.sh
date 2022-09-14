@@ -36,8 +36,8 @@ $DP hypernode-deploy deploy test -f /web/deploy.php -v
 
 # Run some tests
 
-$DP "ls -l"
-$DP "test -f deployment-report.json"
-$DP "cat deployment-report.json | jq"
+$DP ls -l
+$DP test -f deployment-report.json
+$DP jq deployment-report.json
 
 $DP hypernode-deploy cleanup
