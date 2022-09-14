@@ -12,6 +12,7 @@ use Hypernode\Api\HypernodeClientFactory;
 use Hypernode\Api\Resource\Logbook\Flow;
 use Hypernode\Deploy\Console\Output\OutputWatcher;
 use Hypernode\Deploy\Deployer\RecipeLoader;
+use Hypernode\Deploy\Exception\CreateEphemeralHypernodeFailedException;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\TaskFactory;
@@ -275,6 +276,7 @@ class DeployRunner
      * @throws HypernodeApiClientException
      * @throws HypernodeApiServerException
      * @throws TimeoutException
+     * @throws CreateEphemeralHypernodeFailedException
      */
     private function waitForEphemeralApp(string $ephemeralApp, int $timeout = 900): void
     {
@@ -289,8 +291,15 @@ class DeployRunner
 
             try {
                 $flows = $this->hypernodeClient->logbook->getList($ephemeralApp);
-                $remaining = array_filter($flows, fn (Flow $flow) => !$flow->isComplete());
-                if ($flows && !$remaining) {
+                $relevantFlows = array_filter($flows, fn (Flow $flow) => $flow->name === 'ensure_app');
+                $failedFlows = array_filter($flows, fn (Flow $flow) => $flow->isReverted());
+                $completedFlows = array_filter($flows, fn (Flow $flow) => $flow->isComplete());
+
+                if (count($failedFlows) === count($relevantFlows)) {
+                    throw new CreateEphemeralHypernodeFailedException();
+                }
+
+                if ($relevantFlows && count($completedFlows) === count($relevantFlows)) {
                     $resolved = true;
                     break;
                 }
