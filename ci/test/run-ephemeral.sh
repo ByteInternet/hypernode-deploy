@@ -5,7 +5,7 @@ set -x
 
 # Handy aliases
 HN="ssh app@hndeployintegr8.hypernode.io -o StrictHostKeyChecking=no"
-DP="docker run -v /tmp/m2build:/web -e HYPERNODE_API_TOKEN -e SSH_PRIVATE_KEY -w /web hndeploy"
+DP="docker run --rm -v /tmp/m2build:/web -e HYPERNODE_API_TOKEN -e SSH_PRIVATE_KEY -w /web hndeploy"
 
 # Build Docker image
 docker build \
@@ -33,3 +33,11 @@ $DP hypernode-deploy build -f /web/deploy.php --verbose
 ##########################################
 # SSH from deploy container to hypernode container
 $DP hypernode-deploy deploy test -f /web/deploy.php -v
+
+# Run some tests
+
+$DP "ls -l"
+$DP "test -f deployment-report.json"
+$DP "cat deployment-report.json | jq"
+
+$DP hypernode-deploy cleanup
