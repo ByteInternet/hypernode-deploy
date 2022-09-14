@@ -24,6 +24,15 @@ class Cleanup extends Command
         $this->ephemeralHypernodeManager = $ephemeralHypernodeManager;
     }
 
+    protected function configure()
+    {
+        parent::configure();
+        $this->setName('cleanup');
+        $this->setDescription(
+            'Clean up any acquired resources during the deployment, like ephemeral Hypernodes.'
+        );
+    }
+
     /**
      * @throws Throwable
      */
