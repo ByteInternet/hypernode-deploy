@@ -7,8 +7,8 @@ namespace Hypernode\Deploy\Report;
 class Report
 {
     public const REPORT_FILENAME = 'deployment-report.json';
+    public const REPORT_VERSION = 'v1';
 
-    private string $version;
     private string $stage;
     /**
      * @var string[]
@@ -18,19 +18,24 @@ class Report
      * @var string[]
      */
     private array $ephemeralHypernodes;
+    private string $version;
 
     /**
-     * @param string $version
      * @param string $stage
      * @param string[] $hostnames
      * @param string[] $ephemeralHypernodes
+     * @param string $version Version of the report file
      */
-    public function __construct(string $version, string $stage, array $hostnames, array $ephemeralHypernodes)
-    {
-        $this->version = $version;
+    public function __construct(
+        string $stage,
+        array $hostnames,
+        array $ephemeralHypernodes,
+        string $version = self::REPORT_VERSION
+    ) {
         $this->stage = $stage;
         $this->hostnames = $hostnames;
         $this->ephemeralHypernodes = $ephemeralHypernodes;
+        $this->version = $version;
     }
 
     public function getVersion(): string
@@ -72,10 +77,10 @@ class Report
     public static function fromArray(array $data): Report
     {
         return new Report(
-            $data['version'],
             $data['stage'],
             $data['hostnames'],
             $data['ephemeral_hypernodes'],
+            $data['version'],
         );
     }
 }

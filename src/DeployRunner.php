@@ -51,7 +51,6 @@ class DeployRunner
      */
     private array $ephemeralHypernodesRegistered = [];
 
-    private string $version;
     private array $deployedHostnames = [];
     private string $deployedStage = '';
 
@@ -60,15 +59,13 @@ class DeployRunner
         InputInterface $input,
         LoggerInterface $log,
         RecipeLoader $recipeLoader,
-        EphemeralHypernodeManager $ephemeralHypernodeManager,
-        string $version
+        EphemeralHypernodeManager $ephemeralHypernodeManager
     ) {
         $this->taskFactory = $taskFactory;
         $this->input = $input;
         $this->log = $log;
         $this->recipeLoader = $recipeLoader;
         $this->ephemeralHypernodeManager = $ephemeralHypernodeManager;
-        $this->version = $version;
     }
 
     /**
@@ -411,10 +408,9 @@ class DeployRunner
     public function getDeploymentReport()
     {
         return new Report\Report(
-            $this->version,
             $this->deployedStage,
             $this->deployedHostnames,
-            $this->ephemeralHypernodesRegistered,
+            $this->ephemeralHypernodesRegistered
         );
     }
 }
