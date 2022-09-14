@@ -5,13 +5,10 @@ namespace Hypernode\Deploy;
 use Deployer\Deployer;
 use Deployer\Exception\Exception;
 use Deployer\Exception\GracefulShutdownException;
-use Hypernode\Api\Exception\HypernodeApiClientException;
-use Hypernode\Api\Exception\HypernodeApiServerException;
-use Hypernode\Api\HypernodeClient;
-use Hypernode\Api\HypernodeClientFactory;
-use Hypernode\Api\Resource\Logbook\Flow;
+use Deployer\Host\Host;
 use Hypernode\Deploy\Console\Output\OutputWatcher;
 use Hypernode\Deploy\Deployer\RecipeLoader;
+use Hypernode\Deploy\Ephemeral\EphemeralHypernodeManager;
 use Hypernode\Deploy\Exception\CreateEphemeralHypernodeFailedException;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
@@ -45,7 +42,7 @@ class DeployRunner
     private InputInterface $input;
     private LoggerInterface $log;
     private RecipeLoader $recipeLoader;
-    private HypernodeClient $hypernodeClient;
+    private EphemeralHypernodeManager $ephemeralHypernodeManager;
 
     /**
      * Registered ephemeral Hypernodes to stop/cancel after running.
@@ -54,17 +51,24 @@ class DeployRunner
      */
     private array $ephemeralHypernodesRegistered = [];
 
+    private string $version;
+    private array $deployedHostnames = [];
+    private string $deployedStage = '';
+
     public function __construct(
         TaskFactory $taskFactory,
         InputInterface $input,
         LoggerInterface $log,
-        RecipeLoader $recipeLoader
+        RecipeLoader $recipeLoader,
+        EphemeralHypernodeManager $ephemeralHypernodeManager,
+        string $version
     ) {
         $this->taskFactory = $taskFactory;
         $this->input = $input;
         $this->log = $log;
         $this->recipeLoader = $recipeLoader;
-        $this->hypernodeClient = HypernodeClientFactory::create(getenv('HYPERNODE_API_TOKEN') ?: '');
+        $this->ephemeralHypernodeManager = $ephemeralHypernodeManager;
+        $this->version = $version;
     }
 
     /**
@@ -258,70 +262,19 @@ class DeployRunner
         $parentApp = $serverOptions[Server::OPTION_HN_PARENT_APP] ?? null;
         if ($isEphemeral && $parentApp) {
             $this->log->info(sprintf('Creating an ephemeral Hypernode based on %s.', $parentApp));
-            $ephemeralApp = $this->hypernodeClient->ephemeralApp->create($parentApp);
+            $ephemeralApp = $this->ephemeralHypernodeManager->createForHypernode($parentApp);
             $server->setHostname(sprintf("%s.hypernode.io", $ephemeralApp));
             $this->ephemeralHypernodesRegistered[] = $ephemeralApp;
             $this->log->info(sprintf('Successfully requested ephemeral Hypernode, name is %s.', $ephemeralApp));
 
-            $this->log->info('Waiting for ephemeral Hypernode to become available...');
             try {
-                $this->waitForEphemeralApp($ephemeralApp);
+                $this->log->info('Waiting for ephemeral Hypernode to become available...');
+                $this->ephemeralHypernodeManager->waitForAvailability($ephemeralApp);
+                $this->log->info('Ephemeral Hypernode has become available!');
             } catch (CreateEphemeralHypernodeFailedException | TimeoutException $e) {
-                $this->hypernodeClient->ephemeralApp->cancel($ephemeralApp);
+                $this->ephemeralHypernodeManager->cancel($ephemeralApp);
                 throw $e;
             }
-            $this->log->info('Ephemeral Hypernode has become available!');
-        }
-    }
-
-    /**
-     * Poll and wait for ephemeral app to become available.
-     *
-     * @throws HypernodeApiClientException
-     * @throws HypernodeApiServerException
-     * @throws TimeoutException
-     * @throws CreateEphemeralHypernodeFailedException
-     */
-    private function waitForEphemeralApp(string $ephemeralApp, int $timeout = 900): void
-    {
-        $latest = microtime(true);
-        $timeElapsed = 0;
-        $resolved = false;
-
-        while ($timeElapsed < $timeout && !$resolved) {
-            $now = microtime(true);
-            $timeElapsed += $now - $latest;
-            $latest = $now;
-
-            try {
-                $flows = $this->hypernodeClient->logbook->getList($ephemeralApp);
-                $relevantFlows = array_filter($flows, fn (Flow $flow) => $flow->name === 'ensure_app');
-                $failedFlows = array_filter($flows, fn (Flow $flow) => $flow->isReverted());
-                $completedFlows = array_filter($flows, fn (Flow $flow) => $flow->isComplete());
-
-                if (count($failedFlows) === count($relevantFlows)) {
-                    throw new CreateEphemeralHypernodeFailedException();
-                }
-
-                if ($relevantFlows && count($completedFlows) === count($relevantFlows)) {
-                    $resolved = true;
-                    break;
-                }
-            } catch (HypernodeApiClientException $e) {
-                // A 404 not found means there are no flows in the logbook yet, we should wait.
-                // Otherwise, there's an error, and it should be propagated.
-                if ($e->getCode() !== 404) {
-                    throw $e;
-                }
-            }
-
-            sleep(5);
-        }
-
-        if (!$resolved) {
-            throw new TimeoutException(
-                sprintf('Timed out waiting for ephemeral Hypernode %s to become available', $ephemeralApp)
-            );
         }
     }
 
@@ -374,6 +327,8 @@ class DeployRunner
         $exitCode = $executor->run($tasks, $hosts);
 
         if ($exitCode === 0) {
+            $this->deployedHostnames = array_map(fn (Host $host) => $host->getHostname(), $hosts);
+            $this->deployedStage = $stage;
             return 0;
         }
 
@@ -389,10 +344,7 @@ class DeployRunner
             $executor->run($tasks, $hosts);
         }
 
-        foreach ($this->ephemeralHypernodesRegistered as $ephemeralHypernode) {
-            $this->log->info(sprintf('Stopping ephemeral Hypernode %s...', $ephemeralHypernode));
-            $this->hypernodeClient->ephemeralApp->cancel($ephemeralHypernode);
-        }
+        $this->ephemeralHypernodeManager->cancel(...$this->ephemeralHypernodesRegistered);
 
         return $exitCode;
     }
@@ -454,5 +406,15 @@ class DeployRunner
         if (file_exists(WORKING_DIR . '/vendor/autoload.php')) {
             require_once WORKING_DIR . '/vendor/autoload.php';
         }
+    }
+
+    public function getDeploymentReport()
+    {
+        return new Report\Report(
+            $this->version,
+            $this->deployedStage,
+            $this->deployedHostnames,
+            $this->ephemeralHypernodesRegistered,
+        );
     }
 }
