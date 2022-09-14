@@ -31,7 +31,7 @@ class LinkTask extends TaskBase
                 }
             }
 
-            run('ln -s {{app_current_path}}/{{public_folder}} /data/web/public');
+            run('ln -s {{current_path}}/{{public_folder}} /data/web/public');
         })->select("roles=$role");
     }
 }
