@@ -30,7 +30,7 @@ class NginxManageVHostTask extends TaskBase implements ConfigurableTaskInterface
     public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
         task('deploy:nginx:manage_vhost', function () {
-            run('hypernode-manage-vhosts {{domain}} --webroot {{app_current_path}}/{{public_folder}} --no');
+            run('hypernode-manage-vhosts {{domain}} --webroot {{current_path}}/{{public_folder}} --no');
         });
 
         return null;

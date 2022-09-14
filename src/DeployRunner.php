@@ -215,14 +215,12 @@ class DeployRunner
             return run('realpath ~/apps/{{domain}}');
         });
         $host->set('current_path', '{{deploy_path}}/current');
-        $host->set('app_release_path', '{{release_path}}/app');
-        $host->set('app_current_path', '{{current_path}}/app');
-        $host->set('nginx_release_path', '{{release_path}}/nginx');
-        $host->set('nginx_current_path', '{{current_path}}/nginx');
-        $host->set('supervisor_release_path', '{{release_path}}/supervisor');
-        $host->set('supervisor_current_path', '{{current_path}}/supervisor');
-        $host->set('varnish_release_path', '{{release_path}}/varnish');
-        $host->set('varnish_current_path', '{{current_path}}/varnish');
+        $host->set('nginx_release_path', '{{release_path}}/.hypernode/nginx');
+        $host->set('nginx_current_path', '{{current_path}}/.hypernode/nginx');
+        $host->set('supervisor_release_path', '{{release_path}}/.hypernode/supervisor');
+        $host->set('supervisor_current_path', '{{current_path}}/.hypernode/supervisor');
+        $host->set('varnish_release_path', '{{release_path}}/.hypernode/varnish');
+        $host->set('varnish_current_path', '{{current_path}}/.hypernode/varnish');
         $host->set('configuration_stage', $stage);
         $host->set('writable_mode', 'chmod');
 
