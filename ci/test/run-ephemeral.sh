@@ -17,7 +17,6 @@ docker build \
 
 # Copy application from remote to local
 $HN /data/web/magento2/bin/magento app:config:dump scopes themes
-echo "Waiting for SSH to be available on the Hypernode container"
 mkdir /tmp/m2build
 mkdir -p "$HOME/.ssh"
 cp ci/test/magento/deploy_ephemeral.php /tmp/m2build/deploy.php
@@ -26,10 +25,6 @@ rm /tmp/m2build/app/etc/env.php
 
 # Build application
 $DP hypernode-deploy build -f /web/deploy.php --verbose
-
-# Prepare env
-$HN mkdir -p /data/web/apps/banaan.store/shared/app/etc/
-$HN cp /data/web/magento2/app/etc/env.php /data/web/apps/banaan.store/shared/app/etc/env.php
 
 ##########################################
 # DEPLOY WITHOUT PLATFORM CONFIGURATIONS #
