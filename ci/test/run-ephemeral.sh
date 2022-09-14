@@ -24,7 +24,7 @@ rsync -a -e "ssh -o StrictHostKeyChecking=no" app@hndeployintegr8.hypernode.io:m
 rm /tmp/m2build/app/etc/env.php
 
 # Build application
-$DP hypernode-deploy build -f /web/deploy.php --verbose
+$DP hypernode-deploy build -f /web/deploy.php -vvv
 
 ##########################################
 # DEPLOY WITHOUT PLATFORM CONFIGURATIONS #
@@ -32,12 +32,13 @@ $DP hypernode-deploy build -f /web/deploy.php --verbose
 # Nginx/Supervisor/etc configs           #
 ##########################################
 # SSH from deploy container to hypernode container
-$DP hypernode-deploy deploy test -f /web/deploy.php -v
+$DP hypernode-deploy deploy test -f /web/deploy.php -vvv
 
 # Run some tests
 
 $DP ls -l
 $DP test -f deployment-report.json
+$DP cat deployment-report.json
 $DP jq deployment-report.json
 
-$DP hypernode-deploy cleanup
+$DP hypernode-deploy cleanup -vvv
