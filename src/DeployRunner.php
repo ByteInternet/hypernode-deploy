@@ -72,9 +72,9 @@ class DeployRunner
      * @throws Throwable
      * @throws Exception
      *
-     * @return void
+     * @return int
      */
-    public function run(OutputInterface $output, string $stage, string $task = self::TASK_DEPLOY)
+    public function run(OutputInterface $output, string $stage, string $task = self::TASK_DEPLOY): int
     {
         $console = new Application();
         $deployer = new Deployer($console);
@@ -91,9 +91,10 @@ class DeployRunner
             $this->initializeDeployer($deployer, $task);
         } catch (InvalidConfigurationException $e) {
             $output->write($e->getMessage());
-            return;
+            return 1;
         }
-        $this->runStage($deployer, $stage, $task);
+
+        return $this->runStage($deployer, $stage, $task);
     }
 
     /**
@@ -265,7 +266,12 @@ class DeployRunner
             $this->log->info(sprintf('Successfully requested ephemeral Hypernode, name is %s.', $ephemeralApp));
 
             $this->log->info('Waiting for ephemeral Hypernode to become available...');
-            $this->waitForEphemeralApp($ephemeralApp);
+            try {
+                $this->waitForEphemeralApp($ephemeralApp);
+            } catch (CreateEphemeralHypernodeFailedException | TimeoutException $e) {
+                $this->hypernodeClient->ephemeralApp->cancel($ephemeralApp);
+                throw $e;
+            }
             $this->log->info('Ephemeral Hypernode has become available!');
         }
     }
@@ -352,7 +358,7 @@ class DeployRunner
      * @throws Throwable
      * @throws Exception
      */
-    private function runStage(Deployer $deployer, string $stage, string $task = 'deploy'): void
+    private function runStage(Deployer $deployer, string $stage, string $task = 'deploy'): int
     {
         $hosts = $deployer->selector->select("stage=$stage");
         if (empty($hosts)) {
@@ -361,40 +367,36 @@ class DeployRunner
 
         $tasks = $deployer->scriptManager->getTasks($task);
         $executor = $deployer->master;
-        $failed = false;
 
-        try {
-            /**
-             * Set the env variable to tell deployer to deploy the hosts sequentially instead of parallel.
-             * @see \Deployer\Executor\Master::runTask()
-             */
-            putenv('DEPLOYER_LOCAL_WORKER=true');
-            $executor->run($tasks, $hosts);
-        } catch (Throwable $exception) {
-            $deployer->output->writeln('[' . \get_class($exception) . '] ' . $exception->getMessage());
-            $deployer->output->writeln($exception->getTraceAsString());
-            $failed = true;
+        /**
+         * Set the env variable to tell deployer to deploy the hosts sequentially instead of parallel.
+         * @see \Deployer\Executor\Master::runTask()
+         */
+        putenv('DEPLOYER_LOCAL_WORKER=true');
+        $exitCode = $executor->run($tasks, $hosts);
 
-            if ($exception instanceof GracefulShutdownException) {
-                throw $exception;
-            }
-
-            // Check if we have tasks to execute on failure
-            if ($deployer['fail']->has($task)) {
-                $taskName = $deployer['fail']->get($task);
-                $tasks = $deployer->scriptManager->getTasks($taskName);
-
-                $executor->run($tasks, $hosts);
-            }
-            throw $exception;
-        } finally {
-            if ($failed) {
-                foreach ($this->ephemeralHypernodesRegistered as $ephemeralHypernode) {
-                    $this->log->info(sprintf('Stopping ephemeral Hypernode %s...', $ephemeralHypernode));
-                    $this->hypernodeClient->ephemeralApp->cancel($ephemeralHypernode);
-                }
-            }
+        if ($exitCode === 0) {
+            return 0;
         }
+
+        if ($exitCode === GracefulShutdownException::EXIT_CODE) {
+            return 1;
+        }
+
+        // Check if we have tasks to execute on failure
+        if ($deployer['fail']->has($task)) {
+            $taskName = $deployer['fail']->get($task);
+            $tasks = $deployer->scriptManager->getTasks($taskName);
+
+            $executor->run($tasks, $hosts);
+        }
+
+        foreach ($this->ephemeralHypernodesRegistered as $ephemeralHypernode) {
+            $this->log->info(sprintf('Stopping ephemeral Hypernode %s...', $ephemeralHypernode));
+            $this->hypernodeClient->ephemeralApp->cancel($ephemeralHypernode);
+        }
+
+        return $exitCode;
     }
 
     private function tryGetConfiguration(): Configuration
