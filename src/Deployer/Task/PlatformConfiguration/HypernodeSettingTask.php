@@ -33,9 +33,9 @@ class HypernodeSettingTask extends TaskBase implements ConfigurableTaskInterface
         Assert::isInstanceOf($config, HypernodeSettingConfiguration::class);
         $attribute = $config->getAttribute();
         $value = $config->getValue();
-        $taskName = "deploy:hypernode:setting:{$attribute}";
+        $taskName = "deploy:hypernode:setting:$attribute";
         $task = task($taskName, function () use ($attribute, $value) {
-            run("hypernode-systemctl settings {$attribute} {$value}");
+            run("hypernode-systemctl settings $attribute $value --block");
         });
         after('deploy:setup', $taskName);
         return $task;
