@@ -72,8 +72,6 @@ class DeployRunner
      * @throws GracefulShutdownException
      * @throws Throwable
      * @throws Exception
-     *
-     * @return int
      */
     public function run(OutputInterface $output, string $stage, string $task = self::TASK_DEPLOY): int
     {
