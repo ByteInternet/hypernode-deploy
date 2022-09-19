@@ -8,14 +8,17 @@ use Deployer\Exception\GracefulShutdownException;
 use Deployer\Host\Host;
 use Hypernode\Deploy\Console\Output\OutputWatcher;
 use Hypernode\Deploy\Deployer\RecipeLoader;
-use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\TaskFactory;
+use Hypernode\Deploy\Ephemeral\EphemeralHypernodeManager;
+use Hypernode\Deploy\Exception\CreateEphemeralHypernodeFailedException;
+use Hypernode\Deploy\Exception\InvalidConfigurationException;
+use Hypernode\Deploy\Exception\TimeoutException;
+use Hypernode\DeployConfiguration\Configurable\ServerRoleConfigurableInterface;
+use Hypernode\DeployConfiguration\Configurable\StageConfigurableInterface;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Server;
-use Hypernode\DeployConfiguration\ServerRoleConfigurableInterface;
 use Hypernode\DeployConfiguration\Stage;
-use Hypernode\DeployConfiguration\StageConfigurableInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -32,36 +35,37 @@ use function Deployer\task;
 
 class DeployRunner
 {
-    /**
-     * @var TaskFactory
-     */
-    private $taskFactory;
+    public const TASK_BUILD = 'build';
+    public const TASK_DEPLOY = 'deploy';
+
+    private TaskFactory $taskFactory;
+    private InputInterface $input;
+    private LoggerInterface $log;
+    private RecipeLoader $recipeLoader;
+    private EphemeralHypernodeManager $ephemeralHypernodeManager;
 
     /**
-     * @var InputInterface
+     * Registered ephemeral Hypernodes to stop/cancel after running.
+     *
+     * @var string[]
      */
-    private $input;
+    private array $ephemeralHypernodesRegistered = [];
 
-    /**
-     * @var LoggerInterface
-     */
-    private $log;
-
-    /**
-     * @var RecipeLoader
-     */
-    private $recipeLoader;
+    private array $deployedHostnames = [];
+    private string $deployedStage = '';
 
     public function __construct(
         TaskFactory $taskFactory,
         InputInterface $input,
         LoggerInterface $log,
-        RecipeLoader $recipeLoader
+        RecipeLoader $recipeLoader,
+        EphemeralHypernodeManager $ephemeralHypernodeManager
     ) {
         $this->taskFactory = $taskFactory;
         $this->input = $input;
         $this->log = $log;
         $this->recipeLoader = $recipeLoader;
+        $this->ephemeralHypernodeManager = $ephemeralHypernodeManager;
     }
 
     /**
@@ -69,7 +73,7 @@ class DeployRunner
      * @throws Throwable
      * @throws Exception
      */
-    public function run(OutputInterface $output, string $stage, string $task = 'deploy'): int
+    public function run(OutputInterface $output, string $stage, string $task = self::TASK_DEPLOY): int
     {
         $console = new Application();
         $deployer = new Deployer($console);
@@ -83,7 +87,7 @@ class DeployRunner
         );
 
         try {
-            $this->initializeDeployer($deployer);
+            $this->initializeDeployer($deployer, $task);
         } catch (InvalidConfigurationException $e) {
             $output->write($e->getMessage());
             return 1;
@@ -100,13 +104,13 @@ class DeployRunner
      * @throws Throwable
      * @throws InvalidConfigurationException
      */
-    private function initializeDeployer(Deployer $deployer): void
+    private function initializeDeployer(Deployer $deployer, string $task): void
     {
         $this->recipeLoader->load('common.php');
         $tasks = $this->taskFactory->loadAll();
         $config = $this->getConfiguration($deployer);
         $config->setLogger($this->log);
-        $this->configureStages($config);
+        $this->configureStages($config, $task);
 
         foreach ($tasks as $task) {
             $task->configure($config);
@@ -176,19 +180,25 @@ class DeployRunner
         }
     }
 
-    private function configureStages(Configuration $config): void
+    private function configureStages(Configuration $config, string $task): void
     {
-        $this->initializeBuildStage($config);
+        if ($task === self::TASK_BUILD) {
+            $this->initializeBuildStage($config);
+        }
 
-        foreach ($config->getStages() as $stage) {
-            foreach ($stage->getServers() as $server) {
-                $this->configureStageServer($stage, $server, $config);
+        if ($task === self::TASK_DEPLOY) {
+            foreach ($config->getStages() as $stage) {
+                foreach ($stage->getServers() as $server) {
+                    $this->configureStageServer($stage, $server, $config);
+                }
             }
         }
     }
 
     private function configureStageServer(Stage $stage, Server $server, Configuration $config): void
     {
+        $this->maybeConfigureEphemeralServer($server);
+
         $host = host($stage->getName() . ':' . $server->getHostname());
         $host->setHostname($server->getHostname());
         $host->setPort(22);
@@ -237,6 +247,29 @@ class DeployRunner
                 sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
             );
             $host->set($key, $value);
+        }
+    }
+
+    private function maybeConfigureEphemeralServer(Server $server): void
+    {
+        $serverOptions = $server->getOptions();
+        $isEphemeral = $serverOptions[Server::OPTION_HN_EPHEMERAL] ?? false;
+        $parentApp = $serverOptions[Server::OPTION_HN_PARENT_APP] ?? null;
+        if ($isEphemeral && $parentApp) {
+            $this->log->info(sprintf('Creating an ephemeral Hypernode based on %s.', $parentApp));
+            $ephemeralApp = $this->ephemeralHypernodeManager->createForHypernode($parentApp);
+            $server->setHostname(sprintf("%s.hypernode.io", $ephemeralApp));
+            $this->ephemeralHypernodesRegistered[] = $ephemeralApp;
+            $this->log->info(sprintf('Successfully requested ephemeral Hypernode, name is %s.', $ephemeralApp));
+
+            try {
+                $this->log->info('Waiting for ephemeral Hypernode to become available...');
+                $this->ephemeralHypernodeManager->waitForAvailability($ephemeralApp);
+                $this->log->info('Ephemeral Hypernode has become available!');
+            } catch (CreateEphemeralHypernodeFailedException | TimeoutException $e) {
+                $this->ephemeralHypernodeManager->cancel($ephemeralApp);
+                throw $e;
+            }
         }
     }
 
@@ -289,6 +322,8 @@ class DeployRunner
         $exitCode = $executor->run($tasks, $hosts);
 
         if ($exitCode === 0) {
+            $this->deployedHostnames = array_map(fn (Host $host) => $host->getHostname(), $hosts);
+            $this->deployedStage = $stage;
             return 0;
         }
 
@@ -303,6 +338,8 @@ class DeployRunner
 
             $executor->run($tasks, $hosts);
         }
+
+        $this->ephemeralHypernodeManager->cancel(...$this->ephemeralHypernodesRegistered);
 
         return $exitCode;
     }
@@ -364,5 +401,14 @@ class DeployRunner
         if (file_exists(WORKING_DIR . '/vendor/autoload.php')) {
             require_once WORKING_DIR . '/vendor/autoload.php';
         }
+    }
+
+    public function getDeploymentReport()
+    {
+        return new Report\Report(
+            $this->deployedStage,
+            $this->deployedHostnames,
+            $this->ephemeralHypernodesRegistered
+        );
     }
 }
