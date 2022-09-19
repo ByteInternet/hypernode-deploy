@@ -5,6 +5,7 @@ namespace Hypernode\Deploy;
 use Deployer\Deployer;
 use Deployer\Exception\Exception;
 use Deployer\Exception\GracefulShutdownException;
+use Deployer\Host\Host;
 use Hypernode\Deploy\Console\Output\OutputWatcher;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
@@ -67,10 +68,8 @@ class DeployRunner
      * @throws GracefulShutdownException
      * @throws Throwable
      * @throws Exception
-     *
-     * @return void
      */
-    public function run(OutputInterface $output, string $stage, string $task = 'deploy')
+    public function run(OutputInterface $output, string $stage, string $task = 'deploy'): int
     {
         $console = new Application();
         $deployer = new Deployer($console);
@@ -87,9 +86,10 @@ class DeployRunner
             $this->initializeDeployer($deployer);
         } catch (InvalidConfigurationException $e) {
             $output->write($e->getMessage());
-            return;
+            return 1;
         }
-        $this->runStage($deployer, $stage, $task);
+
+        return $this->runStage($deployer, $stage, $task);
     }
 
     /**
@@ -271,7 +271,7 @@ class DeployRunner
      * @throws Throwable
      * @throws Exception
      */
-    private function runStage(Deployer $deployer, string $stage, string $task = 'deploy'): void
+    private function runStage(Deployer $deployer, string $stage, string $task = 'deploy'): int
     {
         $hosts = $deployer->selector->select("stage=$stage");
         if (empty($hosts)) {
@@ -281,30 +281,30 @@ class DeployRunner
         $tasks = $deployer->scriptManager->getTasks($task);
         $executor = $deployer->master;
 
-        try {
-            /**
-             * Set the env variable to tell deployer to deploy the hosts sequentially instead of parallel.
-             * @see \Deployer\Executor\Master::runTask()
-             */
-            putenv('DEPLOYER_LOCAL_WORKER=true');
-            $executor->run($tasks, $hosts);
-        } catch (Throwable $exception) {
-            $deployer->output->writeln('[' . \get_class($exception) . '] ' . $exception->getMessage());
-            $deployer->output->writeln($exception->getTraceAsString());
+        /**
+         * Set the env variable to tell deployer to deploy the hosts sequentially instead of parallel.
+         * @see \Deployer\Executor\Master::runTask()
+         */
+        putenv('DEPLOYER_LOCAL_WORKER=true');
+        $exitCode = $executor->run($tasks, $hosts);
 
-            if ($exception instanceof GracefulShutdownException) {
-                throw $exception;
-            }
-
-            // Check if we have tasks to execute on failure
-            if ($deployer['fail']->has($task)) {
-                $taskName = $deployer['fail']->get($task);
-                $tasks = $deployer->scriptManager->getTasks($taskName);
-
-                $executor->run($tasks, $hosts);
-            }
-            throw $exception;
+        if ($exitCode === 0) {
+            return 0;
         }
+
+        if ($exitCode === GracefulShutdownException::EXIT_CODE) {
+            return 1;
+        }
+
+        // Check if we have tasks to execute on failure
+        if ($deployer['fail']->has($task)) {
+            $taskName = $deployer['fail']->get($task);
+            $tasks = $deployer->scriptManager->getTasks($taskName);
+
+            $executor->run($tasks, $hosts);
+        }
+
+        return $exitCode;
     }
 
     private function tryGetConfiguration(): Configuration
