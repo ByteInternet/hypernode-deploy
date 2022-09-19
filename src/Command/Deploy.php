@@ -35,7 +35,6 @@ class Deploy extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->deployRunner->run($output, $input->getArgument('stage'), 'deploy');
-        return 0;
+        return $this->deployRunner->run($output, $input->getArgument('stage'), 'deploy');
     }
 }

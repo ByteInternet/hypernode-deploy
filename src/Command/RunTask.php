@@ -36,7 +36,6 @@ class RunTask extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->deployRunner->run($output, $input->getArgument('stage'), $input->getArgument('task'));
-        return 0;
+        return $this->deployRunner->run($output, $input->getArgument('stage'), $input->getArgument('task'));
     }
 }

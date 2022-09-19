@@ -34,7 +34,6 @@ class ComposerAuth extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->deployRunner->run($output, 'build', 'deploy:vendors:auth');
-        return 0;
+        return $this->deployRunner->run($output, 'build', 'deploy:vendors:auth');
     }
 }
