@@ -51,6 +51,8 @@ class EphemeralHypernodeManager
         $latest = microtime(true);
         $timeElapsed = 0;
         $resolved = false;
+        $interval = 3;
+        $allowedErrorWindow = 3;
 
         while ($timeElapsed < $timeout && !$resolved) {
             $now = microtime(true);
@@ -76,10 +78,19 @@ class EphemeralHypernodeManager
                 // Otherwise, there's an error, and it should be propagated.
                 if ($e->getCode() !== 404) {
                     throw $e;
+                } elseif ($timeElapsed < $allowedErrorWindow) {
+                    // Sometimes we get an error where the logbook is not yet available, but it will be soon.
+                    // We allow a small window for this to happen, and then we throw an exception.
+                    sprintf(
+                        'Got an expected exception during the allowed error window of HTTP code %d, waiting for %s to become available',
+                        $e->getCode(),
+                        $ephemeralHypernode
+                    );
+                    continue;
                 }
             }
 
-            sleep(5);
+            sleep($interval);
         }
 
         if (!$resolved) {
