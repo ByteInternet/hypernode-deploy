@@ -7,15 +7,30 @@ jobs:
     strategy:
       matrix:
         php_version: [7.4, 8.1]
+        testsuite: [general, ephemeral]
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout hypernode-deploy
-      uses: actions/checkout@v3
-    - name: Run test script
-      run: MAGENTO_REPO=./magento2 ./runtests.sh
-      shell: bash
-      env:
-        PHP_VERSION: ${{ matrix.php_version }}
+      - name: Checkout hypernode-deploy
+        uses: actions/checkout@v3
+      - name: Run general testsuite
+        if: ${{ matrix.testsuite == 'general' }}
+        run: MAGENTO_REPO=./magento2 ./runtests.sh general
+        shell: bash
+        env:
+          PHP_VERSION: ${{ matrix.php_version }}
+      - name: Start SSH agent for ephemeral testsuite
+        if: ${{ matrix.testsuite == 'ephemeral' && matrix.php_version == '8.1' }}
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Run ephemeral testsuite
+        if: ${{ matrix.testsuite == 'ephemeral' && matrix.php_version == '8.1' }}
+        run: ./runtests.sh ephemeral
+        shell: bash
+        env:
+          PHP_VERSION: ${{ matrix.php_version }}
+          HYPERNODE_API_TOKEN: ${{ secrets.HYPERNODE_API_TOKEN }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   code_quality:
     strategy:
       matrix:

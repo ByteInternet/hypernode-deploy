@@ -37,6 +37,7 @@ RUN apt-get update && \
         git \
         patch \
         bash \
+        jq \
         ca-certificates \
         wget \
         curl \

@@ -70,7 +70,7 @@ class PrepareSshTaskGlobal extends TaskBase
             return;
         }
 
-        if (strpos($key, 'BEGIN RSA PRIVATE KEY') === false) {
+        if (!preg_match('/BEGIN (OPENSSH|RSA) PRIVATE KEY/', $key)) {
             runLocally('echo "$SSH_PRIVATE_KEY" | base64 -d > {{ssh_key_file}}');
         } else {
             runLocally('echo "$SSH_PRIVATE_KEY" > {{ssh_key_file}}');

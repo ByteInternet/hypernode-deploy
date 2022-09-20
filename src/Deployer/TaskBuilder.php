@@ -8,8 +8,8 @@ use Deployer\Exception\TimeoutException;
 use Deployer\Task\Task;
 use Hypernode\DeployConfiguration\Command\Command;
 use Hypernode\DeployConfiguration\Command\DeployCommand;
-use Hypernode\DeployConfiguration\ServerRoleConfigurableInterface;
-use Hypernode\DeployConfiguration\StageConfigurableInterface;
+use Hypernode\DeployConfiguration\Configurable\ServerRoleConfigurableInterface;
+use Hypernode\DeployConfiguration\Configurable\StageConfigurableInterface;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
 use function Deployer\parse;
