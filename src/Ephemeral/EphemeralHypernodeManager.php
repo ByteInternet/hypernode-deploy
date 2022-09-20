@@ -79,10 +79,10 @@ class EphemeralHypernodeManager
                 if ($e->getCode() !== 404) {
                     throw $e;
                 } elseif ($timeElapsed < $allowedErrorWindow) {
-                    // Some times we get an error where the logbook is not yet available, but it will be soon.
+                    // Sometimes we get an error where the logbook is not yet available, but it will be soon.
                     // We allow a small window for this to happen, and then we throw an exception.
                     sprintf(
-                        'Got an excepted exception during the allowed error window of HTTP code %d, waiting for %s to become available',
+                        'Got an expected exception during the allowed error window of HTTP code %d, waiting for %s to become available',
                         $e->getCode(),
                         $ephemeralHypernode
                     );
