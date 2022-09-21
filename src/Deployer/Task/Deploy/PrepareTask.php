@@ -23,9 +23,5 @@ class PrepareTask extends TaskBase
             'deploy:shared',
             'deploy:writable',
         ]);
-        task('deploy:prepare_release', [
-            'deploy:prepare',
-            'deploy:release',
-        ])->select("roles=$role");
     }
 }
