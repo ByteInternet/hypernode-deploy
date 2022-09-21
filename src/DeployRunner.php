@@ -73,7 +73,7 @@ class DeployRunner
      * @throws Throwable
      * @throws Exception
      */
-    public function run(OutputInterface $output, string $stage, string $task = self::TASK_DEPLOY): int
+    public function run(OutputInterface $output, string $stage, string $task, bool $configureBuildStage, bool $configureServers): int
     {
         $console = new Application();
         $deployer = new Deployer($console);
@@ -87,7 +87,7 @@ class DeployRunner
         );
 
         try {
-            $this->initializeDeployer($deployer, $task);
+            $this->initializeDeployer($deployer, $configureBuildStage, $configureServers);
         } catch (InvalidConfigurationException $e) {
             $output->write($e->getMessage());
             return 1;
@@ -104,13 +104,20 @@ class DeployRunner
      * @throws Throwable
      * @throws InvalidConfigurationException
      */
-    private function initializeDeployer(Deployer $deployer, string $task): void
+    private function initializeDeployer(Deployer $deployer, bool $configureBuildStage, bool $configureServers): void
     {
         $this->recipeLoader->load('common.php');
         $tasks = $this->taskFactory->loadAll();
         $config = $this->getConfiguration($deployer);
         $config->setLogger($this->log);
-        $this->configureStages($config, $task);
+
+        if ($configureBuildStage) {
+            $this->initializeBuildStage($config);
+        }
+
+        if ($configureServers) {
+            $this->configureServers($config);
+        }
 
         foreach ($tasks as $task) {
             $task->configure($config);
@@ -180,17 +187,11 @@ class DeployRunner
         }
     }
 
-    private function configureStages(Configuration $config, string $task): void
+    private function configureServers(Configuration $config): void
     {
-        if ($task === self::TASK_BUILD) {
-            $this->initializeBuildStage($config);
-        }
-
-        if ($task === self::TASK_DEPLOY) {
-            foreach ($config->getStages() as $stage) {
-                foreach ($stage->getServers() as $server) {
-                    $this->configureStageServer($stage, $server, $config);
-                }
+        foreach ($config->getStages() as $stage) {
+            foreach ($stage->getServers() as $server) {
+                $this->configureStageServer($stage, $server, $config);
             }
         }
     }
