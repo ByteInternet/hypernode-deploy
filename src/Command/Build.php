@@ -33,6 +33,6 @@ class Build extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        return $this->deployRunner->run($output, 'build', DeployRunner::TASK_BUILD);
+        return $this->deployRunner->run($output, 'build', DeployRunner::TASK_BUILD, true, false);
     }
 }
