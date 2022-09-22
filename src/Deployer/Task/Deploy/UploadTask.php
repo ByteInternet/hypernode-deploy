@@ -30,7 +30,7 @@ class UploadTask extends TaskBase
         task('deploy:upload', [
             'deploy:info',
             'prepare:ssh',
-            'deploy:release',
+            'deploy:prepare',
             'deploy:copy',
             'deploy:deploy',
         ])->select("roles=$role");
