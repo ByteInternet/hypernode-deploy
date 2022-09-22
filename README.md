@@ -1,3 +1,13 @@
+## Hypernode Deploy
+
+This is the official application deployment tool for the Hypernode, a highly automated hosting platform for ecommerce applications.
+
+If you want to use Hypernode Deploy in your shop you will probably want to head over to the [hypernode-deploy-configuration repository](https://github.com/ByteInternet/hypernode-deploy-configuration) instead.
+
+If you are looking to see how the internals of the deployment tool work or even want to contribute a change to the project yourself, then you're in the right place.
+
+This project builds the hypernode/deploy container image.
+
 ## Switching node version
 
 ```bash
