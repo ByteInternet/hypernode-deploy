@@ -32,7 +32,8 @@ $DP hypernode-deploy build -f /web/deploy.php -vvv
 # Nginx/Supervisor/etc configs           #
 ##########################################
 # SSH from deploy container to hypernode container
-$DP hypernode-deploy deploy test -f /web/deploy.php -vvv
+#$DP hypernode-deploy deploy test -f /web/deploy.php -vvv
+$DP hypernode-deploy deploy staging -f /web/deploy.php -vvv
 
 # Run some tests
 
