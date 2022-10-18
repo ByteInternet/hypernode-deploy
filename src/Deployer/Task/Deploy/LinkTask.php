@@ -29,9 +29,9 @@ class LinkTask extends TaskBase
                 } else {
                     run('rmdir /data/web/public');
                 }
+            } else {
+                run('ln -s {{current_path}}/{{public_folder}} /data/web/public');
             }
-
-            run('ln -s {{current_path}}/{{public_folder}} /data/web/public');
         })->select("roles=$role");
     }
 }
