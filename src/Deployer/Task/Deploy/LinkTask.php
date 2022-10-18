@@ -28,6 +28,7 @@ class LinkTask extends TaskBase
                     return;
                 } else {
                     run('rmdir /data/web/public');
+                    run('ln -s {{current_path}}/{{public_folder}} /data/web/public');
                 }
             } else {
                 run('ln -s {{current_path}}/{{public_folder}} /data/web/public');
