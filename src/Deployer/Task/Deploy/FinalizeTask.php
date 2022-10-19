@@ -7,6 +7,7 @@ use Hypernode\DeployConfiguration\ServerRole;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\DeployConfiguration\Configuration;
 
+use function Deployer\after;
 use function Deployer\fail;
 use function Deployer\task;
 
@@ -35,5 +36,6 @@ class FinalizeTask extends TaskBase
         ])->select("roles=$role");
 
         fail('deploy', 'deploy:failed');
+        after('deploy:failed', 'deploy:unlock');
     }
 }
