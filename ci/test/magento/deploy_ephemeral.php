@@ -12,13 +12,13 @@ namespace Hypernode\DeployConfiguration;
 $configuration = new ApplicationTemplate\Magento2(['en_US', 'nl_NL']);
 
 $stagingStage = $configuration->addStage('staging', 'banaan.store');
-$stagingStage->addServer('hndeployintegr8', null, [], [
+$stagingStage->addServer('hndeployintegr8.hypernode.io', null, [], [
     'user' => 'app',
     'port' => 22,
 ]);
 
 $productionStage = $configuration->addStage('test', 'banaan.store');
-$productionStage->addServer('hndeployintegr8', null, [], [
+$productionStage->addServer('hndeployintegr8.hypernode.io', null, [], [
     'user' => 'app',
     'port' => 22,
 ]);
