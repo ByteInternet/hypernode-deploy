@@ -5,7 +5,7 @@ set -x
 
 # Handy aliases
 HN="ssh app@hndeployintegr8.hypernode.io -o StrictHostKeyChecking=no"
-DP="docker run --rm -v /tmp/m2build:/web1 -e HYPERNODE_API_TOKEN -e SSH_PRIVATE_KEY -w /web1 hndeploy"
+DP="docker run --rm -v /tmp/m2build:/web -e HYPERNODE_API_TOKEN -e SSH_PRIVATE_KEY -w /web hndeploy"
 
 # Build Docker image
 docker build \
@@ -22,9 +22,10 @@ mkdir -p "$HOME/.ssh"
 cp ci/test/magento/deploy_ephemeral.php /tmp/m2build/deploy.php
 rsync -a -e "ssh -o StrictHostKeyChecking=no" app@hndeployintegr8.hypernode.io:magento2/ /tmp/m2build
 rm /tmp/m2build/app/etc/env.php
+rm -rf /tmp/m2build/var/log
 
 # Build application
-$DP hypernode-deploy build -f /web1/deploy.php -vvv
+$DP hypernode-deploy build -f /web/deploy.php -vvv
 
 ##########################################
 # DEPLOY WITHOUT PLATFORM CONFIGURATIONS #
@@ -32,7 +33,7 @@ $DP hypernode-deploy build -f /web1/deploy.php -vvv
 # Nginx/Supervisor/etc configs           #
 ##########################################
 # SSH from deploy container to hypernode container
-$DP hypernode-deploy deploy staging -f /web1/deploy.php -vvv
+$DP hypernode-deploy deploy staging -f /web/deploy.php -vvv
 
 # Run some tests, the staging environment should not have a ephemeral node
 $DP ls -l
@@ -43,7 +44,7 @@ $DP jq .stage deployment-report.json -r
 $DP jq .hostnames[0] deployment-report.json -r
 
 # Now do a test deploy which should have a ephemeral node.
-$DP hypernode-deploy deploy test -f /web1/deploy.php -vvv
+$DP hypernode-deploy deploy test -f /web/deploy.php -vvv
 
 $DP ls -l
 $DP test -f deployment-report.json
