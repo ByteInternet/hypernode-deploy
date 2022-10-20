@@ -39,9 +39,10 @@ $DP hypernode-deploy deploy staging -f /web/deploy.php -vvv
 $DP ls -l
 $DP test -f deployment-report.json
 $DP jq . deployment-report.json
-$DP jq .version deployment-report.json -r
-$DP jq .stage deployment-report.json -r
-$DP jq .hostnames[0] deployment-report.json -r
+$DP jq .version deployment-report.json -r -e
+$DP jq .stage deployment-report.json -r -e
+$DP jq .hostnames[0] deployment-report.json -r -e
+$DP jq .ephemeral_hypernodes | select(length == 0) deployment-report.json -r -e
 
 # Now do a test deploy which should have a ephemeral node.
 $DP hypernode-deploy deploy test -f /web/deploy.php -vvv
@@ -49,10 +50,10 @@ $DP hypernode-deploy deploy test -f /web/deploy.php -vvv
 $DP ls -l
 $DP test -f deployment-report.json
 $DP jq . deployment-report.json
-$DP jq .version deployment-report.json -r
-$DP jq .stage deployment-report.json -r
-$DP jq .hostnames[0] deployment-report.json -r
-$DP jq .ephemeral_hypernodes[0] deployment-report.json -r
+$DP jq .version deployment-report.json -r -e
+$DP jq .stage deployment-report.json -r -e
+$DP jq .hostnames[0] deployment-report.json -r -e
+$DP jq .ephemeral_hypernodes[0] deployment-report.json -r -e
 
 # cleanup data
 $DP hypernode-deploy cleanup -vvv
