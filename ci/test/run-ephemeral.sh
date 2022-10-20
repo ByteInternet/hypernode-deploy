@@ -42,7 +42,7 @@ $DP jq . deployment-report.json
 $DP jq .version deployment-report.json -r -e
 $DP jq .stage deployment-report.json -r -e
 $DP jq .hostnames[0] deployment-report.json -r -e
-$DP jq .ephemeral_hypernodes | select(length == 0) deployment-report.json -r -e
+$DP jq '.ephemeral_hypernodes | select(length == 0)' deployment-report.json -r -e
 
 # Now do a test deploy which should have a ephemeral node.
 $DP hypernode-deploy deploy test -f /web/deploy.php -vvv
