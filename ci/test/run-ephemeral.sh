@@ -32,7 +32,7 @@ $DP hypernode-deploy build -f /web/deploy.php -vvv
 # This should pass, but not generate any #
 # Nginx/Supervisor/etc configs           #
 ##########################################
-# SSH from deploy container to hypernode container
+# SSH from deploy container to Hypernode container
 $DP hypernode-deploy deploy staging -f /web/deploy.php -vvv
 
 # Run some tests, the staging environment should not have a ephemeral node
