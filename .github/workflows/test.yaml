@@ -6,7 +6,7 @@ jobs:
   integration_test:
     strategy:
       matrix:
-        ngfhmbv n
+        php_version: [7.4, 8.1]
         testsuite: [general, brancher]
     runs-on: ubuntu-latest
     steps:
