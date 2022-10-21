@@ -22,6 +22,7 @@ mkdir -p "$HOME/.ssh"
 cp ci/test/magento/deploy_brancher.php /tmp/m2build/deploy.php
 rsync -a -e "ssh -o StrictHostKeyChecking=no" app@hndeployintegr8.hypernode.io:magento2/ /tmp/m2build
 rm /tmp/m2build/app/etc/env.php
+rm -rf /tmp/m2build/var/log
 
 # Build application
 $DP hypernode-deploy build -f /web/deploy.php -vvv
@@ -31,17 +32,28 @@ $DP hypernode-deploy build -f /web/deploy.php -vvv
 # This should pass, but not generate any #
 # Nginx/Supervisor/etc configs           #
 ##########################################
-# SSH from deploy container to hypernode container
-$DP hypernode-deploy deploy test -f /web/deploy.php -vvv
+# SSH from deploy container to Hypernode container
+$DP hypernode-deploy deploy staging -f /web/deploy.php -vvv
 
-# Run some tests
+# Run some tests, the staging environment should not have a ephemeral node
+$DP ls -l
+$DP test -f deployment-report.json
+$DP jq . deployment-report.json
+$DP jq .version deployment-report.json -r -e
+$DP jq .stage deployment-report.json -r -e
+$DP jq .hostnames[0] deployment-report.json -r -e
+$DP jq '.ephemeral_hypernodes | select(length == 0)' deployment-report.json -r -e
+
+# Now do a test deploy which should have a ephemeral node.
+$DP hypernode-deploy deploy test -f /web/deploy.php -vvv
 
 $DP ls -l
 $DP test -f deployment-report.json
 $DP jq . deployment-report.json
-$DP jq .version deployment-report.json -r
-$DP jq .stage deployment-report.json -r
-$DP jq .hostnames[0] deployment-report.json -r
-$DP jq .brancher_hypernodes[0] deployment-report.json -r
+$DP jq .version deployment-report.json -r -e
+$DP jq .stage deployment-report.json -r -e
+$DP jq .hostnames[0] deployment-report.json -r -e
+$DP jq .ephemeral_hypernodes[0] deployment-report.json -r -e
 
+# cleanup data
 $DP hypernode-deploy cleanup -vvv

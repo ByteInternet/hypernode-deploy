@@ -87,7 +87,7 @@ class DeployRunner
         );
 
         try {
-            $this->initializeDeployer($deployer, $configureBuildStage, $configureServers);
+            $this->initializeDeployer($deployer, $configureBuildStage, $configureServers, $stage);
         } catch (InvalidConfigurationException $e) {
             $output->write($e->getMessage());
             return 1;
@@ -101,11 +101,15 @@ class DeployRunner
      *
      * @throws Exception
      * @throws GracefulShutdownException
-     * @throws Throwable
      * @throws InvalidConfigurationException
+     * @throws Throwable
      */
-    private function initializeDeployer(Deployer $deployer, bool $configureBuildStage, bool $configureServers): void
-    {
+    private function initializeDeployer(
+        Deployer $deployer,
+        bool $configureBuildStage,
+        bool $configureServers,
+        string $stage
+    ): void {
         $this->recipeLoader->load('common.php');
         $tasks = $this->taskFactory->loadAll();
         $config = $this->getConfiguration($deployer);
@@ -116,7 +120,7 @@ class DeployRunner
         }
 
         if ($configureServers) {
-            $this->configureServers($config);
+            $this->configureServers($config, $stage);
         }
 
         foreach ($tasks as $task) {
@@ -187,11 +191,15 @@ class DeployRunner
         }
     }
 
-    private function configureServers(Configuration $config): void
+    private function configureServers(Configuration $config, string $stage): void
     {
-        foreach ($config->getStages() as $stage) {
-            foreach ($stage->getServers() as $server) {
-                $this->configureStageServer($stage, $server, $config);
+        foreach ($config->getStages() as $configStage) {
+            if ($configStage->getName() !== $stage) {
+                continue;
+            }
+
+            foreach ($configStage->getServers() as $server) {
+                $this->configureStageServer($configStage, $server, $config);
             }
         }
     }
@@ -323,7 +331,7 @@ class DeployRunner
         $exitCode = $executor->run($tasks, $hosts);
 
         if ($exitCode === 0) {
-            $this->deployedHostnames = array_map(fn (Host $host) => $host->getHostname(), $hosts);
+            $this->deployedHostnames = array_map(fn(Host $host) => $host->getHostname(), $hosts);
             $this->deployedStage = $stage;
             return 0;
         }
