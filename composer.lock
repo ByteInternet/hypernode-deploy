@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c2050586df39ec657cd256f09544ea60",
+    "content-hash": "39b23eb540c8c7de2b3500a08cecdf01",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -733,12 +733,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-api-php.git",
-                "reference": "0a40102d119f5678447b6e0682d939fcb077a622"
+                "reference": "c40c85bcf1940486edb667e949ff09b9003df664"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-api-php/zipball/0a40102d119f5678447b6e0682d939fcb077a622",
-                "reference": "0a40102d119f5678447b6e0682d939fcb077a622",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-api-php/zipball/c40c85bcf1940486edb667e949ff09b9003df664",
+                "reference": "c40c85bcf1940486edb667e949ff09b9003df664",
                 "shasum": ""
             },
             "require": {
@@ -775,22 +775,22 @@
             "description": "Hypernode API Client for PHP",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-api-php/issues",
-                "source": "https://github.com/ByteInternet/hypernode-api-php/tree/master"
+                "source": "https://github.com/ByteInternet/hypernode-api-php/tree/0.1.0"
             },
-            "time": "2022-09-14T07:21:34+00:00"
+            "time": "2022-10-21T08:40:17+00:00"
         },
         {
             "name": "hypernode/deploy-configuration",
-            "version": "v3.x-dev",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-deploy-configuration.git",
-                "reference": "39ba384b779da41e3f7c6e12056c6a2bdb9b62b4"
+                "reference": "c1d105abb790b57b5474da07afa66721d02f0442"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/39ba384b779da41e3f7c6e12056c6a2bdb9b62b4",
-                "reference": "39ba384b779da41e3f7c6e12056c6a2bdb9b62b4",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/c1d105abb790b57b5474da07afa66721d02f0442",
+                "reference": "c1d105abb790b57b5474da07afa66721d02f0442",
                 "shasum": ""
             },
             "require": {
@@ -817,9 +817,9 @@
             "description": "Hypernode deploy configuration files",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-deploy-configuration/issues",
-                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/v3"
+                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/3.0.0"
             },
-            "time": "2022-09-16T13:49:04+00:00"
+            "time": "2022-10-21T08:39:30+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -7549,7 +7549,6 @@
     "stability-flags": {
         "deployer/deployer": 20,
         "hypernode/api-client": 20,
-        "hypernode/deploy-configuration": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
@@ -7560,5 +7559,5 @@
         "composer-runtime-api": "^2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.0.0"
 }

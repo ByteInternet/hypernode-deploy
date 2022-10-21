@@ -12,6 +12,6 @@ namespace Hypernode\DeployConfiguration;
 $configuration = new ApplicationTemplate\Magento2(['en_US', 'nl_NL']);
 
 $productionStage = $configuration->addStage('test', 'banaan.store');
-$productionStage->addEphemeralServer('hndeployintegr8');
+$productionStage->addBrancherServer('hndeployintegr8');
 
 return $configuration;

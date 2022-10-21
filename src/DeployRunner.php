@@ -10,8 +10,8 @@ use Hypernode\Deploy\Console\Output\OutputWatcher;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\TaskFactory;
-use Hypernode\Deploy\Ephemeral\EphemeralHypernodeManager;
-use Hypernode\Deploy\Exception\CreateEphemeralHypernodeFailedException;
+use Hypernode\Deploy\Brancher\BrancherHypernodeManager;
+use Hypernode\Deploy\Exception\CreateBrancherHypernodeFailedException;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Hypernode\Deploy\Exception\TimeoutException;
 use Hypernode\DeployConfiguration\Configurable\ServerRoleConfigurableInterface;
@@ -42,14 +42,14 @@ class DeployRunner
     private InputInterface $input;
     private LoggerInterface $log;
     private RecipeLoader $recipeLoader;
-    private EphemeralHypernodeManager $ephemeralHypernodeManager;
+    private BrancherHypernodeManager $brancherHypernodeManager;
 
     /**
-     * Registered ephemeral Hypernodes to stop/cancel after running.
+     * Registered branccher Hypernodes to stop/cancel after running.
      *
      * @var string[]
      */
-    private array $ephemeralHypernodesRegistered = [];
+    private array $brancherHypernodesRegistered = [];
 
     private array $deployedHostnames = [];
     private string $deployedStage = '';
@@ -59,13 +59,13 @@ class DeployRunner
         InputInterface $input,
         LoggerInterface $log,
         RecipeLoader $recipeLoader,
-        EphemeralHypernodeManager $ephemeralHypernodeManager
+        BrancherHypernodeManager $brancherHypernodeManager
     ) {
         $this->taskFactory = $taskFactory;
         $this->input = $input;
         $this->log = $log;
         $this->recipeLoader = $recipeLoader;
-        $this->ephemeralHypernodeManager = $ephemeralHypernodeManager;
+        $this->brancherHypernodeManager = $brancherHypernodeManager;
     }
 
     /**
@@ -198,7 +198,7 @@ class DeployRunner
 
     private function configureStageServer(Stage $stage, Server $server, Configuration $config): void
     {
-        $this->maybeConfigureEphemeralServer($server);
+        $this->maybeConfigureBrancherServer($server);
 
         $host = host($stage->getName() . ':' . $server->getHostname());
         $host->setHostname($server->getHostname());
@@ -251,24 +251,24 @@ class DeployRunner
         }
     }
 
-    private function maybeConfigureEphemeralServer(Server $server): void
+    private function maybeConfigureBrancherServer(Server $server): void
     {
         $serverOptions = $server->getOptions();
-        $isEphemeral = $serverOptions[Server::OPTION_HN_EPHEMERAL] ?? false;
+        $isBrancher = $serverOptions[Server::OPTION_HN_BRANCHER] ?? false;
         $parentApp = $serverOptions[Server::OPTION_HN_PARENT_APP] ?? null;
-        if ($isEphemeral && $parentApp) {
-            $this->log->info(sprintf('Creating an ephemeral Hypernode based on %s.', $parentApp));
-            $ephemeralApp = $this->ephemeralHypernodeManager->createForHypernode($parentApp);
-            $server->setHostname(sprintf("%s.hypernode.io", $ephemeralApp));
-            $this->ephemeralHypernodesRegistered[] = $ephemeralApp;
-            $this->log->info(sprintf('Successfully requested ephemeral Hypernode, name is %s.', $ephemeralApp));
+        if ($isBrancher && $parentApp) {
+            $this->log->info(sprintf('Creating an brancher Hypernode based on %s.', $parentApp));
+            $brancherApp = $this->brancherHypernodeManager->createForHypernode($parentApp);
+            $server->setHostname(sprintf("%s.hypernode.io", $brancherApp));
+            $this->brancherHypernodesRegistered[] = $brancherApp;
+            $this->log->info(sprintf('Successfully requested brancher Hypernode, name is %s.', $brancherApp));
 
             try {
-                $this->log->info('Waiting for ephemeral Hypernode to become available...');
-                $this->ephemeralHypernodeManager->waitForAvailability($ephemeralApp);
-                $this->log->info('Ephemeral Hypernode has become available!');
-            } catch (CreateEphemeralHypernodeFailedException | TimeoutException $e) {
-                $this->ephemeralHypernodeManager->cancel($ephemeralApp);
+                $this->log->info('Waiting for brancher Hypernode to become available...');
+                $this->brancherHypernodeManager->waitForAvailability($brancherApp);
+                $this->log->info('Brancher Hypernode has become available!');
+            } catch (CreateBrancherHypernodeFailedException | TimeoutException $e) {
+                $this->brancherHypernodeManager->cancel($brancherApp);
                 throw $e;
             }
         }
@@ -340,7 +340,7 @@ class DeployRunner
             $executor->run($tasks, $hosts);
         }
 
-        $this->ephemeralHypernodeManager->cancel(...$this->ephemeralHypernodesRegistered);
+        $this->brancherHypernodeManager->cancel(...$this->brancherHypernodesRegistered);
 
         return $exitCode;
     }
@@ -409,7 +409,7 @@ class DeployRunner
         return new Report\Report(
             $this->deployedStage,
             $this->deployedHostnames,
-            $this->ephemeralHypernodesRegistered
+            $this->brancherHypernodesRegistered
         );
     }
 }

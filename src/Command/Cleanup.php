@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hypernode\Deploy\Command;
 
-use Hypernode\Deploy\Ephemeral\EphemeralHypernodeManager;
+use Hypernode\Deploy\Brancher\BrancherHypernodeManager;
 use Hypernode\Deploy\Report\ReportLoader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,14 +14,14 @@ use Throwable;
 class Cleanup extends Command
 {
     private ReportLoader $reportLoader;
-    private EphemeralHypernodeManager $ephemeralHypernodeManager;
+    private BrancherHypernodeManager $brancherHypernodeManager;
 
-    public function __construct(ReportLoader $reportLoader, EphemeralHypernodeManager $ephemeralHypernodeManager)
+    public function __construct(ReportLoader $reportLoader, BrancherHypernodeManager $brancherHypernodeManager)
     {
         parent::__construct();
 
         $this->reportLoader = $reportLoader;
-        $this->ephemeralHypernodeManager = $ephemeralHypernodeManager;
+        $this->brancherHypernodeManager = $brancherHypernodeManager;
     }
 
     protected function configure()
@@ -29,7 +29,7 @@ class Cleanup extends Command
         parent::configure();
         $this->setName('cleanup');
         $this->setDescription(
-            'Clean up any acquired resources during the deployment, like ephemeral Hypernodes.'
+            'Clean up any acquired resources during the deployment, like brancher Hypernodes.'
         );
     }
 
@@ -45,7 +45,7 @@ class Cleanup extends Command
             return 0;
         }
 
-        $this->ephemeralHypernodeManager->cancel(...$report->getEphemeralHypernodes());
+        $this->brancherHypernodeManager->cancel(...$report->getBrancherHypernodes());
 
         return 0;
     }

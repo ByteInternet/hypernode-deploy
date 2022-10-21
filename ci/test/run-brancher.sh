@@ -19,7 +19,7 @@ docker build \
 $HN /data/web/magento2/bin/magento app:config:dump scopes themes
 mkdir /tmp/m2build
 mkdir -p "$HOME/.ssh"
-cp ci/test/magento/deploy_ephemeral.php /tmp/m2build/deploy.php
+cp ci/test/magento/deploy_brancher.php /tmp/m2build/deploy.php
 rsync -a -e "ssh -o StrictHostKeyChecking=no" app@hndeployintegr8.hypernode.io:magento2/ /tmp/m2build
 rm /tmp/m2build/app/etc/env.php
 
@@ -42,6 +42,6 @@ $DP jq . deployment-report.json
 $DP jq .version deployment-report.json -r
 $DP jq .stage deployment-report.json -r
 $DP jq .hostnames[0] deployment-report.json -r
-$DP jq .ephemeral_hypernodes[0] deployment-report.json -r
+$DP jq .brancher_hypernodes[0] deployment-report.json -r
 
 $DP hypernode-deploy cleanup -vvv

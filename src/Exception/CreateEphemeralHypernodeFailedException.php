@@ -6,6 +6,6 @@ namespace Hypernode\Deploy\Exception;
 
 use Exception;
 
-class CreateEphemeralHypernodeFailedException extends Exception
+class CreateBrancherHypernodeFailedException extends Exception
 {
 }
