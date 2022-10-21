@@ -28,17 +28,6 @@ tools/vendor/bin/grumphp run --config tools/grumphp.yml
 ### Docker container
 We use Google Container Structure Tests over https://github.com/aelsabbahy/goss because the Hipex deploy container does not require a health check.
 
-## Build images locally
-
-```bash
-CONTAINER_IMAGE=hipex/deploy/dev \
-CI_COMMIT_TAG=2.0.2 \
-PHP_VERSION=7.4 \
-NODE_VERSION=14 \
-LOCAL_BUILD= \
-./ci/build.sh
-```
-
 ## Run with local image 
 
 ```bash
