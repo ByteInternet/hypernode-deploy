@@ -17,24 +17,24 @@ class Report
     /**
      * @var string[]
      */
-    private array $ephemeralHypernodes;
+    private array $brancherHypernodes;
     private string $version;
 
     /**
      * @param string $stage
      * @param string[] $hostnames
-     * @param string[] $ephemeralHypernodes
+     * @param string[] $brancherHypernodes
      * @param string $version Version of the report file
      */
     public function __construct(
         string $stage,
         array $hostnames,
-        array $ephemeralHypernodes,
+        array $brancherHypernodes,
         string $version = self::REPORT_VERSION
     ) {
         $this->stage = $stage;
         $this->hostnames = $hostnames;
-        $this->ephemeralHypernodes = $ephemeralHypernodes;
+        $this->brancherHypernodes = $brancherHypernodes;
         $this->version = $version;
     }
 
@@ -59,9 +59,9 @@ class Report
     /**
      * @return string[]
      */
-    public function getEphemeralHypernodes(): array
+    public function getBrancherHypernodes(): array
     {
-        return $this->ephemeralHypernodes;
+        return $this->brancherHypernodes;
     }
 
     public function toArray(): array
@@ -70,7 +70,7 @@ class Report
             'version' => $this->version,
             'stage' => $this->stage,
             'hostnames' => $this->hostnames,
-            'ephemeral_hypernodes' => $this->ephemeralHypernodes,
+            'brancher_hypernodes' => $this->brancherHypernodes,
         ];
     }
 
@@ -79,7 +79,7 @@ class Report
         return new Report(
             $data['stage'],
             $data['hostnames'],
-            $data['ephemeral_hypernodes'],
+            $data['brancher_hypernodes'],
             $data['version'],
         );
     }

@@ -18,6 +18,6 @@ $stagingStage->addServer('hndeployintegr8.hypernode.io', null, [], [
 ]);
 
 $productionStage = $configuration->addStage('test', 'banaan.store');
-$productionStage->addEphemeralServer('hndeployintegr8');
+$productionStage->addBrancherServer('hndeployintegr8');
 
 return $configuration;

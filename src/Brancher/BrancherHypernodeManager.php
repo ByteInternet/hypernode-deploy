@@ -1,17 +1,17 @@
 <?php
 
-namespace Hypernode\Deploy\Ephemeral;
+namespace Hypernode\Deploy\Brancher;
 
 use Hypernode\Api\Exception\HypernodeApiClientException;
 use Hypernode\Api\Exception\HypernodeApiServerException;
 use Hypernode\Api\HypernodeClient;
 use Hypernode\Api\HypernodeClientFactory;
 use Hypernode\Api\Resource\Logbook\Flow;
-use Hypernode\Deploy\Exception\CreateEphemeralHypernodeFailedException;
+use Hypernode\Deploy\Exception\CreateBrancherHypernodeFailedException;
 use Hypernode\Deploy\Exception\TimeoutException;
 use Psr\Log\LoggerInterface;
 
-class EphemeralHypernodeManager
+class BrancherHypernodeManager
 {
     private LoggerInterface $log;
     private HypernodeClient $hypernodeClient;
@@ -23,30 +23,30 @@ class EphemeralHypernodeManager
     }
 
     /**
-     * Create ephemeral Hypernode instance for given Hypernode.
+     * Create brancher Hypernode instance for given Hypernode.
      *
      * @param string $hypernode Name of the Hypernode
-     * @return string Name of the created ephemeral Hypernode
+     * @return string Name of the created brancher Hypernode
      * @throws HypernodeApiClientException
      * @throws HypernodeApiServerException
      */
     public function createForHypernode(string $hypernode): string
     {
-        return $this->hypernodeClient->ephemeralApp->create($hypernode);
+        return $this->hypernodeClient->brancherApp->create($hypernode);
     }
 
     /**
-     * Wait for ephemeral Hypernode to become available.
+     * Wait for brancher Hypernode to become available.
      *
-     * @param string $ephemeralHypernode Name of the ephemeral Hypernode
+     * @param string $brancherHypernode Name of the brancher Hypernode
      * @param int $timeout Maximum time to wait for availability
      * @return void
-     * @throws CreateEphemeralHypernodeFailedException
+     * @throws CreateBrancherHypernodeFailedException
      * @throws HypernodeApiClientException
      * @throws HypernodeApiServerException
      * @throws TimeoutException
      */
-    public function waitForAvailability(string $ephemeralHypernode, int $timeout = 900): void
+    public function waitForAvailability(string $brancherHypernode, int $timeout = 900): void
     {
         $latest = microtime(true);
         $timeElapsed = 0;
@@ -60,13 +60,13 @@ class EphemeralHypernodeManager
             $latest = $now;
 
             try {
-                $flows = $this->hypernodeClient->logbook->getList($ephemeralHypernode);
+                $flows = $this->hypernodeClient->logbook->getList($brancherHypernode);
                 $relevantFlows = array_filter($flows, fn (Flow $flow) => $flow->name === 'ensure_app');
                 $failedFlows = array_filter($flows, fn (Flow $flow) => $flow->isReverted());
                 $completedFlows = array_filter($flows, fn (Flow $flow) => $flow->isComplete());
 
                 if (count($failedFlows) === count($relevantFlows)) {
-                    throw new CreateEphemeralHypernodeFailedException();
+                    throw new CreateBrancherHypernodeFailedException();
                 }
 
                 if ($relevantFlows && count($completedFlows) === count($relevantFlows)) {
@@ -84,7 +84,7 @@ class EphemeralHypernodeManager
                     sprintf(
                         'Got an expected exception during the allowed error window of HTTP code %d, waiting for %s to become available',
                         $e->getCode(),
-                        $ephemeralHypernode
+                        $brancherHypernode
                     );
                     continue;
                 }
@@ -95,23 +95,23 @@ class EphemeralHypernodeManager
 
         if (!$resolved) {
             throw new TimeoutException(
-                sprintf('Timed out waiting for ephemeral Hypernode %s to become available', $ephemeralHypernode)
+                sprintf('Timed out waiting for brancher Hypernode %s to become available', $brancherHypernode)
             );
         }
     }
 
     /**
-     * Cancel one or multiple ephemeral Hypernodes.
+     * Cancel one or multiple brancher Hypernodes.
      *
-     * @param string ...$ephemeralHypernodes Name(s) of the ephemeral Hypernode(s)
+     * @param string ...$brancherHypernodes Name(s) of the brancher Hypernode(s)
      * @throws HypernodeApiClientException
      * @throws HypernodeApiServerException
      */
-    public function cancel(string ...$ephemeralHypernodes): void
+    public function cancel(string ...$brancherHypernodes): void
     {
-        foreach ($ephemeralHypernodes as $ephemeralHypernode) {
-            $this->log->info(sprintf('Stopping ephemeral Hypernode %s...', $ephemeralHypernode));
-            $this->hypernodeClient->ephemeralApp->cancel($ephemeralHypernode);
+        foreach ($brancherHypernodes as $brancherHypernode) {
+            $this->log->info(sprintf('Stopping brancher Hypernode %s...', $brancherHypernode));
+            $this->hypernodeClient->brancherApp->cancel($brancherHypernode);
         }
     }
 }

@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         php_version: [7.4, 8.1]
-        testsuite: [general, ephemeral]
+        testsuite: [general, brancher]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout hypernode-deploy
@@ -18,14 +18,14 @@ jobs:
         shell: bash
         env:
           PHP_VERSION: ${{ matrix.php_version }}
-      - name: Start SSH agent for ephemeral testsuite
-        if: ${{ matrix.testsuite == 'ephemeral' && matrix.php_version == '8.1' }}
+      - name: Start SSH agent for brancher testsuite
+        if: ${{ matrix.testsuite == 'brancher' && matrix.php_version == '8.1' }}
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Run ephemeral testsuite
-        if: ${{ matrix.testsuite == 'ephemeral' && matrix.php_version == '8.1' }}
-        run: ./runtests.sh ephemeral
+      - name: Run brancher testsuite
+        if: ${{ matrix.testsuite == 'brancher' && matrix.php_version == '8.1' }}
+        run: ./runtests.sh brancher
         shell: bash
         env:
           PHP_VERSION: ${{ matrix.php_version }}
