@@ -26,13 +26,14 @@ class BrancherHypernodeManager
      * Create brancher Hypernode instance for given Hypernode.
      *
      * @param string $hypernode Name of the Hypernode
+     * @param string[] $data Extra data to be applied to brancher instance
      * @return string Name of the created brancher Hypernode
      * @throws HypernodeApiClientException
      * @throws HypernodeApiServerException
      */
-    public function createForHypernode(string $hypernode): string
+    public function createForHypernode(string $hypernode, array $data = []): string
     {
-        return $this->hypernodeClient->brancherApp->create($hypernode);
+        return $this->hypernodeClient->brancherApp->create($hypernode, $data);
     }
 
     /**
