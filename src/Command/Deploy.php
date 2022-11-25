@@ -12,10 +12,7 @@ use Throwable;
 
 class Deploy extends Command
 {
-    /**
-     * @var DeployRunner
-     */
-    private $deployRunner;
+    private DeployRunner $deployRunner;
     private ReportWriter $reportWriter;
 
     public function __construct(DeployRunner $deployRunner, ReportWriter $reportWriter)
@@ -38,7 +35,13 @@ class Deploy extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $result = $this->deployRunner->run($output, $input->getArgument('stage'), DeployRunner::TASK_DEPLOY, false, true);
+        $result = $this->deployRunner->run(
+            $output,
+            $input->getArgument('stage'),
+            DeployRunner::TASK_DEPLOY,
+            false,
+            true
+        );
 
         if ($result === 0) {
             $this->reportWriter->write($this->deployRunner->getDeploymentReport());

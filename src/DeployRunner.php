@@ -44,10 +44,11 @@ class DeployRunner
     private InputInterface $input;
     private LoggerInterface $log;
     private RecipeLoader $recipeLoader;
+    private ConfigurationLoader $configurationLoader;
     private BrancherHypernodeManager $brancherHypernodeManager;
 
     /**
-     * Registered branccher Hypernodes to stop/cancel after running.
+     * Registered brancher Hypernodes to stop/cancel after running.
      *
      * @var string[]
      */
@@ -61,6 +62,7 @@ class DeployRunner
         InputInterface $input,
         LoggerInterface $log,
         RecipeLoader $recipeLoader,
+        ConfigurationLoader $configurationLoader,
         BrancherHypernodeManager $brancherHypernodeManager
     ) {
         $this->taskFactory = $taskFactory;
@@ -68,6 +70,7 @@ class DeployRunner
         $this->log = $log;
         $this->recipeLoader = $recipeLoader;
         $this->brancherHypernodeManager = $brancherHypernodeManager;
+        $this->configurationLoader = $configurationLoader;
     }
 
     /**
@@ -77,19 +80,10 @@ class DeployRunner
      */
     public function run(OutputInterface $output, string $stage, string $task, bool $configureBuildStage, bool $configureServers): int
     {
-        $console = new Application();
-        $deployer = new Deployer($console);
-        $deployer['output'] = new OutputWatcher($output);
-        $deployer['input'] = new ArrayInput(
-            [],
-            new InputDefinition([
-                new InputOption('limit'),
-                new InputOption('profile'),
-            ])
-        );
+        $deployer = $this->getDeployerInstance($output);
 
         try {
-            $this->initializeDeployer($deployer, $configureBuildStage, $configureServers, $stage);
+            $this->prepare($configureBuildStage, $configureServers, $stage);
         } catch (InvalidConfigurationException | ValidationException $e) {
             $output->write($e->getMessage());
             return 1;
@@ -99,22 +93,20 @@ class DeployRunner
     }
 
     /**
-     * Initialize deployer settings
+     * Prepare deploy runner before running stage
      *
      * @throws Exception
      * @throws GracefulShutdownException
      * @throws InvalidConfigurationException
      * @throws Throwable
      */
-    private function initializeDeployer(
-        Deployer $deployer,
-        bool $configureBuildStage,
-        bool $configureServers,
-        string $stage
-    ): void {
+    private function prepare(bool $configureBuildStage, bool $configureServers, string $stage): void
+    {
         $this->recipeLoader->load('common.php');
         $tasks = $this->taskFactory->loadAll();
-        $config = $this->getConfiguration($deployer);
+        $config = $this->configurationLoader->load(
+            $this->input->getOption('file') ?: 'deploy.php'
+        );
         $config->setLogger($this->log);
 
         if ($configureBuildStage) {
@@ -173,23 +165,6 @@ class DeployRunner
                     $deployerTask->select("roles={$roles}");
                 }
             }
-        }
-    }
-
-    /**
-     * @throws Exception
-     * @throws GracefulShutdownException
-     * @throws Throwable
-     */
-    private function getConfiguration(Deployer $deployer): Configuration
-    {
-        try {
-            return $this->tryGetConfiguration();
-        } catch (\Throwable $e) {
-            $this->log->warning(sprintf('Failed to initialize deploy.php configuration file: %s', $e->getMessage()));
-            $this->tryComposerInstall($deployer);
-            $this->initializeAppAutoloader();
-            return $this->tryGetConfiguration();
         }
     }
 
@@ -360,65 +335,6 @@ class DeployRunner
         return $exitCode;
     }
 
-    private function tryGetConfiguration(): Configuration
-    {
-        $file = $this->input->getOption('file');
-        if (!$file) {
-            $file = 'deploy.php';
-        }
-
-        if (!is_readable($file)) {
-            throw new \RuntimeException(sprintf('No %s file found in project root %s', $file, getcwd()));
-        }
-
-        $configuration = \call_user_func(function () use ($file) {
-            return require $file;
-        });
-
-        if (!$configuration instanceof Configuration) {
-            throw new \RuntimeException(
-                sprintf('%s/deploy.php did not return object of type %s', getcwd(), Configuration::class)
-            );
-        }
-
-        return $configuration;
-    }
-
-    /**
-     * @throws GracefulShutdownException
-     * @throws Throwable
-     * @throws Exception
-     */
-    private function tryComposerInstall(Deployer $deployer): void
-    {
-        /** @psalm-suppress InvalidArgument deployer will have proper typing in 7.x */
-        $host = localhost('composer-prepare');
-        $host->set('labels', ['stage' => 'composer-prepare']);
-        $host->set('bin/php', 'php');
-
-        task('composer-prepare:install', function () {
-            run('composer install --ignore-platform-reqs --optimize-autoloader --no-dev');
-        });
-
-        task('composer-prepare', [
-            'deploy:vendors:auth',
-            'composer-prepare:install',
-        ]);
-
-        $this->runStage($deployer, 'composer-prepare', 'composer-prepare');
-    }
-
-    /**
-     * Initialize autoloader of the application being deployed
-     */
-    private function initializeAppAutoloader(): void
-    {
-        /** @psalm-suppress UndefinedConstant */
-        if (file_exists(WORKING_DIR . '/vendor/autoload.php')) {
-            require_once WORKING_DIR . '/vendor/autoload.php';
-        }
-    }
-
     public function getDeploymentReport()
     {
         return new Report\Report(
@@ -426,5 +342,20 @@ class DeployRunner
             $this->deployedHostnames,
             $this->brancherHypernodesRegistered
         );
+    }
+
+    private function getDeployerInstance(OutputInterface $output): Deployer
+    {
+        $console = new Application();
+        $deployer = new Deployer($console);
+        $deployer['output'] = new OutputWatcher($output);
+        $deployer['input'] = new ArrayInput(
+            [],
+            new InputDefinition([
+                new InputOption('limit'),
+                new InputOption('profile'),
+            ])
+        );
+        return $deployer;
     }
 }

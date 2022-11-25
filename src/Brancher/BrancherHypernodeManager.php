@@ -23,6 +23,36 @@ class BrancherHypernodeManager
     }
 
     /**
+     * Query brancher instances for given Hypernode and return the Brancher instance names.
+     *
+     * @param string $hypernode The parent hypernode to query the Brancher instances from
+     * @param string[] $labels Labels to match against, may be empty
+     * @return string[] The found Brancher instance names
+     */
+    public function queryBrancherHypernodes(string $hypernode, array $labels = []): array
+    {
+        $result = [];
+
+        $hypernodes = $this->hypernodeClient->app->getList(['parent' => $hypernode, 'type' => 'brancher']);
+        foreach ($hypernodes as $brancher) {
+            $match = true;
+
+            foreach ($labels as $label) {
+                if (!in_array($label, $brancher->labels)) {
+                    $match = false;
+                    break;
+                }
+            }
+
+            if ($match) {
+                $result[] = $brancher->name;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Create brancher Hypernode instance for given Hypernode.
      *
      * @param string $hypernode Name of the Hypernode
@@ -82,7 +112,7 @@ class BrancherHypernodeManager
                 } elseif ($timeElapsed < $allowedErrorWindow) {
                     // Sometimes we get an error where the logbook is not yet available, but it will be soon.
                     // We allow a small window for this to happen, and then we throw an exception.
-                    sprintf(
+                    printf(
                         'Got an expected exception during the allowed error window of HTTP code %d, waiting for %s to become available',
                         $e->getCode(),
                         $brancherHypernode
