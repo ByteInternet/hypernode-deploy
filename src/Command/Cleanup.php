@@ -8,6 +8,7 @@ use Hypernode\Deploy\Brancher\BrancherHypernodeManager;
 use Hypernode\Deploy\ConfigurationLoader;
 use Hypernode\Deploy\Report\ReportLoader;
 use Hypernode\DeployConfiguration\BrancherServer;
+use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Server;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -50,35 +51,45 @@ class Cleanup extends Command
     {
         $report = $this->reportLoader->loadReport();
 
-        if ($report !== null) {
+        if ($report) {
             $this->brancherHypernodeManager->cancel(...$report->getBrancherHypernodes());
         }
 
         /** @var string $stageName */
         $stageName = $input->getArgument('stage');
         if ($stageName) {
-            $config = $this->configurationLoader->load(
-                $input->getOption('file') ?: 'deploy.php'
-            );
-            foreach ($config->getStages() as $stage) {
-                if ($stage->getName() !== $stageName) {
-                    continue;
-                }
-                foreach ($stage->getServers() as $server) {
-                    if (!($server instanceof BrancherServer)) {
-                        continue;
-                    }
-                    $labels = $server->getLabels();
-                    $hypernode = $server->getOptions()[Server::OPTION_HN_PARENT_APP];
-                    $brancherHypernodes = $this->brancherHypernodeManager->queryBrancherHypernodes(
-                        $hypernode,
-                        $labels
-                    );
-                    $this->brancherHypernodeManager->cancel(...$brancherHypernodes);
-                }
-            }
+            $config = $this->configurationLoader->load($input->getOption('file') ?: 'deploy.php');
+            $this->cancelByStage($stageName, $config);
         }
 
         return 0;
+    }
+
+    /**
+     * Cancel brancher nodes by stage and their configured labels.
+     *
+     * @param string $stageName Stage to clean up
+     * @param Configuration $config Deployment configuration to read stages/servers from
+     * @return void
+     */
+    private function cancelByStage(string $stageName, Configuration $config): void
+    {
+        foreach ($config->getStages() as $stage) {
+            if ($stage->getName() !== $stageName) {
+                continue;
+            }
+            foreach ($stage->getServers() as $server) {
+                if (!($server instanceof BrancherServer)) {
+                    continue;
+                }
+                $labels = $server->getLabels();
+                $hypernode = $server->getOptions()[Server::OPTION_HN_PARENT_APP];
+                $brancherHypernodes = $this->brancherHypernodeManager->queryBrancherHypernodes(
+                    $hypernode,
+                    $labels
+                );
+                $this->brancherHypernodeManager->cancel(...$brancherHypernodes);
+            }
+        }
     }
 }
