@@ -6,7 +6,6 @@ use Deployer\Deployer;
 use Deployer\Exception\Exception;
 use Deployer\Exception\GracefulShutdownException;
 use Deployer\Host\Host;
-use Hypernode\Deploy\Brancher\BrancherDataValidator;
 use Hypernode\Deploy\Console\Output\OutputWatcher;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
@@ -271,7 +270,6 @@ class DeployRunner
 
             $data = $serverOptions[Server::OPTION_HN_BRANCHER_SETTINGS] ?? [];
             $data['labels'] = $serverOptions[Server::OPTION_HN_BRANCHER_LABELS] ?? [];
-            BrancherDataValidator::validate($data);
             $brancherApp = $this->brancherHypernodeManager->createForHypernode($parentApp, $data);
 
             $this->log->info(sprintf('Successfully requested brancher Hypernode, name is %s.', $brancherApp));
