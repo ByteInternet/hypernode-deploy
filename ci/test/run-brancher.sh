@@ -57,3 +57,22 @@ $DP jq .brancher_hypernodes[0] deployment-report.json -r -e
 
 # cleanup data
 $DP hypernode-deploy cleanup -vvv
+
+rm -f deployment-report.json
+
+# Now do a test deploy which should have a brancher node.
+$DP hypernode-deploy deploy test -f /web/deploy.php -vvv
+
+$DP ls -l
+$DP test -f deployment-report.json
+$DP jq . deployment-report.json
+$DP jq .version deployment-report.json -r -e
+$DP jq .stage deployment-report.json -r -e
+$DP jq .hostnames[0] deployment-report.json -r -e
+$DP jq .brancher_hypernodes[0] deployment-report.json -r -e
+
+# Remove deployment report to make sure we can clean up using hnapi and labels matching
+rm -f deployment-report.json
+
+# cleanup data
+$DP hypernode-deploy cleanup test -vvv
