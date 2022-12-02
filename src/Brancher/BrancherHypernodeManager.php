@@ -33,7 +33,11 @@ class BrancherHypernodeManager
     {
         $result = [];
 
-        $hypernodes = $this->hypernodeClient->app->getList(['parent' => $hypernode, 'type' => 'brancher']);
+        $hypernodes = $this->hypernodeClient->app->getList([
+            'parent' => $hypernode,
+            'type' => 'brancher',
+            'destroyed' => 'False',
+        ]);
         foreach ($hypernodes as $brancher) {
             $match = true;
 
