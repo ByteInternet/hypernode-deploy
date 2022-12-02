@@ -6,6 +6,7 @@ namespace Hypernode\Deploy\Command;
 
 use Hypernode\Deploy\Brancher\BrancherHypernodeManager;
 use Hypernode\Deploy\ConfigurationLoader;
+use Hypernode\Deploy\DeployerLoader;
 use Hypernode\Deploy\Report\ReportLoader;
 use Hypernode\DeployConfiguration\BrancherServer;
 use Hypernode\DeployConfiguration\Configuration;
@@ -19,17 +20,20 @@ use Throwable;
 class Cleanup extends Command
 {
     private ReportLoader $reportLoader;
+    private DeployerLoader $deployerLoader;
     private ConfigurationLoader $configurationLoader;
     private BrancherHypernodeManager $brancherHypernodeManager;
 
     public function __construct(
         ReportLoader $reportLoader,
+        DeployerLoader $deployerLoader,
         ConfigurationLoader $configurationLoader,
         BrancherHypernodeManager $brancherHypernodeManager
     ) {
         parent::__construct();
 
         $this->reportLoader = $reportLoader;
+        $this->deployerLoader = $deployerLoader;
         $this->configurationLoader = $configurationLoader;
         $this->brancherHypernodeManager = $brancherHypernodeManager;
     }
@@ -58,6 +62,7 @@ class Cleanup extends Command
         /** @var string $stageName */
         $stageName = $input->getArgument('stage');
         if ($stageName) {
+            $this->deployerLoader->getOrCreateInstance($output);
             $config = $this->configurationLoader->load($input->getOption('file') ?: 'deploy.php');
             $this->cancelByStage($stageName, $config);
         }

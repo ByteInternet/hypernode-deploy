@@ -6,11 +6,10 @@ use Deployer\Deployer;
 use Deployer\Exception\Exception;
 use Deployer\Exception\GracefulShutdownException;
 use Deployer\Host\Host;
-use Hypernode\Deploy\Console\Output\OutputWatcher;
+use Hypernode\Deploy\Brancher\BrancherHypernodeManager;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
 use Hypernode\Deploy\Deployer\Task\TaskFactory;
-use Hypernode\Deploy\Brancher\BrancherHypernodeManager;
 use Hypernode\Deploy\Exception\CreateBrancherHypernodeFailedException;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Hypernode\Deploy\Exception\TimeoutException;
@@ -21,18 +20,13 @@ use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Server;
 use Hypernode\DeployConfiguration\Stage;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 use function Deployer\host;
 use function Deployer\localhost;
 use function Deployer\run;
-use function Deployer\task;
 
 class DeployRunner
 {
@@ -43,6 +37,7 @@ class DeployRunner
     private InputInterface $input;
     private LoggerInterface $log;
     private RecipeLoader $recipeLoader;
+    private DeployerLoader $deployerLoader;
     private ConfigurationLoader $configurationLoader;
     private BrancherHypernodeManager $brancherHypernodeManager;
 
@@ -61,6 +56,7 @@ class DeployRunner
         InputInterface $input,
         LoggerInterface $log,
         RecipeLoader $recipeLoader,
+        DeployerLoader $deployerLoader,
         ConfigurationLoader $configurationLoader,
         BrancherHypernodeManager $brancherHypernodeManager
     ) {
@@ -68,8 +64,9 @@ class DeployRunner
         $this->input = $input;
         $this->log = $log;
         $this->recipeLoader = $recipeLoader;
-        $this->brancherHypernodeManager = $brancherHypernodeManager;
+        $this->deployerLoader = $deployerLoader;
         $this->configurationLoader = $configurationLoader;
+        $this->brancherHypernodeManager = $brancherHypernodeManager;
     }
 
     /**
@@ -79,7 +76,7 @@ class DeployRunner
      */
     public function run(OutputInterface $output, string $stage, string $task, bool $configureBuildStage, bool $configureServers): int
     {
-        $deployer = $this->getDeployerInstance($output);
+        $deployer = $this->deployerLoader->getOrCreateInstance($output);
 
         try {
             $this->prepare($configureBuildStage, $configureServers, $stage);
@@ -340,20 +337,5 @@ class DeployRunner
             $this->deployedHostnames,
             $this->brancherHypernodesRegistered
         );
-    }
-
-    private function getDeployerInstance(OutputInterface $output): Deployer
-    {
-        $console = new Application();
-        $deployer = new Deployer($console);
-        $deployer['output'] = new OutputWatcher($output);
-        $deployer['input'] = new ArrayInput(
-            [],
-            new InputDefinition([
-                new InputOption('limit'),
-                new InputOption('profile'),
-            ])
-        );
-        return $deployer;
     }
 }
