@@ -72,7 +72,11 @@ $DP jq .hostnames[0] deployment-report.json -r -e
 $DP jq .brancher_hypernodes[0] deployment-report.json -r -e
 
 # Remove deployment report to make sure we can clean up using hnapi and labels matching
+BRANCHER_INSTANCE=$($DP jq .brancher_hypernodes[0] deployment-report.json -r -e)
 $DP rm -f deployment-report.json
 
 # cleanup data
-$DP hypernode-deploy cleanup test -vvv
+$DP hypernode-deploy cleanup test -vvv | tee cleanup.log
+
+# Run tests on cleanup
+grep "Stopping brancher Hypernode ${BRANCHER_INSTANCE}..." cleanup.log
