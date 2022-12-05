@@ -14,6 +14,7 @@ use Hypernode\Deploy\Brancher\BrancherHypernodeManager;
 use Hypernode\Deploy\Exception\CreateBrancherHypernodeFailedException;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Hypernode\Deploy\Exception\TimeoutException;
+use Hypernode\Deploy\Exception\ValidationException;
 use Hypernode\DeployConfiguration\Configurable\ServerRoleConfigurableInterface;
 use Hypernode\DeployConfiguration\Configurable\StageConfigurableInterface;
 use Hypernode\DeployConfiguration\Configuration;
@@ -88,7 +89,7 @@ class DeployRunner
 
         try {
             $this->initializeDeployer($deployer, $configureBuildStage, $configureServers, $stage);
-        } catch (InvalidConfigurationException $e) {
+        } catch (InvalidConfigurationException | ValidationException $e) {
             $output->write($e->getMessage());
             return 1;
         }
@@ -266,10 +267,14 @@ class DeployRunner
         $parentApp = $serverOptions[Server::OPTION_HN_PARENT_APP] ?? null;
         if ($isBrancher && $parentApp) {
             $this->log->info(sprintf('Creating an brancher Hypernode based on %s.', $parentApp));
-            $brancherApp = $this->brancherHypernodeManager->createForHypernode($parentApp);
+
+            $data = $serverOptions[Server::OPTION_HN_BRANCHER_SETTINGS] ?? [];
+            $data['labels'] = $serverOptions[Server::OPTION_HN_BRANCHER_LABELS] ?? [];
+            $brancherApp = $this->brancherHypernodeManager->createForHypernode($parentApp, $data);
+
+            $this->log->info(sprintf('Successfully requested brancher Hypernode, name is %s.', $brancherApp));
             $server->setHostname(sprintf("%s.hypernode.io", $brancherApp));
             $this->brancherHypernodesRegistered[] = $brancherApp;
-            $this->log->info(sprintf('Successfully requested brancher Hypernode, name is %s.', $brancherApp));
 
             try {
                 $this->log->info('Waiting for brancher Hypernode to become available...');
