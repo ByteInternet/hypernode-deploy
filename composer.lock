@@ -729,16 +729,16 @@
         },
         {
             "name": "hypernode/api-client",
-            "version": "0.2.0",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-api-php.git",
-                "reference": "9a93ee94be06a2265cf7fb6eed75b50a376adc9b"
+                "reference": "5fc348028551b5c6d2bbf1c1894f2cc3d59230e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-api-php/zipball/9a93ee94be06a2265cf7fb6eed75b50a376adc9b",
-                "reference": "9a93ee94be06a2265cf7fb6eed75b50a376adc9b",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-api-php/zipball/5fc348028551b5c6d2bbf1c1894f2cc3d59230e9",
+                "reference": "5fc348028551b5c6d2bbf1c1894f2cc3d59230e9",
                 "shasum": ""
             },
             "require": {
@@ -774,9 +774,9 @@
             "description": "Hypernode API Client for PHP",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-api-php/issues",
-                "source": "https://github.com/ByteInternet/hypernode-api-php/tree/0.2.0"
+                "source": "https://github.com/ByteInternet/hypernode-api-php/tree/0.2.1"
             },
-            "time": "2022-11-23T11:15:44+00:00"
+            "time": "2022-11-25T14:45:54+00:00"
         },
         {
             "name": "hypernode/deploy-configuration",

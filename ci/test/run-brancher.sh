@@ -57,3 +57,26 @@ $DP jq .brancher_hypernodes[0] deployment-report.json -r -e
 
 # cleanup data
 $DP hypernode-deploy cleanup -vvv
+
+rm -f deployment-report.json
+
+# Now do a test deploy again to deploy to a brancher node and clean it up by hnapi and labels matching
+$DP hypernode-deploy deploy test -f /web/deploy.php -vvv
+
+$DP ls -l
+$DP test -f deployment-report.json
+$DP jq . deployment-report.json
+$DP jq .version deployment-report.json -r -e
+$DP jq .stage deployment-report.json -r -e
+$DP jq .hostnames[0] deployment-report.json -r -e
+$DP jq .brancher_hypernodes[0] deployment-report.json -r -e
+
+# Remove deployment report to make sure we can clean up using hnapi and labels matching
+BRANCHER_INSTANCE=$($DP jq .brancher_hypernodes[0] deployment-report.json -r -e)
+$DP rm -f deployment-report.json
+
+# cleanup data
+$DP hypernode-deploy cleanup test -vvv | tee cleanup.log
+
+# Run tests on cleanup
+grep "Stopping brancher Hypernode ${BRANCHER_INSTANCE}..." cleanup.log
