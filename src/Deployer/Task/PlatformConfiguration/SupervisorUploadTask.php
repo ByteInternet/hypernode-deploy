@@ -55,6 +55,7 @@ class SupervisorUploadTask extends TaskBase implements ConfigurableTaskInterface
                 ];
                 upload($sourceDir . '/', '{{supervisor/config_path}}/');
                 $args = implode(' ', array_map('escapeshellarg', $args));
+                run("mkdir -p {{supervisor_release_path}}");
                 run("rsync {$args} {{supervisor/config_path}}/ {{supervisor_release_path}}/");
             }
         );
