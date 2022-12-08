@@ -59,6 +59,7 @@ class NginxSyncTask extends TaskBase implements ConfigurableTaskInterface
                 '--delete',
             ];
             $args = implode(' ', array_map('escapeshellarg', $args));
+            run("mkdir -p {{nginx_release_path}}");
             run("rsync {$args} {{nginx/config_path}}/ {{nginx_release_path}}/");
             run("ln -sf {{nginx_current_path}} /data/web/nginx/{{domain}}");
         });
