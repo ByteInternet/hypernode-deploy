@@ -238,10 +238,23 @@ class DeployRunner
         $isBrancher = $serverOptions[Server::OPTION_HN_BRANCHER] ?? false;
         $parentApp = $serverOptions[Server::OPTION_HN_PARENT_APP] ?? null;
         if ($isBrancher && $parentApp) {
-            $this->log->info(sprintf('Creating an brancher Hypernode based on %s.', $parentApp));
+            $settings = $serverOptions[Server::OPTION_HN_BRANCHER_SETTINGS] ?? [];
+            $labels = $serverOptions[Server::OPTION_HN_BRANCHER_LABELS] ?? [];
 
-            $data = $serverOptions[Server::OPTION_HN_BRANCHER_SETTINGS] ?? [];
-            $data['labels'] = $serverOptions[Server::OPTION_HN_BRANCHER_LABELS] ?? [];
+            $this->log->info(sprintf('Creating an brancher Hypernode based on %s.', $parentApp));
+            if ($settings) {
+                $this->log->info(
+                    sprintf('Settings to be applied: [%s].', implode(', ', $settings))
+                );
+            }
+            if ($labels) {
+                $this->log->info(
+                    sprintf('Labels to be applied: [%s].', implode(', ', $labels))
+                );
+            }
+
+            $data = $settings;
+            $data['labels'] = $settings;
             $brancherApp = $this->brancherHypernodeManager->createForHypernode($parentApp, $data);
 
             $this->log->info(sprintf('Successfully requested brancher Hypernode, name is %s.', $brancherApp));
