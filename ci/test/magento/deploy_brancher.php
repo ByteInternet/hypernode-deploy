@@ -19,6 +19,6 @@ $stagingStage->addServer('hndeployintegr8.hypernode.io', null, [], [
 
 $productionStage = $configuration->addStage('test', 'banaan.store');
 $productionStage->addBrancherServer('hndeployintegr8')
-    ->setLabels(['gitref='.\getenv('GITHUB_REF_NAME') ?: 'unknown']);
+    ->setLabels(['gitref='. (\getenv('GITHUB_REF_NAME') ?: 'unknown')]);
 
 return $configuration;
