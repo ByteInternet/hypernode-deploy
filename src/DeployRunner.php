@@ -254,7 +254,7 @@ class DeployRunner
             }
 
             $data = $settings;
-            $data['labels'] = $settings;
+            $data['labels'] = $labels;
             $brancherApp = $this->brancherHypernodeManager->createForHypernode($parentApp, $data);
 
             $this->log->info(sprintf('Successfully requested brancher Hypernode, name is %s.', $brancherApp));
