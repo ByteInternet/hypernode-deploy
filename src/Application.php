@@ -31,7 +31,7 @@ class Application
     Deployer version: %s
     Deployer Recipe version: %s
 
-    NAME;
+NAME;
 
     /**
      * Run application
