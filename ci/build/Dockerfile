@@ -75,6 +75,7 @@ RUN apt-get update && \
         patch \
         bash \
         ca-certificates \
+        python3 \
         wget \
         curl \
         openssl \
@@ -130,6 +131,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --1 --filename=composer1
 RUN curl -sS https://getcomposer.org/installer | php -- --2 --filename=composer2 && mv composer2 /usr/local/bin/ && chmod +x /usr/local/bin/composer2
 # Use version 1 for main composer binary
 RUN ln -s /usr/local/bin/composer1 /usr/local/bin/composer
+
+# Set python3 as default python executable
+RUN ln -s /usr/bin/python3 /usr/local/bin/python
 
 # Copy container files
 COPY ./ci/build/files /
