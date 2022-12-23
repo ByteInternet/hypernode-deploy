@@ -75,6 +75,7 @@ RUN apt-get update && \
         patch \
         bash \
         ca-certificates \
+        python2 \
         python3 \
         wget \
         curl \
