@@ -40,6 +40,7 @@ RUN apt-get update && \
         jq \
         ca-certificates \
         python3 \
+        virtualenv \
         wget \
         curl \
         openssl \
