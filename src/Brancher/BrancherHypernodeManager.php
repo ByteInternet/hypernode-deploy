@@ -81,7 +81,7 @@ class BrancherHypernodeManager
      * @throws HypernodeApiServerException
      * @throws TimeoutException
      */
-    public function waitForAvailability(string $brancherHypernode, int $timeout = 900): void
+    public function waitForAvailability(string $brancherHypernode, int $timeout = 1500): void
     {
         $latest = microtime(true);
         $timeElapsed = 0;
