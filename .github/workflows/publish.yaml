@@ -1,0 +1,47 @@
+name: Release Docker images
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    strategy:
+      matrix:
+        php_version:
+          - "7.4"
+          - "8.0"
+          - "8.1"
+        node_version:
+          - 12
+          - 14
+          - 16
+          - 18
+    runs-on: ubuntu-latest
+    env:
+      PHP_VERSION: ${{ matrix.php_version }}
+      NODE_VERSION: ${{ matrix.node_version }}
+      LATEST_PHP_VERSION: 8.1
+      LATEST_NODE_VERSION: 18
+    steps:
+      - name: Checkout hypernode-deploy
+        uses: actions/checkout@v3
+      - name: Prepare environment
+        run: |
+          export TAG_SPECS="php${{ matrix.php_version }}-node${{ matrix.node_version }}"
+          echo "TAG_SPECS=${TAG_SPECS}" >> $GITHUB_ENV
+          echo "DOCKER_TAG=quay.io/hypernode/deploy:${GITHUB_REF_NAME}-${TAG_SPECS}" >> $GITHUB_ENV
+      - name: Login to Quay
+        run: docker login -u "${QUAY_USER}" -p "${QUAY_TOKEN}" quay.io
+        env:
+          QUAY_USER: ${{ secrets.QUAY_USER }}
+          QUAY_TOKEN: ${{ secrets.QUAY_TOKEN }}
+      - name: Build image
+        run: | 
+          docker build -t "$DOCKER_TAG" -f "./ci/build/Dockerfile" \
+            --build-arg PHP_VERSION=${{ matrix.php_version }} \
+            --build-arg NODE_VERSION=${{ matrix.node_version }} \
+            .
+      - name: Push image
+        run: docker push "$DOCKER_TAG"
+      - name: Push semantic versions
+        run: ci/release_semantic_versions.sh

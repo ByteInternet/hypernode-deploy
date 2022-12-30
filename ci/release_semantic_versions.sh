@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 IMAGE=${IMAGE:-quay.io/hypernode/deploy}
-INPUT_VERSION=${INPUT_VERSION:-}
+INPUT_VERSION=${GITHUB_REF_NAME}
 TAG_SPECS="php${PHP_VERSION}-node${NODE_VERSION}"
 
 if [ -z "${INPUT_VERSION}" ]; then
