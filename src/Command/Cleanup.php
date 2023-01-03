@@ -11,6 +11,7 @@ use Hypernode\Deploy\Report\ReportLoader;
 use Hypernode\DeployConfiguration\BrancherServer;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Server;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,12 +24,14 @@ class Cleanup extends Command
     private DeployerLoader $deployerLoader;
     private ConfigurationLoader $configurationLoader;
     private BrancherHypernodeManager $brancherHypernodeManager;
+    private LoggerInterface $logger;
 
     public function __construct(
         ReportLoader $reportLoader,
         DeployerLoader $deployerLoader,
         ConfigurationLoader $configurationLoader,
-        BrancherHypernodeManager $brancherHypernodeManager
+        BrancherHypernodeManager $brancherHypernodeManager,
+        LoggerInterface $logger
     ) {
         parent::__construct();
 
@@ -36,6 +39,7 @@ class Cleanup extends Command
         $this->deployerLoader = $deployerLoader;
         $this->configurationLoader = $configurationLoader;
         $this->brancherHypernodeManager = $brancherHypernodeManager;
+        $this->logger = $logger;
     }
 
     protected function configure()
@@ -89,6 +93,13 @@ class Cleanup extends Command
                 }
                 $labels = $server->getLabels();
                 $hypernode = $server->getOptions()[Server::OPTION_HN_PARENT_APP];
+                $this->logger->debug(
+                    sprintf(
+                        'Cleaning up Brancher instances based on Hypernode %s with labels [%s]',
+                        $hypernode,
+                        implode(', ', $labels),
+                    )
+                );
                 $brancherHypernodes = $this->brancherHypernodeManager->queryBrancherHypernodes(
                     $hypernode,
                     $labels
