@@ -79,4 +79,5 @@ $DP rm -f deployment-report.json
 $DP hypernode-deploy cleanup test -vvv | tee cleanup.log
 
 # Run tests on cleanup
+grep -F "Cleaning up Brancher instances based on Hypernode hndeployintegr8 with labels [gitref=${GITHUB_SHA:-unknown}]" cleanup.log
 grep "Stopping brancher Hypernode ${BRANCHER_INSTANCE}..." cleanup.log
