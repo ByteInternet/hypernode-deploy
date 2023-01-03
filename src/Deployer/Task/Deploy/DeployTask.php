@@ -2,9 +2,8 @@
 
 namespace Hypernode\Deploy\Deployer\Task\Deploy;
 
-use Hypernode\Deploy\Deployer\Task\TaskBase;
-use Hypernode\DeployConfiguration\ServerRole;
 use Hypernode\Deploy\Deployer\RecipeLoader;
+use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
 
 use function Deployer\fail;
@@ -25,13 +24,12 @@ class DeployTask extends TaskBase
     public function configure(Configuration $config): void
     {
         $this->loader->load('deploy/info.php');
-        $role = ServerRole::APPLICATION;
 
         task('deploy', [
             'deploy:upload',
             'deploy:link',
             'deploy:finalize',
-        ])->select("roles=$role");
+        ]);
 
         fail('deploy', 'deploy:failed');
     }

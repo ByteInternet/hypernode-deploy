@@ -2,10 +2,9 @@
 
 namespace Hypernode\Deploy\Deployer\Task\After;
 
-use Hypernode\Deploy\Deployer\TaskBuilder;
 use Hypernode\Deploy\Deployer\Task\TaskBase;
+use Hypernode\Deploy\Deployer\TaskBuilder;
 use Hypernode\DeployConfiguration\Configuration;
-use Hypernode\DeployConfiguration\ServerRole;
 
 use function count;
 use function Deployer\task;
@@ -32,9 +31,6 @@ class AfterTaskGlobal extends TaskBase
             };
         }
 
-        $role = ServerRole::APPLICATION;
-        task('deploy:after', $tasks)
-            ->once()
-            ->select("roles=$role");
+        task('deploy:after', $tasks)->once();
     }
 }

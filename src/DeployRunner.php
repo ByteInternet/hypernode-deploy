@@ -14,8 +14,6 @@ use Hypernode\Deploy\Exception\CreateBrancherHypernodeFailedException;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Hypernode\Deploy\Exception\TimeoutException;
 use Hypernode\Deploy\Exception\ValidationException;
-use Hypernode\DeployConfiguration\Configurable\ServerRoleConfigurableInterface;
-use Hypernode\DeployConfiguration\Configurable\StageConfigurableInterface;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Server;
 use Hypernode\DeployConfiguration\Stage;
@@ -135,7 +133,7 @@ class DeployRunner
     }
 
     /**
-     * Configure deploy tasks based on specific configuration in Hipex deploy configuration
+     * Configure deploy tasks based on specific configuration in Hypernode Deploy configuration
      * @throws InvalidConfigurationException
      */
     private function initializeConfigurableTask(ConfigurableTaskInterface $task, Configuration $mainConfig): void
@@ -146,20 +144,8 @@ class DeployRunner
         );
 
         foreach ($configurations as $taskConfig) {
-            if (!$task->supports($taskConfig)) {
-                continue;
-            }
-
-            $deployerTask = $task->configureWithTaskConfig($taskConfig);
-            if ($deployerTask) {
-                if ($taskConfig instanceof StageConfigurableInterface && $taskConfig->getStage()) {
-                    $deployerTask->select("stage={$taskConfig->getStage()->getName()}");
-                }
-
-                if ($taskConfig instanceof ServerRoleConfigurableInterface && $taskConfig->getServerRoles()) {
-                    $roles = implode("&", $taskConfig->getServerRoles());
-                    $deployerTask->select("roles={$roles}");
-                }
+            if ($task->supports($taskConfig)) {
+                $task->configureWithTaskConfig($taskConfig);
             }
         }
     }
