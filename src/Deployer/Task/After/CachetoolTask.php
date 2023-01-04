@@ -3,8 +3,6 @@
 namespace Hypernode\Deploy\Deployer\Task\After;
 
 use Hypernode\Deploy\Deployer\Task\TaskBase;
-use Hypernode\DeployConfiguration\ServerRole;
-use Hypernode\Deploy\Deployer\Task\TaskInterface;
 use Hypernode\DeployConfiguration\Configuration;
 
 use function Deployer\after;
@@ -57,7 +55,7 @@ class CachetoolTask extends TaskBase
                 run('curl -L -o cachetool.phar ' . $this->getCachetoolUrl());
                 $cachetoolBinary = '{{release_path}}/cachetool.phar';
 
-                writeln(sprintf("Downloaded cachetool %s for PHP %d", $cachetoolBinary, $this->getPhpVersion()));
+                writeln(sprintf("Downloaded cachetool %s for PHP %f", $cachetoolBinary, $this->getPhpVersion()));
                 return $cachetoolBinary;
             });
             return $cachetoolBinary;
@@ -98,14 +96,11 @@ class CachetoolTask extends TaskBase
             run("cd {{release_path}} && {{bin/php}} {{bin/cachetool}} apcu:cache:clear {{cachetool_options}}");
         });
 
-
-        $role = ServerRole::APPLICATION;
-        task('cachetool:clear:opcache')
-            ->select("roles=$role");
+        task('cachetool:clear:opcache');
 
         task('cachetool:cleanup', function () {
             run('cd {{deploy_path}} && rm -f current/{{bin/cachetool}}');
-        })->select("roles=$role");
+        });
     }
 
     protected function getPhpVersion(): float
@@ -121,7 +116,7 @@ class CachetoolTask extends TaskBase
         }
 
         if ($phpVersion >= 7.3) {
-            return $this->versionBinaryMapping[6];
+            return $this->versionBinaryMapping[7];
         }
 
         if ($phpVersion >= 7.2) {

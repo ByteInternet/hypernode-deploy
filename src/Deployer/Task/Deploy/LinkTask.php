@@ -4,7 +4,6 @@ namespace Hypernode\Deploy\Deployer\Task\Deploy;
 
 use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
-use Hypernode\DeployConfiguration\ServerRole;
 
 use function Deployer\run;
 use function Deployer\task;
@@ -14,11 +13,10 @@ class LinkTask extends TaskBase
 {
     public function configure(Configuration $config): void
     {
-        $role = ServerRole::APPLICATION;
         task('deploy:link', [
             'deploy:symlink',
             'deploy:public_link',
-        ])->select("roles=$role");
+        ]);
 
         // Symlink public_html folder
         task('deploy:public_link', function () {
@@ -33,6 +31,6 @@ class LinkTask extends TaskBase
             } else {
                 run('ln -s {{current_path}}/{{public_folder}} /data/web/public');
             }
-        })->select("roles=$role");
+        });
     }
 }
