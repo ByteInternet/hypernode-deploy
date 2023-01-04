@@ -8,8 +8,6 @@ use Deployer\Exception\TimeoutException;
 use Deployer\Task\Task;
 use Hypernode\DeployConfiguration\Command\Command;
 use Hypernode\DeployConfiguration\Command\DeployCommand;
-use Hypernode\DeployConfiguration\Configurable\ServerRoleConfigurableInterface;
-use Hypernode\DeployConfiguration\Configurable\StageConfigurableInterface;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
 use function Deployer\parse;
@@ -53,15 +51,6 @@ class TaskBuilder
         $task = task($name, function () use ($command) {
             $this->runCommandWithin($command);
         });
-
-        if ($command instanceof StageConfigurableInterface && $command->getStage()) {
-            $task->select("stage={$command->getStage()->getName()}");
-        }
-
-        if ($command instanceof ServerRoleConfigurableInterface && $command->getServerRoles()) {
-            $roles = implode("&", $command->getServerRoles());
-            $task->select("roles=$roles");
-        }
 
         return $task;
     }
