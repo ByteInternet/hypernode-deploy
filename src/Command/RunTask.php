@@ -50,6 +50,7 @@ class RunTask extends Command
             $input->getArgument(self::ARGUMENT_TASK),
             $input->getOption(self::OPTION_CONFIGURE_BUILD_STAGE),
             $input->getOption(self::OPTION_CONFIGURE_SERVERS),
+            false
         );
     }
 }

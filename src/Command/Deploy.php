@@ -7,6 +7,7 @@ use Hypernode\Deploy\Report\ReportWriter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -28,6 +29,12 @@ class Deploy extends Command
         $this->setName('deploy');
         $this->setDescription('Deploy application.');
         $this->addArgument('stage', InputArgument::REQUIRED, 'Stage deploy to');
+        $this->addOption(
+            'reuse-brancher',
+            null,
+            InputOption::VALUE_NONE,
+            'Reuse the brancher Hypernode from the previous deploy. Only works when using addBrancherServer in your deploy configuration.'
+        );
     }
 
     /**
@@ -40,7 +47,8 @@ class Deploy extends Command
             $input->getArgument('stage'),
             DeployRunner::TASK_DEPLOY,
             false,
-            true
+            true,
+            $input->getOption('reuse-brancher')
         );
 
         if ($result === 0) {

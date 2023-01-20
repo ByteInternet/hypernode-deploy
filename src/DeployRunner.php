@@ -72,12 +72,12 @@ class DeployRunner
      * @throws Throwable
      * @throws Exception
      */
-    public function run(OutputInterface $output, string $stage, string $task, bool $configureBuildStage, bool $configureServers): int
+    public function run(OutputInterface $output, string $stage, string $task, bool $configureBuildStage, bool $configureServers, bool $reuseBrancher): int
     {
         $deployer = $this->deployerLoader->getOrCreateInstance($output);
 
         try {
-            $this->prepare($configureBuildStage, $configureServers, $stage);
+            $this->prepare($configureBuildStage, $configureServers, $stage, $reuseBrancher);
         } catch (InvalidConfigurationException | ValidationException $e) {
             $output->write($e->getMessage());
             return 1;
@@ -94,7 +94,7 @@ class DeployRunner
      * @throws InvalidConfigurationException
      * @throws Throwable
      */
-    private function prepare(bool $configureBuildStage, bool $configureServers, string $stage): void
+    private function prepare(bool $configureBuildStage, bool $configureServers, string $stage, bool $reuseBrancher): void
     {
         $this->recipeLoader->load('common.php');
         $tasks = $this->taskFactory->loadAll();
@@ -108,7 +108,7 @@ class DeployRunner
         }
 
         if ($configureServers) {
-            $this->configureServers($config, $stage);
+            $this->configureServers($config, $stage, $reuseBrancher);
         }
 
         foreach ($tasks as $task) {
@@ -150,7 +150,7 @@ class DeployRunner
         }
     }
 
-    private function configureServers(Configuration $config, string $stage): void
+    private function configureServers(Configuration $config, string $stage, bool $reuseBrancher): void
     {
         foreach ($config->getStages() as $configStage) {
             if ($configStage->getName() !== $stage) {
@@ -158,14 +158,14 @@ class DeployRunner
             }
 
             foreach ($configStage->getServers() as $server) {
-                $this->configureStageServer($configStage, $server, $config);
+                $this->configureStageServer($configStage, $server, $config, $reuseBrancher);
             }
         }
     }
 
-    private function configureStageServer(Stage $stage, Server $server, Configuration $config): void
+    private function configureStageServer(Stage $stage, Server $server, Configuration $config, bool $reuseBrancher): void
     {
-        $this->maybeConfigureBrancherServer($server);
+        $this->maybeConfigureBrancherServer($server, $reuseBrancher);
 
         $host = host($stage->getName() . ':' . $server->getHostname());
         $host->setHostname($server->getHostname());
@@ -218,7 +218,7 @@ class DeployRunner
         }
     }
 
-    private function maybeConfigureBrancherServer(Server $server): void
+    private function maybeConfigureBrancherServer(Server $server, bool $reuseBrancher): void
     {
         $serverOptions = $server->getOptions();
         $isBrancher = $serverOptions[Server::OPTION_HN_BRANCHER] ?? false;
@@ -241,7 +241,18 @@ class DeployRunner
 
             $data = $settings;
             $data['labels'] = $labels;
-            $brancherApp = $this->brancherHypernodeManager->createForHypernode($parentApp, $data);
+            if ($reuseBrancher) {
+                $this->log->info('Looking for existing brancher Hypernode. If none is found, a new one will be created.');
+                $brancherApp = $this->brancherHypernodeManager->reuseExistingBrancherHypernode($parentApp, $labels);
+                if ($brancherApp) {
+                    $this->log->info(sprintf('Found existing brancher Hypernode, name is %s.', $brancherApp));
+                } else {
+                    $this->log->info('No existing brancher Hypernode found, creating a new one.');
+                    $brancherApp = $this->brancherHypernodeManager->createForHypernode($parentApp, $data);
+                }
+            } else {
+                $brancherApp = $this->brancherHypernodeManager->createForHypernode($parentApp, $data);
+            }
 
             $this->log->info(sprintf('Successfully requested brancher Hypernode, name is %s.', $brancherApp));
             $server->setHostname(sprintf("%s.hypernode.io", $brancherApp));
