@@ -241,8 +241,7 @@ class DeployRunner
 
             $data = $settings;
             $data['labels'] = $labels;
-            if ($reuseBrancher && $this->brancherHypernodeManager->queryBrancherHypernodes($parentApp, $labels)) {
-                $brancherApp = $this->brancherHypernodeManager->reuseExistingBrancherHypernode($parentApp, $labels);
+            if ($reuseBrancher && $brancherApp = $this->brancherHypernodeManager->reuseExistingBrancherHypernode($parentApp, $labels)) {
                 $this->log->info(sprintf('Found existing brancher Hypernode, name is %s.', $brancherApp));
                 $server->setHostname(sprintf("%s.hypernode.io", $brancherApp));
             } else {
