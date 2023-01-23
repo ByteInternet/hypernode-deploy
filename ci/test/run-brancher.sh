@@ -52,8 +52,14 @@ $DP test -f deployment-report.json
 $DP jq . deployment-report.json
 $DP jq .version deployment-report.json -r -e
 $DP jq .stage deployment-report.json -r -e
-$DP jq .hostnames[0] deployment-report.json -r -e
+BRANCHER_INSTANCE=$($DP jq .hostnames[0] deployment-report.json -r -e)
 $DP jq .brancher_hypernodes[0] deployment-report.json -r -e
+
+# Run another test by reusing the last instance
+$DP hypernode-deploy deploy test -f /web/deploy.php -vvv --reuse-brancher
+
+# Hostname of the reused Brancher instance should be the same as the previous one
+$DP jq .hostnames[0] deployment-report.json -r -e | grep -F "${BRANCHER_INSTANCE}"
 
 # cleanup data
 $DP hypernode-deploy cleanup -vvv

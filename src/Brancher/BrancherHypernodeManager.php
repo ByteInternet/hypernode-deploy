@@ -57,6 +57,25 @@ class BrancherHypernodeManager
     }
 
     /**
+     * Query brancher instances for the given Hypernode and label and return the
+     * most recent Brancher instance name.
+     *
+     * @param string $hypernode The parent hypernode to query the Brancher instances from
+     * @param string[] $labels Labels to match against, may be empty
+     * @return string|null The found Brancher instance name, or null if none was found
+     */
+    public function reuseExistingBrancherHypernode(string $hypernode, array $labels = []): ?string
+    {
+        $brancherHypernodes = $this->queryBrancherHypernodes($hypernode, $labels);
+        if (count($brancherHypernodes) > 0) {
+            // Return the last brancher Hypernode, which is the most recently created one
+            return $brancherHypernodes[count($brancherHypernodes) - 1];
+        }
+
+        return null;
+    }
+
+    /**
      * Create brancher Hypernode instance for given Hypernode.
      *
      * @param string $hypernode Name of the Hypernode
