@@ -303,6 +303,12 @@ class DeployRunner
         $tasks = $deployer->scriptManager->getTasks($task);
         $executor = $deployer->master;
 
+        pcntl_signal(SIGINT, function () {
+            $this->log->warning("Received signal SIGINT, running fail jobs");
+            // We don't have to do anything here. Underlying processes will receive the SIGINT signal as well
+            // and that will cause the $exitCode below to be 255, which will cause the fail tasks to be run.
+        });
+
         /**
          * Set the env variable to tell deployer to deploy the hosts sequentially instead of parallel.
          * @see \Deployer\Executor\Master::runTask()
