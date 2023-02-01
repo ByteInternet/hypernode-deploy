@@ -2,14 +2,15 @@
 
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
-use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
+use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\PlatformConfiguration\VarnishConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
 use function Deployer\fail;
+use function Deployer\get;
 use function Deployer\run;
 use function Deployer\set;
 use function Deployer\task;
@@ -43,7 +44,14 @@ class VarnishLoadTask extends TaskBase implements ConfigurableTaskInterface
         });
 
         task(self::TASK_NAME, function () {
-            run('{{varnishadm_path}} vcl.load {{domain}}.{{release_name}}_varnish {{varnish_release_path}}/varnish.vcl');
+            $appName = get('domain');
+            $appName = preg_replace('/[^a-zA-Z0-9-_]+/', '-', $appName);
+            $appName = trim($appName, '-');
+
+            $releaseName = get('release_name');
+            $vclName = sprintf('varnish-%s-%s', $appName, $releaseName);
+            set('varnish_vcl_name', $vclName);
+            run('{{varnishadm_path}} vcl.load {{varnish_vcl_name}} {{varnish_release_path}}/varnish.vcl');
         });
 
         fail(self::TASK_NAME, 'deploy:varnish:cleanup');
