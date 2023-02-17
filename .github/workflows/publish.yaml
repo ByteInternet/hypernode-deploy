@@ -11,6 +11,7 @@ jobs:
           - "7.4"
           - "8.0"
           - "8.1"
+          - "8.2"
         node_version:
           - 12
           - 14
@@ -36,7 +37,7 @@ jobs:
           QUAY_USER: ${{ secrets.QUAY_USER }}
           QUAY_TOKEN: ${{ secrets.QUAY_TOKEN }}
       - name: Build image
-        run: | 
+        run: |
           docker build -t "$DOCKER_TAG" -f "./ci/build/Dockerfile" \
             --build-arg PHP_VERSION=${{ matrix.php_version }} \
             --build-arg NODE_VERSION=${{ matrix.node_version }} \
