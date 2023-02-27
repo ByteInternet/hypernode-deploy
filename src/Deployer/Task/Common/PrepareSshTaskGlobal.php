@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Hypernode\Deploy\Deployer\Task\Common;
 
+use Deployer\Exception\RunException;
 use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\Configuration;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 use function Deployer\get;
 use function Deployer\runLocally;
@@ -31,16 +31,19 @@ class PrepareSshTaskGlobal extends TaskBase
         task('prepare:ssh', function () {
             $this->configureKey();
 
-            if (testLocally('ssh-add -l | grep -q "no identities"')) {
+            $agentHasNoIdentities = testLocally('ssh-add -l | grep -q "no identities"');
+            $sshKeyFileExists = testLocally('[ -f {{ssh_key_file}} ]');
+
+            if ($agentHasNoIdentities && $sshKeyFileExists) {
                 try {
                     runLocally('ssh-add -k {{ssh_key_file}}');
-                } catch (ProcessFailedException $e) {
+                } catch (RunException $e) {
                     writeln('Failed to add key to ssh agent.');
                     writeln('Trying key {{ssh_key_file}}');
                     try {
                         $keyMd5 = runLocally('md5sum {{ssh_key_file}}');
                         writeln("With MD5 $keyMd5");
-                    } catch (ProcessFailedException $e) {
+                    } catch (RunException $e) {
                         writeln('Failed to get keyfile MD5 ' . $e);
                     }
                     throw $e;
