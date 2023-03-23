@@ -6,6 +6,7 @@ namespace Hypernode\Deploy;
 
 use Deployer\Deployer;
 use Hypernode\Deploy\Console\Output\OutputWatcher;
+use Hypernode\Deploy\Printer\GithubWorkflowPrinter;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -32,6 +33,11 @@ class DeployerLoader
                 new InputOption('profile'),
             ])
         );
+        if (getenv('GITHUB_WORKFLOW')) {
+            $this->deployer['pop'] = function ($c) {
+                return new GithubWorkflowPrinter($c['output']);
+            };
+        }
 
         return $this->deployer;
     }
