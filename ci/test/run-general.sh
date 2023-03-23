@@ -7,9 +7,9 @@ export PHP_VERSION_SHORT=$(echo "${PHP_VERSION:-8.2}" | sed 's/\.//')
 
 # Handy aliases
 HN="docker-compose exec -T hypernode"
-DP="docker-compose exec -T deploy"
-DP1="docker-compose exec --workdir=/web1 -T deploy"
-DP2="docker-compose exec --workdir=/web2 -T deploy"
+DP="docker-compose exec -e GITHUB_WORKFLOW -T deploy"
+DP1="docker-compose exec -e GITHUB_WORKFLOW --workdir=/web1 -T deploy"
+DP2="docker-compose exec -e GITHUB_WORKFLOW --workdir=/web2 -T deploy"
 
 function install_magento() {
     $HN mysql -e "DROP DATABASE IF EXISTS dummytag_preinstalled_magento"
@@ -30,6 +30,20 @@ function install_magento() {
     --timezone=America/Chicago --elasticsearch-host=localhost"
 }
 
+function begin_task() {
+    if [[ -n "${GITHUB_WORKFLOW}" ]]; then
+        echo "::group::$@"
+    else
+        echo "$@"
+    fi
+}
+
+function end_task() {
+    if [[ -n "${GITHUB_WORKFLOW}" ]]; then
+        echo "::endgroup::"
+    fi
+}
+
 # Install docker-compose if it's not installed
 if ! [ -x "$(command -v docker-compose)" ]; then
     pip install docker-compose
@@ -38,13 +52,17 @@ fi
 # Clear up env
 trap "docker-compose down -v" EXIT
 
+begin_task "Setting up Docker stack"
 docker-compose up -d
+end_task
 
+begin_task "Setting Magento 2"
 # Create working initial Magento install on the Hypernode container
-$HN composer create-project --repository=https://mage-os.hypernode.com/mirror/ magento/project-community-edition /data/web/magento2
+$HN composer create-project --repository=https://mirror.mage-os.org/ magento/project-community-edition:2.4.5-p2 /data/web/magento2
 echo "Waiting for MySQL to be available on the Hypernode container"
 $HN bash -c "until mysql -e 'select 1' ; do sleep 1; done"
 install_magento
+end_task
 
 # Copy env to the deploy container
 $HN /data/web/magento2/bin/magento app:config:dump scopes themes
@@ -52,7 +70,7 @@ echo "Waiting for SSH to be available on the Hypernode container"
 chmod 0600 ci/test/.ssh/id_rsa
 chmod 0600 ci/test/.ssh/authorized_keys
 $DP rsync -a app@hypernode:/data/web/magento2/ /web
-$DP rsync -v -a /config/ /web
+$DP rsync -a /config/ /web
 $DP rm /web/app/etc/env.php
 
 # Create second app

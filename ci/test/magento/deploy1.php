@@ -2,6 +2,9 @@
 
 namespace Hypernode\DeployConfiguration;
 
+use function Deployer\run;
+use function Deployer\task;
+
 /**
  * Start by setting up the configuration
  *
@@ -9,6 +12,12 @@ namespace Hypernode\DeployConfiguration;
  * @see ApplicationTemplate\Magento2::initializeDefaultConfiguration
  */
 $configuration = new ApplicationTemplate\Magento2(['en_US', 'nl_NL']);
+
+task('debug:github:msg', static function () {
+    run('echo "::notice::This message should pass through to Github Workflow Summary!"');
+});
+
+$configuration->addDeployTask('debug:github:msg');
 
 $productionStage = $configuration->addStage('production', 'banaan1.store');
 $productionStage->addServer('hypernode', null, [], [
