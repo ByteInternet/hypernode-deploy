@@ -11,7 +11,7 @@ use Symfony\Component\Process\Process;
 
 class GithubWorkflowPrinter extends Printer
 {
-    public const WORKFLOW_COMMAND_PATTERN = '/^::[a-zA-Z0-9-].*::.*$/';
+    public const WORKFLOW_COMMAND_PATTERN = '/^::[a-zA-Z0-9-].*::.*$/m';
 
     private OutputInterface $output;
 
