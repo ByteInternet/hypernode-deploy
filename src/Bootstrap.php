@@ -95,7 +95,7 @@ class Bootstrap
     private function registerTwigLoader(Container $container): void
     {
         $loader = new FilesystemLoader(__DIR__ . '/Resource/template');
-        $twig = new Environment($loader);
+        $twig = new Environment($loader, ['autoescape' => false]);
         $container->set(Environment::class, $twig);
     }
 
