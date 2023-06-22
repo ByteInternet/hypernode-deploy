@@ -12,7 +12,7 @@
         "ext-pcntl": "*",
         "ext-zlib": "*",
         "composer-runtime-api": "^2",
-        "deployer/deployer": "dev-master#e374a8e as v7.0.0",
+        "deployer/deployer": "dev-master#d99377d as v7.3.1",
         "doctrine/annotations": "^1.6",
         "guzzlehttp/guzzle": "^7.5",
         "hypernode/api-client": "^0.2",
@@ -47,7 +47,8 @@
         },
         "sort-packages": true,
         "allow-plugins": {
-            "phpro/grumphp-shim": true
+            "phpro/grumphp-shim": true,
+            "php-http/discovery": true
         }
     }
 }
