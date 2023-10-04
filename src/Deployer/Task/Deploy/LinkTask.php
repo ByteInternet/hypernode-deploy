@@ -29,7 +29,7 @@ class LinkTask extends TaskBase
                     run('ln -s {{release_path}}/{{public_folder}} /data/web/public');
                 }
             } else {
-                run('ln -s {{release_path}}/{{public_folder}} /data/web/public');
+                run('ln -s {{current_path}}/{{public_folder}} /data/web/public');
             }
         });
     }

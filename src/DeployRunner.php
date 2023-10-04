@@ -181,17 +181,13 @@ class DeployRunner
             run('mkdir -p ~/apps/{{domain}}/shared');
             return run('realpath ~/apps/{{domain}}');
         });
-        $host->set('release_number', function () {
-            $latest = run('cat {{deploy_path}}.dep/latest_release || echo 0');
-            return strval(intval($latest) + 1);
-        });
-        $host->set('release_path', '{{deploy_path}}/releases/{{release_number}}');
+        $host->set('current_path', '{{deploy_path}}/current');
         $host->set('nginx_release_path', '{{release_path}}/.hypernode/nginx');
-        $host->set('nginx_current_path', '{{release_path}}/.hypernode/nginx');
+        $host->set('nginx_current_path', '{{current_path}}/.hypernode/nginx');
         $host->set('supervisor_release_path', '{{release_path}}/.hypernode/supervisor');
-        $host->set('supervisor_current_path', '{{release_path}}/.hypernode/supervisor');
+        $host->set('supervisor_current_path', '{{current_path}}/.hypernode/supervisor');
         $host->set('varnish_release_path', '{{release_path}}/.hypernode/varnish');
-        $host->set('varnish_current_path', '{{release_path}}/.hypernode/varnish');
+        $host->set('varnish_current_path', '{{current_path}}/.hypernode/varnish');
         $host->set('configuration_stage', $stage);
         $host->set('writable_mode', 'chmod');
 
