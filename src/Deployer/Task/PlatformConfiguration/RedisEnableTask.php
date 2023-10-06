@@ -36,7 +36,7 @@ class RedisEnableTask extends TaskBase implements ConfigurableTaskInterface
     {
         if ($config->useSupervisor()) {
             task(self::TASK_NAME, function () use ($config) {
-                run("hypernode-systemctl settings redis_version {$config->getVersion()} --block");
+                run("yes | hypernode-systemctl settings redis_version {$config->getVersion()} --block");
                 run("hypernode-systemctl settings supervisor_enabled True --block");
 
                 $instance = $config->getPersistence() ? 'redis-persistent' : 'redis';
@@ -44,7 +44,7 @@ class RedisEnableTask extends TaskBase implements ConfigurableTaskInterface
             });
         } else {
             task(self::TASK_NAME, function () use ($config) {
-                run("hypernode-systemctl settings redis_version {$config->getVersion()} --block");
+                run("yes | hypernode-systemctl settings redis_version {$config->getVersion()} --block");
                 if ($config->getPersistence()) {
                     run("hypernode-systemctl settings redis_persistent_instance --value True --block");
                 }
