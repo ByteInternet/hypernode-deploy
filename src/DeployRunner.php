@@ -210,7 +210,20 @@ class DeployRunner
             );
             $host->set($key, $value);
         }
+        foreach ($config->getVariables('all:'.$stage->getName()) as $key => $value) {
+            $this->log->debug(
+                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
+            );
+            $host->set($key, $value);
+        }
+
         foreach ($config->getVariables('deploy') as $key => $value) {
+            $this->log->debug(
+                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
+            );
+            $host->set($key, $value);
+        }
+        foreach ($config->getVariables('deploy:'.$stage->getName()) as $key => $value) {
             $this->log->debug(
                 sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
             );
@@ -279,10 +292,23 @@ class DeployRunner
             );
             $host->set($key, $value);
         }
+        
+        foreach ($config->getVariables('all:'.$stage->getName()) as $key => $value) {
+            $this->log->debug(
+                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
+            );
+            $host->set($key, $value);
+        }
 
         foreach ($config->getVariables('build') as $key => $value) {
             $this->log->debug(
                 sprintf('Setting var "%s" to %s for stage "build"', $key, json_encode($value))
+            );
+            $host->set($key, $value);
+        }
+        foreach ($config->getVariables('build:'.$stage->getName()) as $key => $value) {
+            $this->log->debug(
+                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
             );
             $host->set($key, $value);
         }
