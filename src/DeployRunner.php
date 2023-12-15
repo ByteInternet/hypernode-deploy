@@ -104,7 +104,7 @@ class DeployRunner
         $config->setLogger($this->log);
 
         if ($configureBuildStage) {
-            $this->initializeBuildStage($config);
+            $this->initializeBuildStage($config, $stage);
         }
 
         if ($configureServers) {
@@ -204,30 +204,20 @@ class DeployRunner
             $host->setSshArguments($sshOptions);
         }
 
-        foreach ($config->getVariables() as $key => $value) {
-            $this->log->debug(
-                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
-            );
-            $host->set($key, $value);
-        }
-        foreach ($config->getVariables('all:'.$stage->getName()) as $key => $value) {
-            $this->log->debug(
-                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
-            );
-            $host->set($key, $value);
-        }
+        $variableSections = [
+            'all',
+            'all:' . $stage->getName(),
+            'deploy',
+            'deploy:' . $stage->getName(),
+        ];
 
-        foreach ($config->getVariables('deploy') as $key => $value) {
-            $this->log->debug(
-                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
-            );
-            $host->set($key, $value);
-        }
-        foreach ($config->getVariables('deploy:'.$stage->getName()) as $key => $value) {
-            $this->log->debug(
-                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
-            );
-            $host->set($key, $value);
+        foreach ($variableSections as $section) {
+            foreach ($config->getVariables($section) as $key => $value) {
+                $this->log->debug(
+                    sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $section)
+                );
+                $host->set($key, $value);
+            }
         }
     }
 
@@ -278,7 +268,7 @@ class DeployRunner
     /**
      * Initialize build stage
      */
-    private function initializeBuildStage(Configuration $config): void
+    private function initializeBuildStage(Configuration $config, string $stage): void
     {
         $host = localhost('build');
         $host->set('labels', ['stage' => 'build']);
@@ -286,31 +276,20 @@ class DeployRunner
         $host->set('deploy_path', '.');
         $host->set('release_or_current_path', '.');
 
-        foreach ($config->getVariables() as $key => $value) {
-            $this->log->debug(
-                sprintf('Setting var "%s" to %s for stage "build"', $key, json_encode($value))
-            );
-            $host->set($key, $value);
-        }
-        
-        foreach ($config->getVariables('all:'.$stage->getName()) as $key => $value) {
-            $this->log->debug(
-                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
-            );
-            $host->set($key, $value);
-        }
+        $variableSections = [
+            'all',
+            'all:' . $stage,
+            'build',
+            'build:' . $stage,
+        ];
 
-        foreach ($config->getVariables('build') as $key => $value) {
-            $this->log->debug(
-                sprintf('Setting var "%s" to %s for stage "build"', $key, json_encode($value))
-            );
-            $host->set($key, $value);
-        }
-        foreach ($config->getVariables('build:'.$stage->getName()) as $key => $value) {
-            $this->log->debug(
-                sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $stage->getName())
-            );
-            $host->set($key, $value);
+        foreach ($variableSections as $section) {
+            foreach ($config->getVariables() as $key => $value) {
+                $this->log->debug(
+                    sprintf('Setting var "%s" to %s for stage "%s"', $key, json_encode($value), $section),
+                );
+                $host->set($key, $value);
+            }
         }
     }
 
