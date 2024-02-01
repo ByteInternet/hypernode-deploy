@@ -2,14 +2,16 @@
 
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
-use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Deployer;
-use Deployer\Task\Task;
 use Deployer\Task\Context;
+use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
+use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Twig\Environment;
 
 use function Deployer\fail;
@@ -68,16 +70,17 @@ class NginxRenderTask extends TaskBase implements ConfigurableTaskInterface
         task('deploy:nginx:render', function () {
             $variables = $this->getAllDeployerVars();
             // Render every file in nginx/config_path using twig
-            foreach (glob(get('nginx/config_path') . '/*') as $nginx_file) {
-                if (!is_file($nginx_file)) {
+            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(get('nginx/config_path')));
+            foreach ($iterator as $nginx_file) {
+                if (!$nginx_file->isFile()) {
                     continue;
                 }
 
-                $renderedContent = $this->render($nginx_file, $variables);
-                writeln('Rendered contents for ' . $nginx_file . ': ' . $renderedContent);
+                $renderedContent = $this->render($nginx_file->getPathname(), $variables);
+                writeln('Rendered contents for ' . $nginx_file->getPathname() . ': ' . $renderedContent);
 
                 # Overwriting the template file shouldn't be a big deal right?
-                file_put_contents($nginx_file, $renderedContent);
+                file_put_contents($nginx_file->getPathname(), $renderedContent);
             }
         });
         fail('deploy:nginx:prepare', 'deploy:nginx:cleanup');
