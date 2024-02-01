@@ -68,7 +68,7 @@ class NginxRenderTask extends TaskBase implements ConfigurableTaskInterface
         task('deploy:nginx:render', function () {
             $variables = $this->getAllDeployerVars();
             // Render every file in nginx/config_path using twig
-            foreach (glob(get('nginx/config_path') . '/**') as $nginx_file) {
+            foreach (glob(get('nginx/config_path') . '/*') as $nginx_file) {
                 if (!is_file($nginx_file)) {
                     continue;
                 }
