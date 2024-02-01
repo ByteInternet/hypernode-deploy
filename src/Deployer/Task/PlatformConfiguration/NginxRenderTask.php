@@ -14,9 +14,8 @@ use Twig\Environment;
 
 use function Deployer\fail;
 use function Deployer\get;
-use function Deployer\run;
-use function Deployer\set;
 use function Deployer\task;
+use function Deployer\writeln;
 
 class NginxRenderTask extends TaskBase implements ConfigurableTaskInterface
 {
@@ -75,6 +74,8 @@ class NginxRenderTask extends TaskBase implements ConfigurableTaskInterface
                 }
 
                 $renderedContent = $this->render($nginx_file, $variables);
+                writeln('Rendered contents for ' . $nginx_file . ': ' . $renderedContent);
+
                 # Overwriting the template file shouldn't be a big deal right?
                 file_put_contents($nginx_file, $renderedContent);
             }
