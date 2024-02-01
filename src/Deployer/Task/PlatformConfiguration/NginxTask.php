@@ -38,6 +38,7 @@ class NginxTask extends TaskBase implements ConfigurableTaskInterface
         task('deploy:nginx', [
             'deploy:nginx:prepare',
             'deploy:nginx:manage_vhost',
+            'deploy:nginx:render',
             'deploy:nginx:upload',
             'deploy:nginx:sync',
             'deploy:nginx:cleanup',
