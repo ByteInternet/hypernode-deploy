@@ -151,6 +151,9 @@ $HN crontab -l -u app | grep "### BEGIN banaan1.store ###"
 $HN crontab -l -u app | grep "### END banaan1.store ###"
 $HN crontab -l -u app | sed -n -e '/### BEGIN banaan1.store ###/,/### END banaan1.store ###/ p' | grep "banaan"
 
+# Verify platform configs are templated correctly
+$HN grep "root /data/web/apps/banaan1.store/current/public;" /data/web/nginx/banaan1.store/server.example.conf || ($HN cat /data/web/nginx/banaan1.store/server.example.conf && exit 1)
+
 ######################################
 # REMOVE A NGINX LOCATION            #
 # Create a new release but make sure #
