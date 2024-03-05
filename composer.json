@@ -12,7 +12,7 @@
         "ext-pcntl": "*",
         "ext-zlib": "*",
         "composer-runtime-api": "^2",
-        "deployer/deployer": "dev-master#d99377d as v7.3.1",
+        "deployer/deployer": "dev-master#5c62c45 as v7.3.3",
         "doctrine/annotations": "^1.6",
         "guzzlehttp/guzzle": "^7.5",
         "hypernode/api-client": "^0.2",
