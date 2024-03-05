@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2569c67a5e053a04388ef456650c5acf",
+    "content-hash": "bd93b92df4e23ffc663b8309e32aee8d",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -827,16 +827,16 @@
         },
         {
             "name": "hypernode/deploy-configuration",
-            "version": "3.1.5",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-deploy-configuration.git",
-                "reference": "85323a32dc9c0806984e97a5483b724002f2e472"
+                "reference": "0caa36f837353bb5bdb527b092ffcdf87acf6eba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/85323a32dc9c0806984e97a5483b724002f2e472",
-                "reference": "85323a32dc9c0806984e97a5483b724002f2e472",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/0caa36f837353bb5bdb527b092ffcdf87acf6eba",
+                "reference": "0caa36f837353bb5bdb527b092ffcdf87acf6eba",
                 "shasum": ""
             },
             "require": {
@@ -863,9 +863,9 @@
             "description": "Hypernode deploy configuration files",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-deploy-configuration/issues",
-                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/3.1.5"
+                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/3.2.0"
             },
-            "time": "2023-12-05T12:52:54+00:00"
+            "time": "2024-03-05T15:25:53+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
