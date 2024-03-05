@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bd93b92df4e23ffc663b8309e32aee8d",
+    "content-hash": "6edc3724a5f78348140ef75de75a3141",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -776,19 +776,20 @@
         },
         {
             "name": "hypernode/api-client",
-            "version": "0.2.1",
+            "version": "0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-api-php.git",
-                "reference": "5fc348028551b5c6d2bbf1c1894f2cc3d59230e9"
+                "reference": "2c7a8210a155493ae3688deb87679672e5a8578f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-api-php/zipball/5fc348028551b5c6d2bbf1c1894f2cc3d59230e9",
-                "reference": "5fc348028551b5c6d2bbf1c1894f2cc3d59230e9",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-api-php/zipball/2c7a8210a155493ae3688deb87679672e5a8578f",
+                "reference": "2c7a8210a155493ae3688deb87679672e5a8578f",
                 "shasum": ""
             },
             "require": {
+                "composer-runtime-api": "^2.0",
                 "ext-curl": "*",
                 "ext-json": "*",
                 "nesbot/carbon": "^2.0",
@@ -821,9 +822,9 @@
             "description": "Hypernode API Client for PHP",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-api-php/issues",
-                "source": "https://github.com/ByteInternet/hypernode-api-php/tree/0.2.1"
+                "source": "https://github.com/ByteInternet/hypernode-api-php/tree/0.4.1"
             },
-            "time": "2022-11-25T14:45:54+00:00"
+            "time": "2023-04-05T07:29:39+00:00"
         },
         {
             "name": "hypernode/deploy-configuration",
