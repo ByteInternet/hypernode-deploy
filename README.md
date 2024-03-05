@@ -6,38 +6,33 @@ If you want to use Hypernode Deploy in your shop you will probably want to head 
 
 If you are looking to see how the internals of the deployment tool work or even want to contribute a change to the project yourself, then you're in the right place.
 
-This project builds the hypernode/deploy container image.
+This project builds the `hypernode/deploy` container image, which can be found on [quay.io/hypernode/deploy](https://quay.io/hypernode/deploy).
 
 ## Building and running a local image
 
 If you don't want to use a pre-built image from https://quay.io/hypernode/deploy or if you are doing development on this project and you want to test out your changes, you can built an image locally and use that.
 
 ```bash
-export LOCAL_BUILD=  # So we don't try to push
-export CONTAINER_IMAGE=hypernode/deploy/dev
-export PHP_VERSION=7.4
-export NODE_VERSION=14
-bash -x ci/build.sh
+export DOCKER_TAG=hypernode_deploy_dev:latest
+export PHP_VERSION=8.2
+export NODE_VERSION=18
+docker build -t "$DOCKER_TAG" -f "./ci/build/Dockerfile" \
+    --build-arg PHP_VERSION=$PHP_VERSION \
+    --build-arg NODE_VERSION=$NODE_VERSION \
+    .
 ```
 
 This will give you a locally built image:
-```bash
-$ docker images | grep hypernode/deploy/dev
-hypernode/deploy/dev                                        php7.4-node14         ece785ad21f5   2 minutes ago   753MB
+```console
+$ docker images | grep hypernode_deploy_dev
+localhost/hypernode_deploy_dev  latest      5280aaef3a82  52 seconds ago  842 MB
 ```
 
 That you could then use like:
-```bash
-$ rm -Rf vendor  # in case we need to do some cleanup
-$ docker run --rm -it --env SSH_PRIVATE_KEY="$(cat ~/.ssh/yourdeploykey | base64)" -v ${PWD}:/build hypernode/deploy/dev:php7.4-node14 hypernode-deploy build -vvv
-$ docker run --rm -it --env SSH_PRIVATE_KEY="$(cat ~/.ssh/yourdeploykey | base64)" -v ${PWD}:/build hypernode/deploy/dev:php7.4-node14 hypernode-deploy deploy staging -vvv
-```
-
-## Switching node version
-
-```bash
-source /etc/profile.d/nvm.sh
-nvm install -s stable
+```console
+$ rm -Rf vendor
+$ docker run --rm -it --env SSH_PRIVATE_KEY="$(cat ~/.ssh/yourdeploykey | base64)" -v ${PWD}:/build hypernode_deploy_dev:latest hypernode-deploy build -vvv
+$ docker run --rm -it --env SSH_PRIVATE_KEY="$(cat ~/.ssh/yourdeploykey | base64)" -v ${PWD}:/build hypernode_deploy_dev:latest hypernode-deploy deploy staging -vvv
 ```
 
 ## Tests
@@ -49,6 +44,3 @@ To run the static tests, please run the following commands:
 composer --working-dir tools install
 tools/vendor/bin/grumphp run --config tools/grumphp.yml
 ```
-
-### Docker container
-We use Google Container Structure Tests over https://github.com/aelsabbahy/goss because the Hipex deploy container does not require a health check.
