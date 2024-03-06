@@ -6,6 +6,7 @@ use Deployer\Deployer;
 use Deployer\Exception\Exception;
 use Deployer\Exception\GracefulShutdownException;
 use Deployer\Host\Host;
+use Deployer\Task\Task;
 use Hypernode\Deploy\Brancher\BrancherHypernodeManager;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
@@ -14,6 +15,7 @@ use Hypernode\Deploy\Exception\CreateBrancherHypernodeFailedException;
 use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Hypernode\Deploy\Exception\TimeoutException;
 use Hypernode\Deploy\Exception\ValidationException;
+use Hypernode\DeployConfiguration\Configurable\ServerRoleConfigurableInterface;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Server;
 use Hypernode\DeployConfiguration\Stage;
@@ -145,9 +147,17 @@ class DeployRunner
 
         foreach ($configurations as $taskConfig) {
             if ($task->supports($taskConfig)) {
-                $task->configureWithTaskConfig($taskConfig);
+                $task = $task->configureWithTaskConfig($taskConfig);
+
+                if ($task && $taskConfig instanceof ServerRoleConfigurableInterface) {
+                    $this->configureTaskOnServerRoles($task, $taskConfig);
+                }
             }
         }
+    }
+
+    private function configureTaskOnServerRoles(Task $task, ServerRoleConfigurableInterface $taskConfiguration) {
+        $task->select('role=' . implode(',role=', $taskConfiguration->getServerRoles()));
     }
 
     private function configureServers(Configuration $config, string $stage, bool $reuseBrancher): void
