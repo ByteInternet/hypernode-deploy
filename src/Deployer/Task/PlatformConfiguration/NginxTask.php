@@ -37,13 +37,14 @@ class NginxTask extends TaskBase implements ConfigurableTaskInterface
 
         task('deploy:nginx', [
             'deploy:nginx:prepare',
-            'deploy:nginx:manage_vhost',
             'deploy:nginx:upload',
             'deploy:nginx:sync',
             'deploy:nginx:cleanup',
         ]);
 
         before('deploy:symlink', 'deploy:nginx');
+        after('deploy:symlink', 'deploy:nginx:manage_vhost');
+
         foreach ($this->getRegisteredTasks() as $taskName) {
             after('deploy:nginx:prepare', $taskName);
         }
