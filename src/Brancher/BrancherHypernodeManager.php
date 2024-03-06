@@ -4,6 +4,7 @@ namespace Hypernode\Deploy\Brancher;
 
 use Hypernode\Api\Exception\HypernodeApiClientException;
 use Hypernode\Api\Exception\HypernodeApiServerException;
+use Hypernode\Api\Exception\ResponseException;
 use Hypernode\Api\HypernodeClient;
 use Hypernode\Api\HypernodeClientFactory;
 use Hypernode\Api\Resource\Logbook\Flow;
@@ -28,6 +29,7 @@ class BrancherHypernodeManager
      * @param string $hypernode The parent hypernode to query the Brancher instances from
      * @param string[] $labels Labels to match against, may be empty
      * @return string[] The found Brancher instance names
+     * @throws ResponseException
      */
     public function queryBrancherHypernodes(string $hypernode, array $labels = []): array
     {
@@ -66,10 +68,21 @@ class BrancherHypernodeManager
      */
     public function reuseExistingBrancherHypernode(string $hypernode, array $labels = []): ?string
     {
-        $brancherHypernodes = $this->queryBrancherHypernodes($hypernode, $labels);
-        if (count($brancherHypernodes) > 0) {
-            // Return the last brancher Hypernode, which is the most recently created one
-            return $brancherHypernodes[count($brancherHypernodes) - 1];
+        try {
+            $brancherHypernodes = $this->queryBrancherHypernodes($hypernode, $labels);
+            if (count($brancherHypernodes) > 0) {
+                // Return the last brancher Hypernode, which is the most recently created one
+                return $brancherHypernodes[count($brancherHypernodes) - 1];
+            }
+        } catch (ResponseException $e) {
+            $this->log->error(
+                sprintf(
+                    'Got an API exception (code %d) while querying for existing brancher Hypernodes for Hypernode %s with labels (%s).',
+                    $e->getCode(),
+                    $hypernode,
+                    implode(', ', $labels)
+                )
+            );
         }
 
         return null;
@@ -108,16 +121,16 @@ class BrancherHypernodeManager
         $interval = 3;
         $allowedErrorWindow = 3;
 
-        while ($timeElapsed < $timeout && !$resolved) {
+        while ($timeElapsed < $timeout) {
             $now = microtime(true);
             $timeElapsed += $now - $latest;
             $latest = $now;
 
             try {
                 $flows = $this->hypernodeClient->logbook->getList($brancherHypernode);
-                $relevantFlows = array_filter($flows, fn (Flow $flow) => $flow->name === 'ensure_app');
-                $failedFlows = array_filter($flows, fn (Flow $flow) => $flow->isReverted());
-                $completedFlows = array_filter($flows, fn (Flow $flow) => $flow->isComplete());
+                $relevantFlows = array_filter($flows, fn(Flow $flow) => $flow->name === 'ensure_app');
+                $failedFlows = array_filter($flows, fn(Flow $flow) => $flow->isReverted());
+                $completedFlows = array_filter($flows, fn(Flow $flow) => $flow->isComplete());
 
                 if (count($failedFlows) === count($relevantFlows)) {
                     throw new CreateBrancherHypernodeFailedException();
@@ -142,7 +155,6 @@ class BrancherHypernodeManager
                             $brancherHypernode
                         )
                     );
-                    ;
                     continue;
                 }
             }
@@ -150,11 +162,45 @@ class BrancherHypernodeManager
             sleep($interval);
         }
 
+        $this->log->info(
+            sprintf(
+                'Brancher Hypernode %s was delivered. Now waiting for node to become reachable...',
+                $brancherHypernode
+            )
+        );
+
         if (!$resolved) {
             throw new TimeoutException(
-                sprintf('Timed out waiting for brancher Hypernode %s to become available', $brancherHypernode)
+                sprintf('Timed out waiting for brancher Hypernode %s to be delivered', $brancherHypernode)
             );
         }
+
+        $resolved = false;
+        while ($timeElapsed < $timeout) {
+            $now = microtime(true);
+            $timeElapsed += $now - $latest;
+            $latest = $now;
+
+            $connection = @fsockopen(sprintf("%s.hypernode.io", $brancherHypernode), 22);
+            if ($connection) {
+                fclose($connection);
+                $resolved = true;
+                break;
+            }
+        }
+
+        if (!$resolved) {
+            throw new TimeoutException(
+                sprintf('Timed out waiting for brancher Hypernode %s to become reachable', $brancherHypernode)
+            );
+        }
+
+        $this->log->info(
+            sprintf(
+                'Brancher Hypernode %s became reachable!',
+                $brancherHypernode
+            )
+        );
     }
 
     /**
