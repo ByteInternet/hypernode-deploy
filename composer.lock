@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "37aef9e9af4806ffb6f067cbee645a10",
+    "content-hash": "6edc3724a5f78348140ef75de75a3141",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -78,12 +78,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/deployphp/deployer.git",
-                "reference": "d99377d"
+                "reference": "5c62c45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/deployphp/deployer/zipball/d99377d",
-                "reference": "d99377d",
+                "url": "https://api.github.com/repos/deployphp/deployer/zipball/5c62c45",
+                "reference": "5c62c45",
                 "shasum": ""
             },
             "require": {
@@ -104,8 +104,7 @@
                 "phpunit/php-code-coverage": "^9.2",
                 "phpunit/phpunit": "^9.3",
                 "slevomat/coding-standard": "^7.0",
-                "squizlabs/php_codesniffer": "^3.5",
-                "symfony/var-exporter": "^5.4"
+                "squizlabs/php_codesniffer": "^3.5"
             },
             "default-branch": true,
             "bin": [
@@ -144,7 +143,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-06-16T10:01:27+00:00"
+            "time": "2024-02-26T13:30:43+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -452,16 +451,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "7.7.0",
+            "version": "7.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "fb7566caccf22d74d1ab270de3551f72a58399f5"
+                "reference": "085b026db54d4b5012f727c80c9958e8b8cbc454"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/fb7566caccf22d74d1ab270de3551f72a58399f5",
-                "reference": "fb7566caccf22d74d1ab270de3551f72a58399f5",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/085b026db54d4b5012f727c80c9958e8b8cbc454",
+                "reference": "085b026db54d4b5012f727c80c9958e8b8cbc454",
                 "shasum": ""
             },
             "require": {
@@ -558,7 +557,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.7.0"
+                "source": "https://github.com/guzzle/guzzle/tree/7.7.1"
             },
             "funding": [
                 {
@@ -574,7 +573,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-05-21T14:04:53+00:00"
+            "time": "2023-08-27T10:02:06+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -777,19 +776,20 @@
         },
         {
             "name": "hypernode/api-client",
-            "version": "0.2.1",
+            "version": "0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-api-php.git",
-                "reference": "5fc348028551b5c6d2bbf1c1894f2cc3d59230e9"
+                "reference": "2c7a8210a155493ae3688deb87679672e5a8578f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-api-php/zipball/5fc348028551b5c6d2bbf1c1894f2cc3d59230e9",
-                "reference": "5fc348028551b5c6d2bbf1c1894f2cc3d59230e9",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-api-php/zipball/2c7a8210a155493ae3688deb87679672e5a8578f",
+                "reference": "2c7a8210a155493ae3688deb87679672e5a8578f",
                 "shasum": ""
             },
             "require": {
+                "composer-runtime-api": "^2.0",
                 "ext-curl": "*",
                 "ext-json": "*",
                 "nesbot/carbon": "^2.0",
@@ -822,22 +822,22 @@
             "description": "Hypernode API Client for PHP",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-api-php/issues",
-                "source": "https://github.com/ByteInternet/hypernode-api-php/tree/0.2.1"
+                "source": "https://github.com/ByteInternet/hypernode-api-php/tree/0.4.1"
             },
-            "time": "2022-11-25T14:45:54+00:00"
+            "time": "2023-04-05T07:29:39+00:00"
         },
         {
             "name": "hypernode/deploy-configuration",
-            "version": "3.1.5",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-deploy-configuration.git",
-                "reference": "85323a32dc9c0806984e97a5483b724002f2e472"
+                "reference": "0caa36f837353bb5bdb527b092ffcdf87acf6eba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/85323a32dc9c0806984e97a5483b724002f2e472",
-                "reference": "85323a32dc9c0806984e97a5483b724002f2e472",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/0caa36f837353bb5bdb527b092ffcdf87acf6eba",
+                "reference": "0caa36f837353bb5bdb527b092ffcdf87acf6eba",
                 "shasum": ""
             },
             "require": {
@@ -864,9 +864,9 @@
             "description": "Hypernode deploy configuration files",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-deploy-configuration/issues",
-                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/3.1.5"
+                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/3.2.0"
             },
-            "time": "2023-12-05T12:52:54+00:00"
+            "time": "2024-03-05T15:25:53+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -7564,8 +7564,8 @@
         {
             "package": "deployer/deployer",
             "version": "9999999-dev",
-            "alias": "v7.3.1",
-            "alias_normalized": "7.3.1.0"
+            "alias": "v7.3.3",
+            "alias_normalized": "7.3.3.0"
         }
     ],
     "minimum-stability": "stable",
