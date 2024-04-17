@@ -16,6 +16,7 @@ use Hypernode\Deploy\Exception\InvalidConfigurationException;
 use Hypernode\Deploy\Exception\TimeoutException;
 use Hypernode\Deploy\Exception\ValidationException;
 use Hypernode\DeployConfiguration\Configurable\ServerRoleConfigurableInterface;
+use Hypernode\DeployConfiguration\Configurable\StageConfigurableInterface;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Server;
 use Hypernode\DeployConfiguration\Stage;
@@ -152,12 +153,24 @@ class DeployRunner
                 if ($task && $taskConfig instanceof ServerRoleConfigurableInterface) {
                     $this->configureTaskOnServerRoles($task, $taskConfig);
                 }
+
+                if ($task && $taskConfig instanceof StageConfigurableInterface) {
+                    $this->configureTaskOnStage($task, $taskConfig);
+                }
             }
         }
     }
 
     private function configureTaskOnServerRoles(Task $task, ServerRoleConfigurableInterface $taskConfiguration) {
         $task->select('role=' . implode(',role=', $taskConfiguration->getServerRoles()));
+    }
+
+    private function configureTaskOnStage(Task $task, StageConfigurableInterface $taskConfiguration) {
+        if (!$taskConfiguration->getStage()) {
+            return;
+        }
+
+        $task->select('stage=' . $taskConfiguration->getStage()->getName());
     }
 
     private function configureServers(Configuration $config, string $stage, bool $reuseBrancher): void
