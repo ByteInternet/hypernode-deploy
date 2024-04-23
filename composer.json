@@ -31,7 +31,8 @@
             "Hypernode\\Deploy\\": "src/"
         },
         "files": [
-            "src/Deployer/functions.php"
+            "src/Deployer/functions.php",
+            "src/Support/helpers.php",
         ]
     },
     "require-dev": {
