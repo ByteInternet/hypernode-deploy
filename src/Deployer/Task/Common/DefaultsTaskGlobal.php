@@ -45,7 +45,11 @@ class DefaultsTaskGlobal extends TaskBase
             return $this->releaseInfo->getCommitSha();
         });
 
-        set('configured/bin/php', 'php');
+        if (str_starts_with($config->getPhpVersion(), 'php')) {
+            set('configured/bin/php', $config->getPhpVersion());
+        } else {
+            set('configured/bin/php', 'php' . $config->getPhpVersion());
+        }
         set('configured/public_folder', $config->getPublicFolder());
     }
 }
