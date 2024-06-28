@@ -35,7 +35,7 @@ class CronSyncTask extends TaskBase implements ConfigurableTaskInterface
 
     public function setCrontab(string $newCrontab): void
     {
-        run('echo "' . $newCrontab . '" | crontab -');
+        run("echo $'" . str_replace('\'', '\\\'', $newCrontab) . "' | crontab -");
     }
 
     public function replaceExistingCronBlocks(string $newCronBlock): string
