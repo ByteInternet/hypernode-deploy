@@ -161,11 +161,13 @@ class DeployRunner
         }
     }
 
-    private function configureTaskOnServerRoles(Task $task, ServerRoleConfigurableInterface $taskConfiguration) {
+    private function configureTaskOnServerRoles(Task $task, ServerRoleConfigurableInterface $taskConfiguration)
+    {
         $task->select('role=' . implode(',role=', $taskConfiguration->getServerRoles()));
     }
 
-    private function configureTaskOnStage(Task $task, StageConfigurableInterface $taskConfiguration) {
+    private function configureTaskOnStage(Task $task, StageConfigurableInterface $taskConfiguration)
+    {
         if (!$taskConfiguration->getStage()) {
             return;
         }
