@@ -25,8 +25,8 @@ class BuildTask extends TaskBase
         $this->recipeLoader->load('deploy/info.php');
 
         task('build', [
-            'deploy:info',
             'prepare:ssh',
+            'deploy:info',
             'build:compile',
             'build:package',
         ])->select("stage=build");
