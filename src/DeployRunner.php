@@ -148,10 +148,10 @@ class DeployRunner
 
         foreach ($configurations as $taskConfig) {
             if ($task->supports($taskConfig)) {
-                $task = $task->configureWithTaskConfig($taskConfig);
+                $deployerTask = $task->configureWithTaskConfig($taskConfig);
 
-                if ($task && $taskConfig instanceof StageConfigurableInterface) {
-                    $this->configureTaskOnStage($task, $taskConfig);
+                if ($deployerTask && $taskConfig instanceof StageConfigurableInterface) {
+                    $this->configureTaskOnStage($deployerTask, $taskConfig);
                 }
             }
         }
