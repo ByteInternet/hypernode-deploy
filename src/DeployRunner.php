@@ -150,20 +150,11 @@ class DeployRunner
             if ($task->supports($taskConfig)) {
                 $task = $task->configureWithTaskConfig($taskConfig);
 
-                if ($task && $taskConfig instanceof ServerRoleConfigurableInterface) {
-                    $this->configureTaskOnServerRoles($task, $taskConfig);
-                }
-
                 if ($task && $taskConfig instanceof StageConfigurableInterface) {
                     $this->configureTaskOnStage($task, $taskConfig);
                 }
             }
         }
-    }
-
-    private function configureTaskOnServerRoles(Task $task, ServerRoleConfigurableInterface $taskConfiguration)
-    {
-        $task->select('role=' . implode(',role=', $taskConfiguration->getServerRoles()));
     }
 
     private function configureTaskOnStage(Task $task, StageConfigurableInterface $taskConfiguration)
