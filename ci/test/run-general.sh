@@ -46,7 +46,8 @@ function end_task() {
 
 # Install docker-compose if it's not installed
 if ! [ -x "$(command -v docker-compose)" ]; then
-    pip install docker-compose
+    curl -sSL https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
 fi
 
 # Clear up env
