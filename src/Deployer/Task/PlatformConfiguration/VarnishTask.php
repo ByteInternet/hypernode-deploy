@@ -2,9 +2,9 @@
 
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
-use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
+use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\PlatformConfiguration\VarnishConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
@@ -31,7 +31,7 @@ class VarnishTask extends TaskBase implements ConfigurableTaskInterface
 
     public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
-        task('deploy:varnish', [
+        $task = task('deploy:varnish', [
             'deploy:varnish:enable',
             'deploy:varnish:prepare',
             'deploy:varnish:upload',
@@ -46,6 +46,6 @@ class VarnishTask extends TaskBase implements ConfigurableTaskInterface
             after('deploy:varnish:prepare', $taskName);
         }
 
-        return null;
+        return $task;
     }
 }

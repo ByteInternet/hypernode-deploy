@@ -2,9 +2,9 @@
 
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
-use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
+use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\PlatformConfiguration\RedisConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
@@ -30,11 +30,11 @@ class RedisTask extends TaskBase implements ConfigurableTaskInterface
 
     public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
-        task('deploy:redis', [
+        $task = task('deploy:redis', [
             'deploy:redis:enable',
         ]);
 
         before('deploy:symlink', self::TASK_NAME);
-        return null;
+        return $task;
     }
 }

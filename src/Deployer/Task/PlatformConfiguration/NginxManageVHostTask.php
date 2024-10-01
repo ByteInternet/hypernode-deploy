@@ -2,11 +2,10 @@
 
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
-use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
+use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\Deploy\Deployer\Task\TaskBase;
-use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 
@@ -29,10 +28,10 @@ class NginxManageVHostTask extends TaskBase implements ConfigurableTaskInterface
 
     public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
-        task('deploy:nginx:manage_vhost', function () {
+        $task = task('deploy:nginx:manage_vhost', function () {
             run('hypernode-manage-vhosts {{domain}} --webroot {{current_path}}/{{public_folder}} --no');
         });
 
-        return null;
+        return $task;
     }
 }

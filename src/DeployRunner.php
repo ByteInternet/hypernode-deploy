@@ -20,6 +20,7 @@ use Hypernode\DeployConfiguration\Configurable\StageConfigurableInterface;
 use Hypernode\DeployConfiguration\Configuration;
 use Hypernode\DeployConfiguration\Server;
 use Hypernode\DeployConfiguration\Stage;
+use Hypernode\DeployConfiguration\TaskConfigurationInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -75,8 +76,14 @@ class DeployRunner
      * @throws Throwable
      * @throws Exception
      */
-    public function run(OutputInterface $output, string $stage, string $task, bool $configureBuildStage, bool $configureServers, bool $reuseBrancher): int
-    {
+    public function run(
+        OutputInterface $output,
+        string $stage,
+        string $task,
+        bool $configureBuildStage,
+        bool $configureServers,
+        bool $reuseBrancher
+    ): int {
         $deployer = $this->deployerLoader->getOrCreateInstance($output);
 
         try {
@@ -97,8 +104,12 @@ class DeployRunner
      * @throws InvalidConfigurationException
      * @throws Throwable
      */
-    private function prepare(bool $configureBuildStage, bool $configureServers, string $stage, bool $reuseBrancher): void
-    {
+    private function prepare(
+        bool $configureBuildStage,
+        bool $configureServers,
+        string $stage,
+        bool $reuseBrancher
+    ): void {
         $this->recipeLoader->load('common.php');
         $tasks = $this->taskFactory->loadAll();
         $config = $this->configurationLoader->load(
@@ -150,20 +161,36 @@ class DeployRunner
             if ($task->supports($taskConfig)) {
                 $deployerTask = $task->configureWithTaskConfig($taskConfig);
 
-                if ($deployerTask && $taskConfig instanceof StageConfigurableInterface) {
-                    $this->configureTaskOnStage($deployerTask, $taskConfig);
+                if ($deployerTask) {
+                    $this->configureDeployerTask($deployerTask, $taskConfig);
                 }
             }
         }
     }
 
-    private function configureTaskOnStage(Task $task, StageConfigurableInterface $taskConfiguration)
+    private function configureDeployerTask(Task $deployerTask, TaskConfigurationInterface $taskConfig): void
     {
-        if (!$taskConfiguration->getStage()) {
-            return;
-        }
+        $roles = $taskConfig instanceof ServerRoleConfigurableInterface
+            ? $taskConfig->getServerRoles()
+            : [];
+        $stage = $taskConfig instanceof StageConfigurableInterface && $taskConfig->getStage()
+            ? $taskConfig->getStage()->getName()
+            : null;
 
-        $task->select('stage=' . $taskConfiguration->getStage()->getName());
+        if ($roles) {
+            if ($stage) {
+                $deployerTask->select(
+                    sprintf(
+                        "stage=${stage}&roles=%s",
+                        implode(",stage=${stage}&roles=", $roles)
+                    )
+                );
+            } else {
+                $deployerTask->select('roles=' . implode(',roles=', $roles));
+            }
+        } elseif ($stage) {
+            $deployerTask->select("stage={$stage}");
+        }
     }
 
     private function configureServers(Configuration $config, string $stage, bool $reuseBrancher): void
@@ -179,8 +206,12 @@ class DeployRunner
         }
     }
 
-    private function configureStageServer(Stage $stage, Server $server, Configuration $config, bool $reuseBrancher): void
-    {
+    private function configureStageServer(
+        Stage $stage,
+        Server $server,
+        Configuration $config,
+        bool $reuseBrancher
+    ): void {
         $this->maybeConfigureBrancherServer($server, $reuseBrancher);
 
         $host = host($stage->getName() . ':' . $server->getHostname());
