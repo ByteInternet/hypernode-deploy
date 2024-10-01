@@ -25,7 +25,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
-use Webmozart\Assert\Assert;
 
 use function Deployer\host;
 use function Deployer\localhost;
@@ -53,10 +52,6 @@ class DeployRunner
 
     private array $deployedHostnames = [];
     private string $deployedStage = '';
-    /**
-     * @var Host[]
-     */
-    private array $configuredHosts = [];
 
     public function __construct(
         TaskFactory $taskFactory,
@@ -175,15 +170,6 @@ class DeployRunner
 
     private function configureDeployerTask(Task $deployerTask, TaskConfigurationInterface $taskConfig): void
     {
-        $rolesConfigured = false;
-        foreach ($this->configuredHosts as $host) {
-            $roles = $host->get('roles', []);
-            if ($roles) {
-                $rolesConfigured = true;
-                break;
-            }
-        }
-
         $roles = $taskConfig instanceof ServerRoleConfigurableInterface
             ? $taskConfig->getServerRoles()
             : [];
@@ -192,15 +178,6 @@ class DeployRunner
             : null;
 
         if ($roles) {
-            if (!$rolesConfigured) {
-                throw new InvalidConfigurationException(
-                    sprintf(
-                        'No roles configured for task %s, skipping role selection',
-                        get_class($taskConfig)
-                    )
-                );
-            }
-
             if ($stage) {
                 $deployerTask->select(
                     sprintf(
@@ -286,9 +263,6 @@ class DeployRunner
             );
             $host->set($key, $value);
         }
-
-        Assert::isInstanceOf($host, Host::class);
-        $this->configuredHosts[] = $host;
     }
 
     private function maybeConfigureBrancherServer(Server $server, bool $reuseBrancher): void
