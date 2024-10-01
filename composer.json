@@ -2,7 +2,7 @@
     "name": "hypernode/deploy",
     "description": "Hypernode Deploy",
     "type": "application",
-    "license": "proprietary",
+    "license": "MIT",
     "bin": [
         "bin/hypernode-deploy.php",
         "bin/hypernode-deploy"
