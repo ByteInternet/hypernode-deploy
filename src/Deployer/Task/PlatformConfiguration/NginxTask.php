@@ -2,9 +2,9 @@
 
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
-use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
+use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\PlatformConfiguration\NginxConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
@@ -35,7 +35,7 @@ class NginxTask extends TaskBase implements ConfigurableTaskInterface
             return '/tmp/nginx-config-' . get('domain');
         });
 
-        task('deploy:nginx', [
+        $task = task('deploy:nginx', [
             'deploy:nginx:prepare',
             'deploy:nginx:upload',
             'deploy:nginx:sync',
@@ -49,6 +49,6 @@ class NginxTask extends TaskBase implements ConfigurableTaskInterface
             after('deploy:nginx:prepare', $taskName);
         }
 
-        return null;
+        return $task;
     }
 }

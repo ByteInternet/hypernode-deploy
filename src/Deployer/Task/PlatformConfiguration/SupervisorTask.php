@@ -2,9 +2,9 @@
 
 namespace Hypernode\Deploy\Deployer\Task\PlatformConfiguration;
 
-use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Deployer\Task\Task;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
+use Hypernode\Deploy\Deployer\Task\IncrementedTaskTrait;
 use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\DeployConfiguration\PlatformConfiguration\SupervisorConfiguration;
 use Hypernode\DeployConfiguration\TaskConfigurationInterface;
@@ -35,7 +35,7 @@ class SupervisorTask extends TaskBase implements ConfigurableTaskInterface
             return '/tmp/supervisor-config-' . get('domain');
         });
 
-        task('deploy:supervisor', [
+        $task = task('deploy:supervisor', [
             'deploy:supervisor:prepare',
             'deploy:supervisor:upload',
             'deploy:supervisor:sync',
@@ -47,6 +47,6 @@ class SupervisorTask extends TaskBase implements ConfigurableTaskInterface
             after('deploy:supervisor:prepare', $taskName);
         }
 
-        return null;
+        return $task;
     }
 }
