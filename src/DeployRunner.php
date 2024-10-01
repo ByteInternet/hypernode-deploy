@@ -187,7 +187,7 @@ class DeployRunner
         $roles = $taskConfig instanceof ServerRoleConfigurableInterface
             ? $taskConfig->getServerRoles()
             : [];
-        $stage = $taskConfig instanceof StageConfigurableInterface
+        $stage = $taskConfig instanceof StageConfigurableInterface && $taskConfig->getStage()
             ? $taskConfig->getStage()->getName()
             : null;
 
