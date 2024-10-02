@@ -828,20 +828,20 @@
         },
         {
             "name": "hypernode/deploy-configuration",
-            "version": "3.2.1",
+            "version": "3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-deploy-configuration.git",
-                "reference": "6eddfb953f36cef655703d722928a5be97aaafe3"
+                "reference": "caede533b14bb3a658090b0cb73f1304386e9dbf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/6eddfb953f36cef655703d722928a5be97aaafe3",
-                "reference": "6eddfb953f36cef655703d722928a5be97aaafe3",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/caede533b14bb3a658090b0cb73f1304386e9dbf",
+                "reference": "caede533b14bb3a658090b0cb73f1304386e9dbf",
                 "shasum": ""
             },
             "require": {
-                "deployer/deployer": "^7.0",
+                "deployer/deployer": "7.0 - 7.4",
                 "psr/log": "^1.0||^2.0||^3.0"
             },
             "conflict": {
@@ -864,9 +864,9 @@
             "description": "Hypernode deploy configuration files",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-deploy-configuration/issues",
-                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/3.2.1"
+                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/3.3.0"
             },
-            "time": "2024-10-01T13:24:26+00:00"
+            "time": "2024-10-02T11:40:49+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
