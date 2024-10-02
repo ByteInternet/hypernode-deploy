@@ -26,8 +26,8 @@ class UploadTask extends TaskBase
         $this->loader->load('deploy/info.php');
 
         task('deploy:upload', [
-            'deploy:info',
             'prepare:ssh',
+            'deploy:info',
             'deploy:prepare',
             'deploy:copy',
             'deploy:deploy',
