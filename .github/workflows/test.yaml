@@ -12,8 +12,6 @@ jobs:
     steps:
       - name: Checkout hypernode-deploy
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
       - name: Run general testsuite
         if: ${{ matrix.testsuite == 'general' }}
         run: MAGENTO_REPO=./magento2 ./runtests.sh general
