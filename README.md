@@ -8,6 +8,23 @@ If you are looking to see how the internals of the deployment tool work or even 
 
 This project builds the `hypernode/deploy` container image, which can be found on [quay.io/hypernode/deploy](https://quay.io/hypernode/deploy).
 
+## Updating deployer dependency
+
+Deployer is an integral part of Hypernode Deploy.
+The official packagist distribution (and the git tags) are just phar distributions with all the engine code stripped away.
+To properly install Deployer as a dependency, we install a very simple fork, which has git tags based on the engine code.
+
+Whenever a new Deployer version is released, here's the process:
+- Sync the fork [ByteInternet/deployer](https://github.com/ByteInternet/deployer)
+- Locate the commit for the release in the master branch.
+    - Usually this comes down to finding the commit that was pushed most recent to the release tag.
+- Clone/update the fork locally.
+- Run `git checkout <commit_sha>`
+- Run `git tag v<version>`
+- Run `git push --tags`
+
+Finally, to utilize the new fork in Hypernode Deploy, you can simply change the deployer/deployer dependency in the `composer.json` file.
+
 ## Building and running a local image
 
 If you don't want to use a pre-built image from https://quay.io/hypernode/deploy or if you are doing development on this project and you want to test out your changes, you can built an image locally and use that.
