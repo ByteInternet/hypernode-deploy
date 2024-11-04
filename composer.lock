@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a0ee2f27bcd1e60886d23d064882ab6d",
+    "content-hash": "a8161c1ede390e143f1581d8c15a9753",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -74,16 +74,16 @@
         },
         {
             "name": "deployer/deployer",
-            "version": "dev-master",
+            "version": "v7.4.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/deployphp/deployer.git",
-                "reference": "a3bab59"
+                "url": "https://github.com/ByteInternet/deployer.git",
+                "reference": "a3bab59d448de84099e52fc5b6c652737a8c2942"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/deployphp/deployer/zipball/a3bab59",
-                "reference": "a3bab59",
+                "url": "https://api.github.com/repos/ByteInternet/deployer/zipball/a3bab59d448de84099e52fc5b6c652737a8c2942",
+                "reference": "a3bab59d448de84099e52fc5b6c652737a8c2942",
                 "shasum": ""
             },
             "require": {
@@ -106,21 +106,39 @@
                 "slevomat/coding-standard": "^7.0",
                 "squizlabs/php_codesniffer": "^3.5"
             },
-            "default-branch": true,
             "bin": [
                 "bin/dep"
             ],
             "type": "library",
             "autoload": {
+                "psr-4": {
+                    "Deployer\\": "src/"
+                },
                 "files": [
                     "src/Support/helpers.php",
                     "src/functions.php"
-                ],
-                "psr-4": {
-                    "Deployer\\": "src/"
-                }
+                ]
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "test": [
+                    "pest"
+                ],
+                "test:e2e": [
+                    "pest --config tests/e2e/phpunit-e2e.xml"
+                ],
+                "phpcs": [
+                    "phpcs"
+                ],
+                "fix": [
+                    "phpcbf"
+                ],
+                "phpstan": [
+                    "phpstan analyse -c phpstan.neon"
+                ],
+                "phpstan:baseline": [
+                    "@phpstan --generate-baseline tests/phpstan-baseline.neon"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -134,16 +152,16 @@
             "homepage": "https://deployer.org",
             "support": {
                 "docs": "https://deployer.org/docs",
-                "issues": "https://github.com/deployphp/deployer/issues",
-                "source": "https://github.com/deployphp/deployer"
+                "source": "https://github.com/deployphp/deployer",
+                "issues": "https://github.com/deployphp/deployer/issues"
             },
             "funding": [
                 {
-                    "url": "https://github.com/sponsors/antonmedv",
-                    "type": "github"
+                    "type": "github",
+                    "url": "https://github.com/sponsors/antonmedv"
                 }
             ],
-            "time": "2024-09-17T08:54:36+00:00"
+            "time": "2024-04-17T21:19:58+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -7560,17 +7578,9 @@
             "time": "2015-12-17T08:42:14+00:00"
         }
     ],
-    "aliases": [
-        {
-            "package": "deployer/deployer",
-            "version": "9999999-dev",
-            "alias": "v7.4.0",
-            "alias_normalized": "7.4.0.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "deployer/deployer": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
@@ -7581,6 +7591,6 @@
         "ext-zlib": "*",
         "composer-runtime-api": "^2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
