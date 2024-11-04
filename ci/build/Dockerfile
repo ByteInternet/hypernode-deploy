@@ -19,6 +19,7 @@ RUN apt-get update \
         gnupg-agent \
         gnupg \
         software-properties-common \
+        gettext-base \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sSL http://debian.hypernode.com/repo.key | apt-key add - \
     && echo "deb http://debian.hypernode.com buster main hypernode" | tee /etc/apt/sources.list.d/hypernode.list \
