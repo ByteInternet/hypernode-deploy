@@ -1,6 +1,6 @@
 name: Run tests for PR
 on:
-  pull_request_target:
+  pull_request:
 
 jobs:
   integration_test:
