@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bookworm
 
 ARG NODE_VERSION
 ARG PHP_VERSION
@@ -22,9 +22,9 @@ RUN apt-get update \
         gettext-base \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sSL http://debian.hypernode.com/repo.key | apt-key add - \
-    && echo "deb http://debian.hypernode.com buster main hypernode" | tee /etc/apt/sources.list.d/hypernode.list \
+    && echo "deb http://debian.hypernode.com bookworm main hypernode" | tee /etc/apt/sources.list.d/hypernode.list \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
-    && echo "deb http://deb.nodesource.com/node_${NODE_VERSION}.x buster main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && echo "deb http://deb.nodesource.com/node_${NODE_VERSION}.x bookworm main" | tee /etc/apt/sources.list.d/nodesource.list \
     && echo \
           "Package: * \
           Pin origin deb.nodesource.com \
