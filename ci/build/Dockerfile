@@ -55,6 +55,7 @@ RUN apt-get update && \
         bc \
     && apt install -y --no-install-recommends \
         php${PHP_VERSION} \
+        php${PHP_VERSION}-amqp \
         php${PHP_VERSION}-bcmath \
         php${PHP_VERSION}-bz2  \
         php${PHP_VERSION}-cli  \
