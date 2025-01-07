@@ -35,7 +35,7 @@ class SlackTask extends TaskBase implements ConfigurableTaskInterface
      */
     public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
-        $this->recipeLoader->load('slack.php');
+        $this->recipeLoader->load('../contrib/slack.php');
 
         set('slack_webhook', $config->getWebHook());
         set('slack_text', '{{release_message}}');
