@@ -21,8 +21,7 @@ class ReleaseInfo
     {
         try {
             return runLocally('git rev-parse HEAD');
-        }
-        catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             return '';
         }
     }
@@ -61,8 +60,9 @@ class ReleaseInfo
         $gitLogOutput = '';
         try {
             $gitLogOutput = runLocally('git log --merges -n 1');
+        } catch (RunException $e) {
+            
         }
-        catch (RunException $e) {}
 
         if (!preg_match(self::MERGE_PATTERN, $gitLogOutput, $matches)) {
             output()->write('No merge commit found');

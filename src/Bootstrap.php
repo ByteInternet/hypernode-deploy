@@ -62,7 +62,7 @@ class Bootstrap
         ]);
 
         if (!defined('DEPLOYER_VERSION')) {
-            define("DEPLOYER_VERSION", sprintf("Hypernode Deploy %s", $this->getVersion()));        
+            define("DEPLOYER_VERSION", sprintf("Hypernode Deploy %s", $this->getVersion()));
         }
 
         $container = $builder->build();
