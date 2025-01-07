@@ -3,6 +3,7 @@
 namespace Hypernode\Deploy\Stdlib;
 
 use Hypernode\DeployConfiguration\Stage;
+use Deployer\Exception\RunException;
 
 use function Deployer\get;
 use function Deployer\parse;
@@ -18,7 +19,12 @@ class ReleaseInfo
 
     public function getCommitSha(): string
     {
-        return runLocally('git rev-parse HEAD');
+        try {
+            return runLocally('git rev-parse HEAD');
+        }
+        catch (\Throwable $e) {
+            return '';
+        }
     }
 
     public function getMessage(): string
@@ -52,7 +58,11 @@ class ReleaseInfo
      */
     private function branchList(): array
     {
-        $gitLogOutput = runLocally('git log --merges -n 1');
+        $gitLogOutput = '';
+        try {
+            $gitLogOutput = runLocally('git log --merges -n 1');
+        }
+        catch (RunException $e) {}
 
         if (!preg_match(self::MERGE_PATTERN, $gitLogOutput, $matches)) {
             output()->write('No merge commit found');

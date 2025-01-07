@@ -41,12 +41,12 @@ class TaskBuilder
     }
 
     /**
-     * @param TaskConfigurationInterface $command
+     * @param Command $command
      * @param string $name
      * @return Task
      * @throws \Exception
      */
-    private function build(TaskConfigurationInterface $command, string $name): Task
+    private function build(Command $command, string $name): Task
     {
         $task = task($name, function () use ($command) {
             $this->runCommandWithin($command);
