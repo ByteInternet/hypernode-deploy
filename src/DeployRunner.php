@@ -223,6 +223,7 @@ class DeployRunner
         $host->setSshMultiplexing(true);
         $host->set('roles', $server->getRoles());
         $host->set('domain', $stage->getDomain());
+        $host->set('stage', $stage->getName());
         $host->set('deploy_path', function () {
             // Ensure directory exists before returning it
             run('mkdir -p ~/apps/{{domain}}/shared');

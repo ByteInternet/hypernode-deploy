@@ -61,6 +61,10 @@ class Bootstrap
             'version' => $this->getVersion(),
         ]);
 
+        if (!defined('DEPLOYER_VERSION')) {
+            define("DEPLOYER_VERSION", sprintf("Hypernode Deploy %s", $this->getVersion()));        
+        }
+
         $container = $builder->build();
 
         $this->registerTwigLoader($container);
