@@ -290,22 +290,25 @@ class DeployRunner
             $data['labels'] = $labels;
             if ($reuseBrancher && $brancherApp = $this->brancherHypernodeManager->reuseExistingBrancherHypernode($parentApp, $labels)) {
                 $this->log->info(sprintf('Found existing brancher Hypernode, name is %s.', $brancherApp));
-                $server->setHostname(sprintf("%s.hypernode.io", $brancherApp));
             } else {
                 $brancherApp = $this->brancherHypernodeManager->createForHypernode($parentApp, $data);
                 $this->log->info(sprintf('Successfully requested brancher Hypernode, name is %s.', $brancherApp));
-                $server->setHostname(sprintf("%s.hypernode.io", $brancherApp));
                 $this->brancherHypernodesRegistered[] = $brancherApp;
-
-                try {
-                    $this->log->info('Waiting for brancher Hypernode to become available...');
-                    $this->brancherHypernodeManager->waitForAvailability($brancherApp);
-                    $this->log->info('Brancher Hypernode has become available!');
-                } catch (CreateBrancherHypernodeFailedException | TimeoutException $e) {
-                    $this->brancherHypernodeManager->cancel($brancherApp);
-                    throw $e;
-                }
             }
+
+            try {
+                $this->log->info('Waiting for brancher Hypernode to become available...');
+                $this->brancherHypernodeManager->waitForAvailability($brancherApp);
+                $this->log->info('Brancher Hypernode is available!');
+            } catch (CreateBrancherHypernodeFailedException | TimeoutException $e) {
+                if (in_array($brancherApp, $this->brancherHypernodesRegistered)) {
+                    $this->brancherHypernodeManager->cancel($brancherApp);
+                }
+
+                throw $e;
+            }
+
+            $server->setHostname(sprintf("%s.hypernode.io", $brancherApp));
         }
     }
 
