@@ -55,7 +55,7 @@ class Bootstrap
     {
         $builder = new ContainerBuilder();
         $builder->useAutowiring(true);
-        $builder->useAnnotations(true);
+        $builder->useAttributes(true);
         $builder->addDefinitions(Di\ConsoleDefinition::getDefinition());
         $builder->addDefinitions([
             'version' => $this->getVersion(),

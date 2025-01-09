@@ -181,8 +181,8 @@ class DeployRunner
             if ($stage) {
                 $deployerTask->select(
                     sprintf(
-                        "stage=${stage}&roles=%s",
-                        implode(",stage=${stage}&roles=", $roles)
+                        "stage={$stage}&roles=%s",
+                        implode(",stage={$stage}&roles=", $roles)
                     )
                 );
             } else {
