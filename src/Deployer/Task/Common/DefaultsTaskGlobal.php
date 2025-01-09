@@ -44,8 +44,7 @@ class DefaultsTaskGlobal extends TaskBase
         set('commit_sha', function () {
             try {
                 return $this->releaseInfo->getCommitSha();
-            }
-            catch (\Throwable $e) {
+            } catch (\Throwable $e) {
                 return '';
             }
         });
