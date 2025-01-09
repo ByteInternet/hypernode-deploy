@@ -2,6 +2,7 @@
 
 namespace Hypernode\Deploy\Stdlib;
 
+use Deployer\Exception\RunException;
 use Hypernode\DeployConfiguration\Stage;
 
 use function Deployer\get;
@@ -52,7 +53,13 @@ class ReleaseInfo
      */
     private function branchList(): array
     {
-        $gitLogOutput = runLocally('git log --merges -n 1');
+        $gitLogOutput = '';
+
+        try {
+            $gitLogOutput = runLocally('git log --merges -n 1');
+        } catch (RunException $e) {
+            return [];
+        }
 
         if (!preg_match(self::MERGE_PATTERN, $gitLogOutput, $matches)) {
             output()->write('No merge commit found');
