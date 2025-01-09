@@ -42,7 +42,12 @@ class DefaultsTaskGlobal extends TaskBase
         });
 
         set('commit_sha', function () {
-            return $this->releaseInfo->getCommitSha();
+            try {
+                return $this->releaseInfo->getCommitSha();
+            }
+            catch (\Throwable $e) {
+                return '';
+            }
         });
 
         if (str_starts_with($config->getPhpVersion(), 'php')) {
