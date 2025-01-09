@@ -58,6 +58,7 @@ class ReleaseInfo
         try {
             $gitLogOutput = runLocally('git log --merges -n 1');
         } catch (RunException $e) {
+            return [];
         }
 
         if (!preg_match(self::MERGE_PATTERN, $gitLogOutput, $matches)) {
