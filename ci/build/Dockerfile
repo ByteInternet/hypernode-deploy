@@ -1,4 +1,5 @@
-FROM debian:bookworm
+# Stage 1: Builder
+FROM debian:bookworm AS builder
 
 ARG NODE_VERSION
 ARG PHP_VERSION
@@ -127,6 +128,76 @@ RUN rm -rvf \
         /usr/share/man \
         /var/lib/apt/lists/* \
     && apt-get autoremove -y
+
+# Setup build location
+RUN mkdir /build
+VOLUME /build
+WORKDIR /build
+
+# Stage 2: Optimized Runtime
+FROM debian:bookworm
+
+ARG PHP_VERSION
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+COPY --from=builder /etc/apt /etc/apt
+
+# Install only necessary runtime dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git \
+        zip \
+        unzip \
+        wget \
+        openssh-client \
+        rsync \
+        curl \
+        nodejs \
+        php${PHP_VERSION} \
+        php${PHP_VERSION}-amqp \
+        php${PHP_VERSION}-bcmath \
+        php${PHP_VERSION}-bz2  \
+        php${PHP_VERSION}-cli  \
+        php${PHP_VERSION}-common  \
+        php${PHP_VERSION}-curl \
+        php${PHP_VERSION}-gd \
+        php${PHP_VERSION}-igbinary \
+        php${PHP_VERSION}-imagick \
+        php${PHP_VERSION}-imap \
+        php${PHP_VERSION}-intl \
+        php${PHP_VERSION}-ldap \
+        php${PHP_VERSION}-mbstring \
+        php${PHP_VERSION}-mysql \
+        php${PHP_VERSION}-odbc \
+        php${PHP_VERSION}-opcache \
+        php${PHP_VERSION}-pgsql \
+        php${PHP_VERSION}-pspell \
+        php${PHP_VERSION}-readline \
+        php${PHP_VERSION}-redis \
+        php${PHP_VERSION}-soap \
+        php${PHP_VERSION}-tidy \
+        php${PHP_VERSION}-xml \
+        php${PHP_VERSION}-zip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy necessary files from the builder stage
+COPY --from=builder /usr/local/bin/composer /usr/local/bin/composer
+COPY --from=builder /bin/hypernode-deploy /bin/hypernode-deploy
+COPY --from=builder /hypernode /hypernode
+
+# Copy container files
+COPY ./ci/build/files /
+
+# Set python3 as default python executable
+RUN ln -s /usr/bin/python3 /usr/local/bin/python
+
+# Setup SSH configuration
+RUN mkdir -p /root/.ssh \
+    && chmod -vf 700 /root/.ssh \
+    && (chmod -vf 600 /root/.ssh/* || true) \
+    && chmod -vf 700 /etc/ssh \
+    && chmod -vf 600 /etc/ssh/*
 
 # Setup default command
 CMD ["hypernode-deploy"]
