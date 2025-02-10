@@ -128,6 +128,9 @@ RUN rm -rvf \
         /var/lib/apt/lists/* \
     && apt-get autoremove -y
 
+# Allow hypernode-deploy to be ran in ordinary git repository locations
+RUN git config --global --add safe.directory "*"
+
 # Setup default command
 CMD ["hypernode-deploy"]
 
