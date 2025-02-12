@@ -50,6 +50,7 @@ RUN apt-get update && \
         make \
         libtool \
         nodejs \
+        npm \
         gnupg \
         zip \
         bc \
