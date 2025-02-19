@@ -40,6 +40,7 @@ if echo "${INPUT_VERSION}" | grep -F "."; then
     fi
 
     tag_and_publish "$LOCAL_IMAGE_TAG" "$IMAGE:$MAJOR_VERSION-$TAG_SPECS"
+    tag_and_publish "$LOCAL_IMAGE_TAG" "$IMAGE:latest-$TAG_SPECS"
 fi
 
 if [[ "${PHP_VERSION}" == "${LATEST_PHP_VERSION}" ]] && [[ "${NODE_VERSION}" == "${LATEST_NODE_VERSION}" ]]; then
