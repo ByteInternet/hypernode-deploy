@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "380d904dca7d545c8ea98379f77f71d6",
+    "content-hash": "9d18f2970cf2fc0621ceb74307a44705",
     "packages": [
         {
             "name": "clue/stream-filter",
@@ -846,16 +846,16 @@
         },
         {
             "name": "hypernode/deploy-configuration",
-            "version": "3.3.0",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-deploy-configuration.git",
-                "reference": "caede533b14bb3a658090b0cb73f1304386e9dbf"
+                "reference": "d999a767c53df06b59d93ada6af106e05af21736"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/caede533b14bb3a658090b0cb73f1304386e9dbf",
-                "reference": "caede533b14bb3a658090b0cb73f1304386e9dbf",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/d999a767c53df06b59d93ada6af106e05af21736",
+                "reference": "d999a767c53df06b59d93ada6af106e05af21736",
                 "shasum": ""
             },
             "require": {
@@ -882,9 +882,9 @@
             "description": "Hypernode deploy configuration files",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-deploy-configuration/issues",
-                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/3.3.0"
+                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/3.4.0"
             },
-            "time": "2024-10-02T11:40:49+00:00"
+            "time": "2025-03-24T13:35:29+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -6966,7 +6966,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -6975,6 +6975,6 @@
         "ext-zlib": "*",
         "composer-runtime-api": "^2"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.2.0"
 }
