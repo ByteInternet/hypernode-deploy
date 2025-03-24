@@ -9,16 +9,16 @@ use Symfony\Component\Process\Process;
 \define('WORKING_DIR', getcwd());
 \define('APPLICATION_ROOT', \dirname(__DIR__));
 
-$customAutoLoadPath = WORKING_DIR . '/vendor/autoload.php';
 // Allows to specify a custom autoload path to avoid overriding Hipex deploy packages
 // when the same packages are used by your application and Hipex Deploy.
 if (getenv('DEPLOY_AUTOLOAD_PATH') !== false) {
     $customAutoLoadPath = getenv('DEPLOY_AUTOLOAD_PATH');
+
+    if (file_exists($customAutoLoadPath)) {
+        require_once $customAutoLoadPath;
+    }
 }
 
-if (file_exists($customAutoLoadPath)) {
-    require_once $customAutoLoadPath;
-}
 
 /** @var \Composer\Autoload\ClassLoader $loader */
 $loader = require_once APPLICATION_ROOT . '/vendor/autoload.php';
