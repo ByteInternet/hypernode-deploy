@@ -50,7 +50,6 @@ RUN apt-get update && \
         make \
         libtool \
         nodejs \
-        npm \
         gnupg \
         zip \
         bc \
@@ -81,6 +80,13 @@ RUN apt-get update && \
         php${PHP_VERSION}-xml \
         php${PHP_VERSION}-zip \
     && rm -rf /var/lib/apt/lists/*
+
+# Only install npm if node version is less than 20, otherwise it's already installed
+RUN if [ "${NODE_VERSION}" -lt 20 ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends npm \
+        && rm -rf /var/lib/apt/lists/*; \
+    fi
 
 COPY ./.git /hypernode/.git
 COPY ./bin /hypernode/bin
