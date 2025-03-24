@@ -25,8 +25,8 @@ class ReleaseInfo
     public function getMessage(): string
     {
         $body = [];
-        $body[] = parse('Successful deployment to **{{stage}}**');
-        $body[] = parse('Branch: `{{branch}}`');
+        $body[] = parse('Successful deployment to *{{stage}}*');
+        $body[] = parse('Branch: `{{target}}`');
         $body[] = parse('User: `{{user}}`');
         $body[] = parse('Commit: `{{commit_sha}}`');
 
@@ -40,7 +40,7 @@ class ReleaseInfo
         }
 
         $body[] = '';
-        $body[] = '**Servers:**';
+        $body[] = '*Servers:*';
         foreach ($this->getServers() as $server) {
             $body[] = '- ' . $server;
         }
