@@ -6,7 +6,7 @@ jobs:
   integration_test:
     strategy:
       matrix:
-        php_version: [8.1, 8.2]  # 8.3 is disabled for now, since Magento 2 does not support this yet.
+        php_version: [8.1, 8.2, 8.3]
         testsuite: [general, brancher]
     runs-on: ubuntu-latest
     steps:
@@ -19,12 +19,12 @@ jobs:
         env:
           PHP_VERSION: ${{ matrix.php_version }}
       - name: Start SSH agent for brancher testsuite
-        if: ${{ matrix.testsuite == 'brancher' && matrix.php_version == '8.2' }}
+        if: ${{ matrix.testsuite == 'brancher' && matrix.php_version == '8.3' }}
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Run brancher testsuite
-        if: ${{ matrix.testsuite == 'brancher' && matrix.php_version == '8.2' }}
+        if: ${{ matrix.testsuite == 'brancher' && matrix.php_version == '8.3' }}
         run: ./runtests.sh brancher
         shell: bash
         env:
