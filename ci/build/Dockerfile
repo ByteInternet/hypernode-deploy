@@ -5,34 +5,33 @@ ARG PHP_VERSION
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        git zip unzip wget \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+
+RUN apt-get install -y --no-install-recommends \
+        git zip unzip wget
 
 # Add repositories
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        apt-transport-https \
-        ca-certificates \
-        curl \
-        gnupg-agent \
-        gnupg \
-        software-properties-common \
-        gettext-base \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl -sSL http://debian.hypernode.com/repo.key | apt-key add - \
-    && echo "deb http://debian.hypernode.com bookworm main hypernode" | tee /etc/apt/sources.list.d/hypernode.list \
-    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
-    && echo "deb http://deb.nodesource.com/node_${NODE_VERSION}.x bookworm main" | tee /etc/apt/sources.list.d/nodesource.list \
+RUN apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    gnupg \
+    software-properties-common \
+    gettext-base
+
+RUN apt-get clean \
+    && curl -fsSL http://debian.hypernode.com/repo.key | gpg --dearmor -o /usr/share/keyrings/hypernode.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/hypernode.gpg] http://debian.hypernode.com bookworm main hypernode" > /etc/apt/sources.list.d/hypernode.list \
     && echo \
-          "Package: * \
-          Pin origin deb.nodesource.com \
-          Pin-Priority: 1001" > /etc/apt/preferences.d/nodejs
+        "Package: * \
+        Pin origin debian.hypernode.com \
+        Pin-Priority: 1000" > /etc/apt/preferences.d/hypernode
+
+RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - 
 
 # Install dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN apt-get install -y --no-install-recommends \
         openssh-client \
         rsync \
         git \
@@ -52,8 +51,10 @@ RUN apt-get update && \
         nodejs \
         gnupg \
         zip \
-        bc \
-    && apt install -y --no-install-recommends \
+        bc
+
+# Install PHP
+RUN apt-get install -y --no-install-recommends \
         php${PHP_VERSION} \
         php${PHP_VERSION}-amqp \
         php${PHP_VERSION}-bcmath \
@@ -78,15 +79,10 @@ RUN apt-get update && \
         php${PHP_VERSION}-soap \
         php${PHP_VERSION}-tidy \
         php${PHP_VERSION}-xml \
-        php${PHP_VERSION}-zip \
-    && rm -rf /var/lib/apt/lists/*
+        php${PHP_VERSION}-zip
 
-# Only install npm if node version is less than 20, otherwise it's already installed
-RUN if [ "${NODE_VERSION}" -lt 20 ]; then \
-        apt-get update \
-        && apt-get install -y --no-install-recommends npm \
-        && rm -rf /var/lib/apt/lists/*; \
-    fi
+# Confirm NodeJS & NPM are installed
+RUN node -v && npm -v
 
 COPY ./.git /hypernode/.git
 COPY ./bin /hypernode/bin
