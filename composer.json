@@ -24,7 +24,6 @@
         "symfony/http-client": "^5.4",
         "symfony/process": "^5.4",
         "twig/twig": "^2.12",
-        "vimeo/psalm": "^6.0",
         "webmozart/assert": "^1.11"
     },
     "autoload": {
@@ -38,7 +37,8 @@
     "require-dev": {
         "phpro/grumphp-shim": "^1.13",
         "phpunit/phpunit": "^9.5",
-        "squizlabs/php_codesniffer": "^3.7"
+        "squizlabs/php_codesniffer": "^3.7",
+        "vimeo/psalm": "^6.0"
     },
     "config": {
         "preferred-install": {
