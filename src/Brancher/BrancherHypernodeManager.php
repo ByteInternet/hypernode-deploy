@@ -128,9 +128,9 @@ class BrancherHypernodeManager
 
             try {
                 $flows = $this->hypernodeClient->logbook->getList($brancherHypernode);
-                $relevantFlows = array_filter($flows, fn(Flow $flow) => $flow->name === 'ensure_app');
-                $failedFlows = array_filter($flows, fn(Flow $flow) => $flow->isReverted());
-                $completedFlows = array_filter($flows, fn(Flow $flow) => $flow->isComplete());
+                $relevantFlows = array_filter($flows, fn(Flow $flow) => in_array($flow->name, ["ensure_app", "ensure_copied_app"], true));
+                $failedFlows = array_filter($relevantFlows, fn(Flow $flow) => $flow->isReverted());
+                $completedFlows = array_filter($relevantFlows, fn(Flow $flow) => $flow->isComplete());
 
                 if (count($failedFlows) === count($relevantFlows)) {
                     throw new CreateBrancherHypernodeFailedException();

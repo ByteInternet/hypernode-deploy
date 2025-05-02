@@ -10,7 +10,7 @@ DP="docker run --rm -v /tmp/m2build:/web -e HYPERNODE_API_TOKEN -e SSH_PRIVATE_K
 # Build Docker image
 docker build \
     -f ci/build/Dockerfile \
-    --build-arg NODE_VERSION=16 \
+    --build-arg NODE_VERSION=22 \
     --build-arg PHP_VERSION="${PHP_VERSION:-8.2}" \
     -t hndeploy \
     .

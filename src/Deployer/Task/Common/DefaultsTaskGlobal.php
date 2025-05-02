@@ -8,6 +8,7 @@ use Hypernode\Deploy\Deployer\Task\TaskBase;
 use Hypernode\Deploy\Stdlib\CpuCoreInfo;
 use Hypernode\Deploy\Stdlib\ReleaseInfo;
 use Hypernode\DeployConfiguration\Configuration;
+use Hypernode\Deploy\Stdlib\TargetFinder;
 
 use function Deployer\set;
 
@@ -23,10 +24,16 @@ class DefaultsTaskGlobal extends TaskBase
      */
     private $releaseInfo;
 
-    public function __construct(CpuCoreInfo $cpuInfo, ReleaseInfo $releaseInfo)
+    /**
+     * @var TargetFinder
+     */
+    private $targetFinder;
+
+    public function __construct(CpuCoreInfo $cpuInfo, ReleaseInfo $releaseInfo, TargetFinder $targetFinder)
     {
         $this->cpuInfo = $cpuInfo;
         $this->releaseInfo = $releaseInfo;
+        $this->targetFinder = $targetFinder;
     }
 
     public function configure(Configuration $config): void
@@ -41,8 +48,16 @@ class DefaultsTaskGlobal extends TaskBase
             return $this->releaseInfo->getMessage();
         });
 
+        set('target', function () {
+            return $this->targetFinder->getTarget();
+        });
+
         set('commit_sha', function () {
-            return $this->releaseInfo->getCommitSha();
+            try {
+                return $this->releaseInfo->getCommitSha();
+            } catch (\Throwable $e) {
+                return '';
+            }
         });
 
         if (str_starts_with($config->getPhpVersion(), 'php')) {
