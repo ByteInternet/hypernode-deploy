@@ -4,6 +4,11 @@ set -e
 set -x
 
 export PHP_VERSION_SHORT=$(echo "${PHP_VERSION:-8.2}" | sed 's/\.//')
+if [[ "${PHP_VERSION:-8.2}" == "8.4" ]]; then
+    export IMAGE_OS="bookworm"
+else
+    export IMAGE_OS="buster"
+fi
 
 # Handy aliases
 HN="docker-compose exec -T hypernode"
