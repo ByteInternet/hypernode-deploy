@@ -2,7 +2,7 @@ version: "3"
 services:
   hypernode:
     container_name: hypernode
-    image: docker.hypernode.com/byteinternet/hypernode-${IMAGE_OS:buster}-docker-php${PHP_VERSION_SHORT:-81}-mysql57
+    image: docker.hypernode.com/byteinternet/hypernode-${IMAGE_OS:-buster}-docker-php${PHP_VERSION_SHORT:-81}-mysql57
     volumes:
       - ./ci/test/.ssh:/root/.ssh
     ports:
