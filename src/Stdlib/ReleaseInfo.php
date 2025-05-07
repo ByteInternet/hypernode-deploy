@@ -2,6 +2,7 @@
 
 namespace Hypernode\Deploy\Stdlib;
 
+use Deployer\Exception\RunException;
 use Hypernode\DeployConfiguration\Stage;
 
 use function Deployer\get;
@@ -24,8 +25,8 @@ class ReleaseInfo
     public function getMessage(): string
     {
         $body = [];
-        $body[] = parse('Successful deployment to **{{stage}}**');
-        $body[] = parse('Branch: `{{branch}}`');
+        $body[] = parse('Successful deployment to *{{stage}}*');
+        $body[] = parse('Branch: `{{target}}`');
         $body[] = parse('User: `{{user}}`');
         $body[] = parse('Commit: `{{commit_sha}}`');
 
@@ -39,7 +40,7 @@ class ReleaseInfo
         }
 
         $body[] = '';
-        $body[] = '**Servers:**';
+        $body[] = '*Servers:*';
         foreach ($this->getServers() as $server) {
             $body[] = '- ' . $server;
         }
@@ -52,7 +53,13 @@ class ReleaseInfo
      */
     private function branchList(): array
     {
-        $gitLogOutput = runLocally('git log --merges -n 1');
+        $gitLogOutput = '';
+
+        try {
+            $gitLogOutput = runLocally('git log --merges -n 1');
+        } catch (RunException $e) {
+            return [];
+        }
 
         if (!preg_match(self::MERGE_PATTERN, $gitLogOutput, $matches)) {
             output()->write('No merge commit found');

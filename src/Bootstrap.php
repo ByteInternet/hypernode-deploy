@@ -55,13 +55,17 @@ class Bootstrap
     {
         $builder = new ContainerBuilder();
         $builder->useAutowiring(true);
-        $builder->useAnnotations(true);
+        $builder->useAttributes(true);
         $builder->addDefinitions(Di\ConsoleDefinition::getDefinition());
         $builder->addDefinitions([
             'version' => $this->getVersion(),
         ]);
 
         $container = $builder->build();
+
+        if (!defined('DEPLOYER_VERSION')) {
+            define("DEPLOYER_VERSION", sprintf("Hypernode Deploy %s", $this->getVersion()));
+        }
 
         $this->registerTwigLoader($container);
 
