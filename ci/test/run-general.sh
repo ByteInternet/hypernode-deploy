@@ -4,6 +4,11 @@ set -e
 set -x
 
 export PHP_VERSION_SHORT=$(echo "${PHP_VERSION:-8.2}" | sed 's/\.//')
+if [[ "${PHP_VERSION:-8.2}" == "8.4" ]]; then
+    export IMAGE_OS="bookworm"
+else
+    export IMAGE_OS="buster"
+fi
 
 # Handy aliases
 HN="docker-compose exec -T hypernode"
@@ -59,7 +64,7 @@ end_task
 
 begin_task "Setting Magento 2"
 # Create working initial Magento install on the Hypernode container
-$HN composer create-project --repository=https://mirror.mage-os.org/ magento/project-community-edition:2.4.7-p3 /data/web/magento2
+$HN composer create-project --repository=https://mirror.mage-os.org/ magento/project-community-edition:2.4.8 /data/web/magento2
 echo "Waiting for MySQL to be available on the Hypernode container"
 $HN bash -c "until mysql -e 'select 1' ; do sleep 1; done"
 install_magento

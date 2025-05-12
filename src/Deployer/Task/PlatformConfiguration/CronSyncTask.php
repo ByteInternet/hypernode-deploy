@@ -51,7 +51,7 @@ class CronSyncTask extends TaskBase implements ConfigurableTaskInterface
             return $newCrontab;
         } else {
             writeln("Replacing cron block for {{domain}}");
-            return preg_replace('/^' . $beginOld . '$.*^' . $endOld . '$/ms', $newCronBlock, $currentCrontab);
+            return (string)preg_replace('/^' . $beginOld . '$.*^' . $endOld . '$/ms', $newCronBlock, $currentCrontab);
         }
     }
 

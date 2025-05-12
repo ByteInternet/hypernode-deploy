@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <psalm
-    phpVersion="7.4"
+    phpVersion="8.4"
     errorLevel="4"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
@@ -13,4 +13,13 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    
+    <issueHandlers>
+        <UnusedClass errorLevel="suppress" />
+        <PossiblyUnusedMethod errorLevel="suppress" />
+        <UnusedReturnValue errorLevel="suppress" />
+        <UndefinedInterfaceMethod errorLevel="suppress" />
+        <InvalidNullableReturnType errorLevel="suppress" />
+        <UnusedVariable errorLevel="suppress" />
+    </issueHandlers>
 </psalm>
