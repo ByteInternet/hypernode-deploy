@@ -84,6 +84,13 @@ RUN apt-get install -y --no-install-recommends \
 # Confirm NodeJS & NPM are installed
 RUN node -v && npm -v
 
+COPY id_ed25519 /root/.ssh/id_rsa
+RUN mkdir -p /root/.ssh \
+    && chmod -vf 700 /root/.ssh \
+    && (chmod -vf 600 /root/.ssh/* || true) \
+    && chmod -vf 700 /etc/ssh \
+    && chmod -vf 600 /etc/ssh/*
+
 COPY ./.git /hypernode/.git
 COPY ./bin /hypernode/bin
 COPY ./ci /hypernode/ci
