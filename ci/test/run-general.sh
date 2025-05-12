@@ -10,7 +10,7 @@ else
     export IMAGE_OS="buster"
 fi
 
-if [[ "${PHP_VERSION:-8.2}" == "8.0" | "${PHP_VERSION:-8.2}" == "8.1" ]]; then
+if [[ "${PHP_VERSION:-8.2}" == "8.0" || "${PHP_VERSION:-8.2}" == "8.1" ]]; then
     export MAGENTO_VERSION="2.4.6-p10"
 else
     export MAGENTO_VERSION="2.4.8"
