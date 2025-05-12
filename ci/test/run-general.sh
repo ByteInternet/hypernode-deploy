@@ -10,6 +10,12 @@ else
     export IMAGE_OS="buster"
 fi
 
+if [[ "${PHP_VERSION:-8.2}" == "8.0" | "${PHP_VERSION:-8.2}" == "8.1" ]]; then
+    export MAGENTO_VERSION="2.4.6-p10"
+else
+    export MAGENTO_VERSION="2.4.8"
+fi
+
 # Handy aliases
 HN="docker-compose exec -T hypernode"
 DP="docker-compose exec -e GITHUB_WORKFLOW -T deploy"
@@ -64,7 +70,7 @@ end_task
 
 begin_task "Setting Magento 2"
 # Create working initial Magento install on the Hypernode container
-$HN composer create-project --repository=https://mirror.mage-os.org/ magento/project-community-edition:2.4.8 /data/web/magento2
+$HN composer create-project --repository=https://mirror.mage-os.org/ magento/project-community-edition:${MAGENTO_VERSION:-2.4.8} /data/web/magento2
 echo "Waiting for MySQL to be available on the Hypernode container"
 $HN bash -c "until mysql -e 'select 1' ; do sleep 1; done"
 install_magento
