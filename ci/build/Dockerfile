@@ -94,8 +94,14 @@ COPY ./ci/build/files /
 
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
-    && chmod +x /usr/local/bin/composer \
-    && composer install --no-dev --optimize-autoloader --working-dir=/hypernode
+    && chmod +x /usr/local/bin/composer
+
+# Remove dev dependencies from composer.json
+RUN cd /hypernode && \
+    jq 'del(.["require-dev"])' composer.json > composer.tmp.json && \
+    cp composer.tmp.json composer.json
+
+RUN composer install --no-dev --optimize-autoloader --working-dir=/hypernode --no-scripts --no-progress --no-interaction
 
 RUN bash /hypernode/ci/compile.sh
 
