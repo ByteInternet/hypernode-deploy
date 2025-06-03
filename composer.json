@@ -23,7 +23,7 @@
         "symfony/finder": "^5.4",
         "symfony/http-client": "^5.4",
         "symfony/process": "^5.4",
-        "twig/twig": "^2.12",
+        "twig/twig": "^3.21",
         "webmozart/assert": "^1.11"
     },
     "autoload": {
