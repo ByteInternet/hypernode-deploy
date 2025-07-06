@@ -19,13 +19,22 @@ class PrepareSshTaskGlobal extends TaskBase
 {
     private const BITBUCKET_KEY_PATH = '/opt/atlassian/pipelines/agent/ssh/id_rsa';
 
+    private const KEY_PATHS = [
+        self::BITBUCKET_KEY_PATH,
+        '~/.ssh/id_rsa',
+        '~/.ssh/id_ed25519'
+    ];
+
     public function configure(Configuration $config): void
     {
         set('ssh_key_file', function () {
-            if (testLocally('[ -f ' . self::BITBUCKET_KEY_PATH . ' ]')) {
-                return self::BITBUCKET_KEY_PATH;
+            foreach (self::KEY_PATHS as $path) {
+                if (testLocally("[ -f $path ]")) {
+                    return $path;
+                }
             }
-            return '~/.ssh/id_rsa';
+
+            return '~/.ssh/id_rsa'; // Fallback
         });
 
         task('prepare:ssh', function () {
