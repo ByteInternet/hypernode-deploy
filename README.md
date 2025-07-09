@@ -40,17 +40,20 @@ docker build -t "$DOCKER_TAG" -f "./ci/build/Dockerfile" \
 ```
 
 This will give you a locally built image:
-```console
-$ docker images | grep hypernode_deploy_dev
+```bash
+docker images | grep hypernode_deploy_dev
 localhost/hypernode_deploy_dev  latest      5280aaef3a82  52 seconds ago  842 MB
 ```
 
+For a Magento application, make sure you git clone a fresh version or remove <code>app/etc/env.php</code> first.
+
 That you could then use like:
-```console
-$ rm -Rf vendor
-$ docker run --rm -it --env SSH_PRIVATE_KEY="$(cat ~/.ssh/yourdeploykey | base64)" -v ${PWD}:/build hypernode_deploy_dev:latest hypernode-deploy build -vvv
-$ docker run --rm -it --env SSH_PRIVATE_KEY="$(cat ~/.ssh/yourdeploykey | base64)" -v ${PWD}:/build hypernode_deploy_dev:latest hypernode-deploy deploy staging -vvv
+```bash
+rm -Rf vendor
+docker run --rm -it --env SSH_PRIVATE_KEY="$(cat ~/.ssh/yourdeploykey | base64)" -v ${PWD}:/build hypernode_deploy_dev:latest hypernode-deploy build -vvv
+docker run --rm -it --env SSH_PRIVATE_KEY="$(cat ~/.ssh/yourdeploykey | base64)" -v ${PWD}:/build hypernode_deploy_dev:latest hypernode-deploy deploy staging -vvv
 ```
+FYI: If you deploy to a brancher node you probably need the HYPERNODE_API_TOKEN environment variable. Get it from the parent server, located at <code>/etc/hypernode/hypernode_api_token</code>.
 
 ## Tests
 
@@ -60,4 +63,13 @@ To run the static tests, please run the following commands:
 ```bash
 composer --working-dir tools install
 tools/vendor/bin/grumphp run --config tools/grumphp.yml
+```
+
+## Configurable Brancher options
+
+### Brancher timeout
+The default timeout for Brancher creation is 1500 seconds. To change this, add the following in your <code>deploy.php</code>:
+```php
+$brancherStage = $configuration->addStage('stage_name', 'host');
+$brancherStage->addBrancherServer('parent_to_base_brancher_on', [], ['hn_brancher_timeout' => 2700])
 ```

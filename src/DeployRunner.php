@@ -34,6 +34,7 @@ class DeployRunner
 {
     public const TASK_BUILD = 'build';
     public const TASK_DEPLOY = 'deploy';
+    public const OPTION_HN_BRANCHER_TIMEOUT = 'hn_brancher_timeout';
 
     private TaskFactory $taskFactory;
     private InputInterface $input;
@@ -275,7 +276,7 @@ class DeployRunner
             $settings = $serverOptions[Server::OPTION_HN_BRANCHER_SETTINGS] ?? [];
             $labels = $serverOptions[Server::OPTION_HN_BRANCHER_LABELS] ?? [];
 
-            $this->log->info(sprintf('Creating an brancher Hypernode based on %s.', $parentApp));
+            $this->log->info(sprintf('Creating a brancher Hypernode based on %s.', $parentApp));
             if ($settings) {
                 $this->log->info(
                     sprintf('Settings to be applied: [%s].', implode(', ', $settings))
@@ -299,7 +300,9 @@ class DeployRunner
 
             try {
                 $this->log->info('Waiting for brancher Hypernode to become available...');
-                $this->brancherHypernodeManager->waitForAvailability($brancherApp);
+                $timeout = $serverOptions[self::OPTION_HN_BRANCHER_TIMEOUT] ?? 1500;
+                $this->log->info(sprintf('Timeout for brancher creation is set at %d seconds.', $timeout));
+                $this->brancherHypernodeManager->waitForAvailability($brancherApp, $timeout);
                 $this->log->info('Brancher Hypernode has become available!');
             } catch (CreateBrancherHypernodeFailedException | TimeoutException $e) {
                 if (in_array($brancherApp, $this->brancherHypernodesRegistered)) {
