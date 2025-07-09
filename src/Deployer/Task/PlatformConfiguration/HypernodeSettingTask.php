@@ -35,7 +35,7 @@ class HypernodeSettingTask extends TaskBase implements ConfigurableTaskInterface
         $value = $config->getValue();
         $taskName = "deploy:hypernode:setting:$attribute";
         $task = task($taskName, function () use ($attribute, $value) {
-            run("hypernode-systemctl settings $attribute $value --block");
+            run("yes | hypernode-systemctl settings $attribute $value --block");
         });
         after('deploy:setup', $taskName);
         return $task;
