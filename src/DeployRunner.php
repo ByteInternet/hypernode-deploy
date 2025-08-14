@@ -104,7 +104,7 @@ class DeployRunner
      * @throws InvalidConfigurationException
      * @throws Throwable
      */
-    private function prepare(
+    public function prepare(
         bool $configureBuildStage,
         bool $configureServers,
         string $stage,
