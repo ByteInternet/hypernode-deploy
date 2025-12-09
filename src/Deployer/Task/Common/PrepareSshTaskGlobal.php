@@ -34,7 +34,11 @@ class PrepareSshTaskGlobal extends TaskBase
                 }
             }
 
-            return '~/.ssh/id_rsa'; // Fallback
+            $home = getenv('HOME');
+            if (!is_dir($home . '/.ssh')) {
+                mkdir($home . '/.ssh', 0700, true);
+            }
+            return $home . '/.ssh/id_rsa'; // Fallback
         });
 
         task('prepare:ssh', function () {
