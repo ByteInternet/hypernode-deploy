@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM debian:bookworm-slim
 
 ARG NODE_VERSION
 ARG PHP_VERSION
