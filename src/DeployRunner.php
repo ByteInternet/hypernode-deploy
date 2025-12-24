@@ -274,6 +274,8 @@ class DeployRunner
         if ($isBrancher && $parentApp) {
             $settings = $serverOptions[Server::OPTION_HN_BRANCHER_SETTINGS] ?? [];
             $labels = $serverOptions[Server::OPTION_HN_BRANCHER_LABELS] ?? [];
+            $reachabilityCheckCount = $serverOptions[Server::OPTION_HN_BRANCHER_REACHABILITY_CHECK_COUNT] ?? 6;
+            $reachabilityCheckInterval = $serverOptions[Server::OPTION_HN_BRANCHER_REACHABILITY_CHECK_INTERVAL] ?? 10;
 
             $this->log->info(sprintf('Creating an brancher Hypernode based on %s.', $parentApp));
             if ($settings) {
@@ -299,7 +301,12 @@ class DeployRunner
 
             try {
                 $this->log->info('Waiting for brancher Hypernode to become available...');
-                $this->brancherHypernodeManager->waitForAvailability($brancherApp);
+                $this->brancherHypernodeManager->waitForAvailability(
+                    $brancherApp,
+                    1500,
+                    $reachabilityCheckCount,
+                    $reachabilityCheckInterval
+                );
                 $this->log->info('Brancher Hypernode has become available!');
             } catch (CreateBrancherHypernodeFailedException | TimeoutException $e) {
                 if (in_array($brancherApp, $this->brancherHypernodesRegistered)) {
