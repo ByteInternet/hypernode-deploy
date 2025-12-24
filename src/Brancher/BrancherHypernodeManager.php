@@ -107,14 +107,20 @@ class BrancherHypernodeManager
      *
      * @param string $brancherHypernode Name of the brancher Hypernode
      * @param int $timeout Maximum time to wait for availability
+     * @param int $reachabilityCheckCount Number of consecutive successful checks required
+     * @param int $reachabilityCheckInterval Seconds between reachability checks
      * @return void
      * @throws CreateBrancherHypernodeFailedException
      * @throws HypernodeApiClientException
      * @throws HypernodeApiServerException
      * @throws TimeoutException
      */
-    public function waitForAvailability(string $brancherHypernode, int $timeout = 1500): void
-    {
+    public function waitForAvailability(
+        string $brancherHypernode,
+        int $timeout = 1500,
+        int $reachabilityCheckCount = 6,
+        int $reachabilityCheckInterval = 10
+    ): void {
         $latest = microtime(true);
         $timeElapsed = 0;
         $resolved = false;
@@ -175,7 +181,7 @@ class BrancherHypernodeManager
             );
         }
 
-        $resolved = false;
+        $consecutiveSuccesses = 0;
         while ($timeElapsed < $timeout) {
             $now = microtime(true);
             $timeElapsed += $now - $latest;
@@ -184,12 +190,37 @@ class BrancherHypernodeManager
             $connection = @fsockopen(sprintf("%s.hypernode.io", $brancherHypernode), 22);
             if ($connection) {
                 fclose($connection);
-                $resolved = true;
-                break;
+                $consecutiveSuccesses++;
+                $this->log->info(
+                    sprintf(
+                        'Brancher Hypernode %s reachability check %d/%d succeeded.',
+                        $brancherHypernode,
+                        $consecutiveSuccesses,
+                        $reachabilityCheckCount
+                    )
+                );
+
+                if ($consecutiveSuccesses >= $reachabilityCheckCount) {
+                    break;
+                }
+                sleep($reachabilityCheckInterval);
+            } else {
+                if ($consecutiveSuccesses > 0) {
+                    $this->log->info(
+                        sprintf(
+                            'Brancher Hypernode %s reachability check failed, resetting counter (was at %d/%d).',
+                            $brancherHypernode,
+                            $consecutiveSuccesses,
+                            $reachabilityCheckCount
+                        )
+                    );
+                }
+                $consecutiveSuccesses = 0;
+                sleep($reachabilityCheckInterval);
             }
         }
 
-        if (!$resolved) {
+        if ($consecutiveSuccesses < $reachabilityCheckCount) {
             throw new TimeoutException(
                 sprintf('Timed out waiting for brancher Hypernode %s to become reachable', $brancherHypernode)
             );
