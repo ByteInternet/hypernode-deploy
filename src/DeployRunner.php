@@ -35,6 +35,10 @@ class DeployRunner
     public const TASK_BUILD = 'build';
     public const TASK_DEPLOY = 'deploy';
 
+    public const DEFAULT_BRANCHER_TIMEOUT = 1500;
+    public const DEFAULT_BRANCHER_REACHABILITY_CHECK_COUNT = 6;
+    public const DEFAULT_BRANCHER_REACHABILITY_CHECK_INTERVAL = 10;
+
     private TaskFactory $taskFactory;
     private InputInterface $input;
     private LoggerInterface $log;
@@ -274,6 +278,9 @@ class DeployRunner
         if ($isBrancher && $parentApp) {
             $settings = $serverOptions[Server::OPTION_HN_BRANCHER_SETTINGS] ?? [];
             $labels = $serverOptions[Server::OPTION_HN_BRANCHER_LABELS] ?? [];
+            $timeout = $serverOptions[Server::OPTION_HN_BRANCHER_TIMEOUT] ?? self::DEFAULT_BRANCHER_TIMEOUT;
+            $reachabilityCheckCount = $serverOptions[Server::OPTION_HN_BRANCHER_REACHABILITY_CHECK_COUNT] ?? self::DEFAULT_BRANCHER_REACHABILITY_CHECK_COUNT;
+            $reachabilityCheckInterval = $serverOptions[Server::OPTION_HN_BRANCHER_REACHABILITY_CHECK_INTERVAL] ?? self::DEFAULT_BRANCHER_REACHABILITY_CHECK_INTERVAL;
 
             $this->log->info(sprintf('Creating an brancher Hypernode based on %s.', $parentApp));
             if ($settings) {
@@ -299,7 +306,12 @@ class DeployRunner
 
             try {
                 $this->log->info('Waiting for brancher Hypernode to become available...');
-                $this->brancherHypernodeManager->waitForAvailability($brancherApp);
+                $this->brancherHypernodeManager->waitForAvailability(
+                    $brancherApp,
+                    $timeout,
+                    $reachabilityCheckCount,
+                    $reachabilityCheckInterval
+                );
                 $this->log->info('Brancher Hypernode has become available!');
             } catch (CreateBrancherHypernodeFailedException | TimeoutException $e) {
                 if (in_array($brancherApp, $this->brancherHypernodesRegistered)) {
