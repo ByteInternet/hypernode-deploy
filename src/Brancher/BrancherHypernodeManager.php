@@ -117,14 +117,10 @@ class BrancherHypernodeManager
         int $reachabilityCheckCount,
         int $reachabilityCheckInterval
     ): bool {
-        $latest = microtime(true);
-        $timeElapsed = 0;
+        $startTime = microtime(true);
         $consecutiveSuccesses = 0;
 
-        while ($timeElapsed < $timeout) {
-            $now = microtime(true);
-            $timeElapsed += $now - $latest;
-            $latest = $now;
+        while ((microtime(true) - $startTime) < $timeout) {
 
             $connection = @fsockopen(sprintf("%s.hypernode.io", $brancherHypernode), 22);
             if ($connection) {
@@ -238,7 +234,11 @@ class BrancherHypernodeManager
                 )
             );
             
-            if ($this->checkSshReachability($brancherHypernode, $timeout, $reachabilityCheckCount, $reachabilityCheckInterval)) {
+            // Allocate 50% of timeout for initial SSH check to leave time for fallback
+            $sshCheckTimeout = (int) ($timeout * 0.5);
+            $sshCheckStartTime = microtime(true);
+            
+            if ($this->checkSshReachability($brancherHypernode, $sshCheckTimeout, $reachabilityCheckCount, $reachabilityCheckInterval)) {
                 $this->log->info(
                     sprintf(
                         'Reused brancher Hypernode %s is already reachable!',
@@ -247,6 +247,10 @@ class BrancherHypernodeManager
                 );
                 return;
             }
+            
+            // Adjust timeout for remaining checks based on time already spent
+            $timeSpentOnSshCheck = microtime(true) - $sshCheckStartTime;
+            $timeout = max(1, (int) ($timeout - $timeSpentOnSshCheck));
             
             $this->log->info(
                 sprintf(
