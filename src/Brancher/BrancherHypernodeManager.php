@@ -15,10 +15,9 @@ use Psr\Log\LoggerInterface;
 class BrancherHypernodeManager
 {
     /**
-     * Ratio of timeout to allocate for initial SSH check when reusing a Brancher.
-     * The remaining time is reserved for logbook flow checks if SSH fails.
+     * Timeout in seconds for initial SSH check when reusing a Brancher.
      */
-    private const REUSED_SSH_CHECK_TIMEOUT_RATIO = 0.5;
+    private const REUSED_SSH_CHECK_TIMEOUT_SECONDS = 10;
 
     private LoggerInterface $log;
     private HypernodeClient $hypernodeClient;
@@ -247,11 +246,7 @@ class BrancherHypernodeManager
                 )
             );
 
-            // Allocate a portion of timeout for initial SSH check to leave time for fallback
-            $sshCheckTimeout = (int) ($timeout * self::REUSED_SSH_CHECK_TIMEOUT_RATIO);
-            $sshCheckStartTime = microtime(true);
-
-            if ($this->checkSshReachability($brancherHypernode, $sshCheckTimeout, $reachabilityCheckCount, $reachabilityCheckInterval)) {
+            if ($this->checkSshReachability($brancherHypernode, self::REUSED_SSH_CHECK_TIMEOUT_SECONDS, $reachabilityCheckCount, $reachabilityCheckInterval)) {
                 $this->log->info(
                     sprintf(
                         'Reused brancher Hypernode %s is already reachable!',
@@ -260,10 +255,6 @@ class BrancherHypernodeManager
                 );
                 return;
             }
-
-            // Adjust timeout for remaining checks based on time already spent
-            $timeSpentOnSshCheck = microtime(true) - $sshCheckStartTime;
-            $timeout = max(1, (int) ($timeout - $timeSpentOnSshCheck));
 
             $this->log->info(
                 sprintf(
