@@ -143,7 +143,7 @@ class BrancherHypernodeManager
                 if ($consecutiveSuccesses >= $reachabilityCheckCount) {
                     return true;
                 }
-                
+
                 // Only sleep if there's enough time remaining for another check
                 if ((microtime(true) - $startTime + $reachabilityCheckInterval) < $timeout) {
                     sleep($reachabilityCheckInterval);
@@ -160,7 +160,7 @@ class BrancherHypernodeManager
                     );
                 }
                 $consecutiveSuccesses = 0;
-                
+
                 // Only sleep if there's enough time remaining for another check
                 if ((microtime(true) - $startTime + $reachabilityCheckInterval) < $timeout) {
                     sleep($reachabilityCheckInterval);
@@ -246,11 +246,11 @@ class BrancherHypernodeManager
                     $brancherHypernode
                 )
             );
-            
+
             // Allocate a portion of timeout for initial SSH check to leave time for fallback
             $sshCheckTimeout = (int) ($timeout * self::REUSED_SSH_CHECK_TIMEOUT_RATIO);
             $sshCheckStartTime = microtime(true);
-            
+
             if ($this->checkSshReachability($brancherHypernode, $sshCheckTimeout, $reachabilityCheckCount, $reachabilityCheckInterval)) {
                 $this->log->info(
                     sprintf(
@@ -260,11 +260,11 @@ class BrancherHypernodeManager
                 );
                 return;
             }
-            
+
             // Adjust timeout for remaining checks based on time already spent
             $timeSpentOnSshCheck = microtime(true) - $sshCheckStartTime;
             $timeout = max(1, (int) ($timeout - $timeSpentOnSshCheck));
-            
+
             $this->log->info(
                 sprintf(
                     'Reused brancher Hypernode %s is not yet reachable, proceeding with full availability wait...',
