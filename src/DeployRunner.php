@@ -296,8 +296,10 @@ class DeployRunner
 
             $data = $settings;
             $data['labels'] = $labels;
+            $isReused = false;
             if ($reuseBrancher && $brancherApp = $this->brancherHypernodeManager->reuseExistingBrancherHypernode($parentApp, $labels)) {
                 $this->log->info(sprintf('Found existing brancher Hypernode, name is %s.', $brancherApp));
+                $isReused = true;
             } else {
                 $brancherApp = $this->brancherHypernodeManager->createForHypernode($parentApp, $data);
                 $this->log->info(sprintf('Successfully requested brancher Hypernode, name is %s.', $brancherApp));
@@ -306,12 +308,21 @@ class DeployRunner
 
             try {
                 $this->log->info('Waiting for brancher Hypernode to become available...');
-                $this->brancherHypernodeManager->waitForAvailability(
-                    $brancherApp,
-                    $timeout,
-                    $reachabilityCheckCount,
-                    $reachabilityCheckInterval
-                );
+                if ($isReused) {
+                    $this->brancherHypernodeManager->waitForReusedAvailability(
+                        $brancherApp,
+                        $timeout,
+                        $reachabilityCheckCount,
+                        $reachabilityCheckInterval
+                    );
+                } else {
+                    $this->brancherHypernodeManager->waitForAvailability(
+                        $brancherApp,
+                        $timeout,
+                        $reachabilityCheckCount,
+                        $reachabilityCheckInterval
+                    );
+                }
                 $this->log->info('Brancher Hypernode has become available!');
             } catch (CreateBrancherHypernodeFailedException | TimeoutException $e) {
                 if (in_array($brancherApp, $this->brancherHypernodesRegistered)) {

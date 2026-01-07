@@ -103,6 +103,66 @@ class BrancherHypernodeManager
     }
 
     /**
+     * Check if brancher Hypernode is reachable via SSH.
+     *
+     * @param string $brancherHypernode Name of the brancher Hypernode
+     * @param int $timeout Maximum time to wait for reachability
+     * @param int $reachabilityCheckCount Number of consecutive successful checks required
+     * @param int $reachabilityCheckInterval Seconds between reachability checks
+     * @return bool True if reachable, false if timed out
+     */
+    private function checkSshReachability(
+        string $brancherHypernode,
+        int $timeout,
+        int $reachabilityCheckCount,
+        int $reachabilityCheckInterval
+    ): bool {
+        $latest = microtime(true);
+        $timeElapsed = 0;
+        $consecutiveSuccesses = 0;
+
+        while ($timeElapsed < $timeout) {
+            $now = microtime(true);
+            $timeElapsed += $now - $latest;
+            $latest = $now;
+
+            $connection = @fsockopen(sprintf("%s.hypernode.io", $brancherHypernode), 22);
+            if ($connection) {
+                fclose($connection);
+                $consecutiveSuccesses++;
+                $this->log->info(
+                    sprintf(
+                        'Brancher Hypernode %s reachability check %d/%d succeeded.',
+                        $brancherHypernode,
+                        $consecutiveSuccesses,
+                        $reachabilityCheckCount
+                    )
+                );
+
+                if ($consecutiveSuccesses >= $reachabilityCheckCount) {
+                    return true;
+                }
+                sleep($reachabilityCheckInterval);
+            } else {
+                if ($consecutiveSuccesses > 0) {
+                    $this->log->info(
+                        sprintf(
+                            'Brancher Hypernode %s reachability check failed, resetting counter (was at %d/%d).',
+                            $brancherHypernode,
+                            $consecutiveSuccesses,
+                            $reachabilityCheckCount
+                        )
+                    );
+                }
+                $consecutiveSuccesses = 0;
+                sleep($reachabilityCheckInterval);
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Wait for brancher Hypernode to become available.
      *
      * @param string $brancherHypernode Name of the brancher Hypernode
@@ -121,6 +181,81 @@ class BrancherHypernodeManager
         int $reachabilityCheckCount = 6,
         int $reachabilityCheckInterval = 10
     ): void {
+        $this->waitForAvailabilityInternal($brancherHypernode, $timeout, $reachabilityCheckCount, $reachabilityCheckInterval, false);
+    }
+
+    /**
+     * Wait for reused brancher Hypernode to become available.
+     * For reused Branchers, first checks SSH connectivity before checking logbook flows,
+     * as older Branchers may not have recent logbook entries.
+     *
+     * @param string $brancherHypernode Name of the brancher Hypernode
+     * @param int $timeout Maximum time to wait for availability
+     * @param int $reachabilityCheckCount Number of consecutive successful checks required
+     * @param int $reachabilityCheckInterval Seconds between reachability checks
+     * @return void
+     * @throws CreateBrancherHypernodeFailedException
+     * @throws HypernodeApiClientException
+     * @throws HypernodeApiServerException
+     * @throws TimeoutException
+     */
+    public function waitForReusedAvailability(
+        string $brancherHypernode,
+        int $timeout = 1500,
+        int $reachabilityCheckCount = 6,
+        int $reachabilityCheckInterval = 10
+    ): void {
+        $this->waitForAvailabilityInternal($brancherHypernode, $timeout, $reachabilityCheckCount, $reachabilityCheckInterval, true);
+    }
+
+    /**
+     * Internal method to wait for brancher Hypernode to become available.
+     *
+     * @param string $brancherHypernode Name of the brancher Hypernode
+     * @param int $timeout Maximum time to wait for availability
+     * @param int $reachabilityCheckCount Number of consecutive successful checks required
+     * @param int $reachabilityCheckInterval Seconds between reachability checks
+     * @param bool $checkSshFirst For reused Branchers, check SSH first before logbook
+     * @return void
+     * @throws CreateBrancherHypernodeFailedException
+     * @throws HypernodeApiClientException
+     * @throws HypernodeApiServerException
+     * @throws TimeoutException
+     */
+    private function waitForAvailabilityInternal(
+        string $brancherHypernode,
+        int $timeout,
+        int $reachabilityCheckCount,
+        int $reachabilityCheckInterval,
+        bool $checkSshFirst
+    ): void {
+        // For reused Branchers, first check if SSH is already reachable
+        if ($checkSshFirst) {
+            $this->log->info(
+                sprintf(
+                    'Checking if reused brancher Hypernode %s is already reachable via SSH...',
+                    $brancherHypernode
+                )
+            );
+            
+            if ($this->checkSshReachability($brancherHypernode, $timeout, $reachabilityCheckCount, $reachabilityCheckInterval)) {
+                $this->log->info(
+                    sprintf(
+                        'Reused brancher Hypernode %s is already reachable!',
+                        $brancherHypernode
+                    )
+                );
+                return;
+            }
+            
+            $this->log->info(
+                sprintf(
+                    'Reused brancher Hypernode %s is not yet reachable, proceeding with full availability wait...',
+                    $brancherHypernode
+                )
+            );
+        }
+
         $latest = microtime(true);
         $timeElapsed = 0;
         $resolved = false;
@@ -181,46 +316,8 @@ class BrancherHypernodeManager
             );
         }
 
-        $consecutiveSuccesses = 0;
-        while ($timeElapsed < $timeout) {
-            $now = microtime(true);
-            $timeElapsed += $now - $latest;
-            $latest = $now;
-
-            $connection = @fsockopen(sprintf("%s.hypernode.io", $brancherHypernode), 22);
-            if ($connection) {
-                fclose($connection);
-                $consecutiveSuccesses++;
-                $this->log->info(
-                    sprintf(
-                        'Brancher Hypernode %s reachability check %d/%d succeeded.',
-                        $brancherHypernode,
-                        $consecutiveSuccesses,
-                        $reachabilityCheckCount
-                    )
-                );
-
-                if ($consecutiveSuccesses >= $reachabilityCheckCount) {
-                    break;
-                }
-                sleep($reachabilityCheckInterval);
-            } else {
-                if ($consecutiveSuccesses > 0) {
-                    $this->log->info(
-                        sprintf(
-                            'Brancher Hypernode %s reachability check failed, resetting counter (was at %d/%d).',
-                            $brancherHypernode,
-                            $consecutiveSuccesses,
-                            $reachabilityCheckCount
-                        )
-                    );
-                }
-                $consecutiveSuccesses = 0;
-                sleep($reachabilityCheckInterval);
-            }
-        }
-
-        if ($consecutiveSuccesses < $reachabilityCheckCount) {
+        $remainingTimeout = $timeout - $timeElapsed;
+        if (!$this->checkSshReachability($brancherHypernode, $remainingTimeout, $reachabilityCheckCount, $reachabilityCheckInterval)) {
             throw new TimeoutException(
                 sprintf('Timed out waiting for brancher Hypernode %s to become reachable', $brancherHypernode)
             );
