@@ -143,7 +143,11 @@ class BrancherHypernodeManager
                 if ($consecutiveSuccesses >= $reachabilityCheckCount) {
                     return true;
                 }
-                sleep($reachabilityCheckInterval);
+                
+                // Only sleep if there's enough time remaining for another check
+                if ((microtime(true) - $startTime + $reachabilityCheckInterval) < $timeout) {
+                    sleep($reachabilityCheckInterval);
+                }
             } else {
                 if ($consecutiveSuccesses > 0) {
                     $this->log->info(
@@ -156,7 +160,11 @@ class BrancherHypernodeManager
                     );
                 }
                 $consecutiveSuccesses = 0;
-                sleep($reachabilityCheckInterval);
+                
+                // Only sleep if there's enough time remaining for another check
+                if ((microtime(true) - $startTime + $reachabilityCheckInterval) < $timeout) {
+                    sleep($reachabilityCheckInterval);
+                }
             }
         }
 
