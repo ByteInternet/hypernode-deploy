@@ -14,6 +14,12 @@ use Psr\Log\LoggerInterface;
 
 class BrancherHypernodeManager
 {
+    /**
+     * Ratio of timeout to allocate for initial SSH check when reusing a Brancher.
+     * The remaining time is reserved for logbook flow checks if SSH fails.
+     */
+    private const REUSED_SSH_CHECK_TIMEOUT_RATIO = 0.5;
+
     private LoggerInterface $log;
     private HypernodeClient $hypernodeClient;
 
@@ -121,7 +127,6 @@ class BrancherHypernodeManager
         $consecutiveSuccesses = 0;
 
         while ((microtime(true) - $startTime) < $timeout) {
-
             $connection = @fsockopen(sprintf("%s.hypernode.io", $brancherHypernode), 22);
             if ($connection) {
                 fclose($connection);
@@ -234,8 +239,8 @@ class BrancherHypernodeManager
                 )
             );
             
-            // Allocate 50% of timeout for initial SSH check to leave time for fallback
-            $sshCheckTimeout = (int) ($timeout * 0.5);
+            // Allocate a portion of timeout for initial SSH check to leave time for fallback
+            $sshCheckTimeout = (int) ($timeout * self::REUSED_SSH_CHECK_TIMEOUT_RATIO);
             $sshCheckStartTime = microtime(true);
             
             if ($this->checkSshReachability($brancherHypernode, $sshCheckTimeout, $reachabilityCheckCount, $reachabilityCheckInterval)) {
