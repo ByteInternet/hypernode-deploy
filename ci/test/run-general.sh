@@ -4,7 +4,7 @@ set -e
 set -x
 
 export PHP_VERSION_SHORT=$(echo "${PHP_VERSION:-8.2}" | sed 's/\.//')
-if [[ "${PHP_VERSION:-8.2}" == "8.4" ]]; then
+if [[ "${PHP_VERSION:-8.2}" == "8.4" || "${PHP_VERSION:-8.2}" == "8.5" ]]; then
     export IMAGE_OS="bookworm"
 else
     export IMAGE_OS="buster"

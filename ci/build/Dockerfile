@@ -26,7 +26,8 @@ RUN apt-get clean \
     && echo \
         "Package: * \
         Pin origin debian.hypernode.com \
-        Pin-Priority: 1000" > /etc/apt/preferences.d/hypernode
+        Pin-Priority: 1000" > /etc/apt/preferences.d/hypernode \
+    && apt update
 
 RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - 
 
@@ -71,7 +72,6 @@ RUN apt-get install -y --no-install-recommends \
         php${PHP_VERSION}-mbstring \
         php${PHP_VERSION}-mysql \
         php${PHP_VERSION}-odbc \
-        php${PHP_VERSION}-opcache \
         php${PHP_VERSION}-pgsql \
         php${PHP_VERSION}-pspell \
         php${PHP_VERSION}-readline \
