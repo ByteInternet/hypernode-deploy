@@ -6,7 +6,7 @@ jobs:
   integration_test:
     strategy:
       matrix:
-        php_version: [8.1, 8.2, 8.3, 8.4]
+        php_version: [8.1, 8.2, 8.3, 8.4, 8.5]
         testsuite: [general, brancher]
     runs-on: ubuntu-latest
     steps:
@@ -34,7 +34,7 @@ jobs:
   code_quality:
     strategy:
       matrix:
-        php_version: [8.1, 8.2, 8.3, 8.4]
+        php_version: [8.1, 8.2, 8.3, 8.4, 8.5]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout hypernode-deploy
