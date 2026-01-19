@@ -5,6 +5,7 @@ grumphp:
             warning_severity: 0
             whitelist_patterns:
                 - /^src\/(.*)/
+                - /^tests\/(.*)/
             triggered_by: [php]
         psalm:
             config: psalm.xml
