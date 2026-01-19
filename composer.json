@@ -35,6 +35,11 @@
             "src/Deployer/functions.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Hypernode\\Deploy\\Tests\\": "tests/"
+        }
+    },
     "require-dev": {
         "phpro/grumphp-shim": "^1.13",
         "phpunit/phpunit": "^9.5",

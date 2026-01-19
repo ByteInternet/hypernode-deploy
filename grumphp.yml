@@ -11,3 +11,5 @@ grumphp:
             no_cache: true
         composer:
             file: ../composer.json
+        phpunit:
+            config_file: phpunit.xml.dist
