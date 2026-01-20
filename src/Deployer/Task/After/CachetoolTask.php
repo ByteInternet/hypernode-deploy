@@ -19,6 +19,7 @@ class CachetoolTask extends TaskBase
     /**
      * @var string[]
      *
+     * CacheTool 9.x/10.x works with PHP >=8.1
      * CacheTool 8.x works with PHP >=8.0
      * CacheTool 7.x works with PHP >=7.3
      * CacheTool 6.x works with PHP >=7.3
@@ -26,7 +27,8 @@ class CachetoolTask extends TaskBase
      * CacheTool 4.x works with PHP >=7.1
      */
     private $versionBinaryMapping = [
-        8 => 'https://github.com/gordalina/cachetool/releases/download/8.4.0/cachetool.phar',
+        10 => 'https://github.com/gordalina/cachetool/releases/download/10.0.0/cachetool.phar',
+        8 => 'https://github.com/gordalina/cachetool/releases/download/8.6.1/cachetool.phar',
         7 => 'https://github.com/gordalina/cachetool/releases/download/7.1.0/cachetool.phar',
         6 => 'https://github.com/gordalina/cachetool/releases/download/6.6.0/cachetool.phar',
         5 => 'https://github.com/gordalina/cachetool/releases/download/5.1.3/cachetool.phar',
@@ -52,10 +54,10 @@ class CachetoolTask extends TaskBase
             $cachetoolBinary = get('cachetool_binary');
 
             within('{{release_path}}', function () {
-                run('curl -L -o cachetool.phar ' . $this->getCachetoolUrl());
+                $phpVersion = $this->getPhpVersion();
                 $cachetoolBinary = '{{release_path}}/cachetool.phar';
-
-                writeln(sprintf("Downloaded cachetool %s for PHP %f", $cachetoolBinary, $this->getPhpVersion()));
+                run('curl -L -o cachetool.phar ' . $this->getCachetoolUrl($phpVersion));
+                writeln(sprintf("Downloaded cachetool %s for PHP %s", $cachetoolBinary, $phpVersion));
                 return $cachetoolBinary;
             });
             return $cachetoolBinary;
@@ -103,30 +105,36 @@ class CachetoolTask extends TaskBase
         });
     }
 
-    protected function getPhpVersion(): float
+    protected function getPhpVersion(): string
     {
-        return (float) run('{{bin/php}} -r "echo PHP_VERSION . \" - \" . PHP_VERSION_ID;"');
+        return run('{{bin/php}} -r "echo PHP_VERSION;"');
     }
 
-    public function getCachetoolUrl(): string
+    public function getCachetoolUrl(?string $phpVersion = null): string
     {
-        $phpVersion = $this->getPhpVersion();
-        if ($phpVersion >= 8.0) {
+        $phpVersion = $phpVersion ?? $this->getPhpVersion();
+
+        if (version_compare($phpVersion, '8.1.0', '>=')) {
+            return $this->versionBinaryMapping[10];
+        }
+
+        if (version_compare($phpVersion, '8.0.0', '>=')) {
             return $this->versionBinaryMapping[8];
         }
 
-        if ($phpVersion >= 7.3) {
+        if (version_compare($phpVersion, '7.3.0', '>=')) {
             return $this->versionBinaryMapping[7];
         }
 
-        if ($phpVersion >= 7.2) {
+        if (version_compare($phpVersion, '7.2.0', '>=')) {
             return $this->versionBinaryMapping[5];
         }
 
-        if ($phpVersion >= 7.1) {
+        if (version_compare($phpVersion, '7.1.0', '>=')) {
             return $this->versionBinaryMapping[4];
         }
 
-        return $this->versionBinaryMapping[8];
+        // Default to latest for unknown/newer PHP versions
+        return $this->versionBinaryMapping[10];
     }
 }
