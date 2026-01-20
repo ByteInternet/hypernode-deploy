@@ -37,7 +37,6 @@ class CachetoolTask extends TaskBase
 
     public function register(): void
     {
-        after('deploy:symlink', 'cachetool:clear:opcache');
         after('cachetool:clear:opcache', 'cachetool:cleanup');
     }
 
