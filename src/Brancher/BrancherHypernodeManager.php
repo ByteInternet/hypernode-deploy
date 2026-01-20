@@ -337,7 +337,20 @@ class BrancherHypernodeManager
     {
         foreach ($brancherHypernodes as $brancherHypernode) {
             $this->log->info(sprintf('Stopping brancher Hypernode %s...', $brancherHypernode));
-            $this->hypernodeClient->brancherApp->cancel($brancherHypernode);
+            try {
+                $this->hypernodeClient->brancherApp->cancel($brancherHypernode);
+            } catch (HypernodeApiClientException $e) {
+                // If the brancher is already cancelled or not found, that's fine -
+                // our goal was to cancel it anyway
+                if ($e->getCode() === 404 || str_contains($e->getMessage(), 'has already been cancelled')) {
+                    $this->log->info(sprintf(
+                        'Brancher Hypernode %s was already cancelled or not found, skipping.',
+                        $brancherHypernode
+                    ));
+                    continue;
+                }
+                throw $e;
+            }
         }
     }
 }
