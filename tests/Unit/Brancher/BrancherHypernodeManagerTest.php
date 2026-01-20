@@ -7,6 +7,7 @@ namespace Hypernode\Deploy\Tests\Unit\Brancher;
 use Hypernode\Api\Exception\HypernodeApiClientException;
 use Hypernode\Api\HypernodeClient;
 use Hypernode\Api\Resource\Logbook\Flow;
+use Hypernode\Api\Service\BrancherApp;
 use Hypernode\Api\Service\Logbook;
 use Hypernode\Deploy\Brancher\BrancherHypernodeManager;
 use Hypernode\Deploy\Exception\CreateBrancherHypernodeFailedException;
@@ -20,6 +21,7 @@ class BrancherHypernodeManagerTest extends TestCase
 {
     private LoggerInterface&MockObject $logger;
     private HypernodeClient&MockObject $hypernodeClient;
+    private BrancherApp&MockObject $brancherApp;
     private Logbook&MockObject $logbook;
     private TestSshPoller $sshPoller;
     private BrancherHypernodeManager $manager;
@@ -28,7 +30,9 @@ class BrancherHypernodeManagerTest extends TestCase
     {
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->hypernodeClient = $this->createMock(HypernodeClient::class);
+        $this->brancherApp = $this->createMock(BrancherApp::class);
         $this->logbook = $this->createMock(Logbook::class);
+        $this->hypernodeClient->brancherApp = $this->brancherApp;
         $this->hypernodeClient->logbook = $this->logbook;
         $this->sshPoller = new TestSshPoller();
         $this->sshPoller->setMicrotime(1000.0);
@@ -257,5 +261,89 @@ class BrancherHypernodeManagerTest extends TestCase
             'name' => $name,
             'state' => $state,
         ]);
+    }
+
+    public function testCancelSucceeds(): void
+    {
+        $this->brancherApp->expects($this->once())
+            ->method('cancel')
+            ->with('test-brancher');
+
+        $this->manager->cancel('test-brancher');
+    }
+
+    public function testCancelAlreadyCancelledBrancherContinues(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(400);
+        $response->method('getBody')->willReturn('["Brancher app test-brancher has already been cancelled."]');
+        $exception = new HypernodeApiClientException($response);
+
+        $this->brancherApp->expects($this->once())
+            ->method('cancel')
+            ->with('test-brancher')
+            ->willThrowException($exception);
+
+        $this->logger->expects($this->exactly(2))
+            ->method('info');
+
+        // Should not throw
+        $this->manager->cancel('test-brancher');
+    }
+
+    public function testCancelNotFoundBrancherContinues(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(404);
+        $response->method('getBody')->willReturn('Not Found');
+        $exception = new HypernodeApiClientException($response);
+
+        $this->brancherApp->expects($this->once())
+            ->method('cancel')
+            ->with('test-brancher')
+            ->willThrowException($exception);
+
+        $this->logger->expects($this->exactly(2))
+            ->method('info');
+
+        // Should not throw
+        $this->manager->cancel('test-brancher');
+    }
+
+    public function testCancelOtherClientErrorPropagates(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(403);
+        $response->method('getBody')->willReturn('Forbidden');
+        $exception = new HypernodeApiClientException($response);
+
+        $this->brancherApp->expects($this->once())
+            ->method('cancel')
+            ->with('test-brancher')
+            ->willThrowException($exception);
+
+        $this->expectException(HypernodeApiClientException::class);
+
+        $this->manager->cancel('test-brancher');
+    }
+
+    public function testCancelMultipleBranchersPartialFailure(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(400);
+        $response->method('getBody')->willReturn('["Brancher app brancher-1 has already been cancelled."]');
+        $exception = new HypernodeApiClientException($response);
+
+        $this->brancherApp->expects($this->exactly(2))
+            ->method('cancel')
+            ->willReturnCallback(function (string $name) use ($exception) {
+                if ($name === 'brancher-1') {
+                    throw $exception;
+                }
+                // brancher-2 succeeds
+            });
+
+        // Should not throw, should continue to second brancher
+        $this->manager->cancel('brancher-1', 'brancher-2');
     }
 }
