@@ -19,9 +19,7 @@ use function Deployer\within;
  */
 class HighPerformanceStaticDeployTask extends TaskBase
 {
-    private const BINARY_URL_VERSIONED = 'https://github.com/elgentos/magento2-static-deploy/releases/download/%s/magento2-static-deploy-linux-amd64';
-    private const BINARY_URL_LATEST = 'https://github.com/elgentos/magento2-static-deploy/releases/latest/download/magento2-static-deploy-linux-amd64';
-    private const DEFAULT_VERSION = 'latest';
+    private const BINARY_PATH = '/opt/magento2-static-deploy';
 
     public function configure(Configuration $config): void
     {
@@ -29,21 +27,14 @@ class HighPerformanceStaticDeployTask extends TaskBase
             return;
         }
 
-        $version = $this->getVersion($config);
-
-        task('magento:deploy:assets', function () use ($version) {
-            within('{{release_or_current_path}}', function () use ($version) {
-                run(sprintf('curl -sL -o /tmp/magento2-static-deploy %s', $this->getBinaryUrl($version)));
-                run('chmod +x /tmp/magento2-static-deploy');
-            });
-
+        task('magento:deploy:assets', function () {
             $themes = get('magento_themes', []);
             $themeArgs = $this->buildThemeArgs($themes);
             $locales = get('static_content_locales', 'en_US');
             $contentVersion = get('content_version', time());
 
             within('{{release_or_current_path}}', function () use ($themeArgs, $locales, $contentVersion) {
-                run("/tmp/magento2-static-deploy --force --area=frontend --area=adminhtml $themeArgs --content-version=$contentVersion --verbose $locales");
+                run(self::BINARY_PATH . " --force --area=frontend --area=adminhtml $themeArgs --content-version=$contentVersion --verbose $locales");
             });
         })->select('stage=build');
     }
@@ -56,25 +47,6 @@ class HighPerformanceStaticDeployTask extends TaskBase
         return $variables['high_performance_static_deploy']
             ?? $buildVariables['high_performance_static_deploy']
             ?? false;
-    }
-
-    public function getVersion(Configuration $config): string
-    {
-        $variables = $config->getVariables();
-        $buildVariables = $config->getVariables('build');
-
-        return $variables['high_performance_static_deploy_version']
-            ?? $buildVariables['high_performance_static_deploy_version']
-            ?? self::DEFAULT_VERSION;
-    }
-
-    public function getBinaryUrl(string $version): string
-    {
-        if ($version === 'latest') {
-            return self::BINARY_URL_LATEST;
-        }
-
-        return sprintf(self::BINARY_URL_VERSIONED, $version);
     }
 
     /**

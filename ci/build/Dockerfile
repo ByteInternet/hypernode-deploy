@@ -117,6 +117,11 @@ RUN curl -sS https://getcomposer.org/installer | php -- --2.2 --filename=compose
 # Use version 1 for main composer binary
 RUN rm -f /usr/local/bin/composer; ln -s /usr/local/bin/composer2 /usr/local/bin/composer
 
+# Install elgentos magento2-static-deploy binary for high-performance static content deployment
+RUN curl -sL -o /opt/magento2-static-deploy \
+    https://github.com/elgentos/magento2-static-deploy/releases/latest/download/magento2-static-deploy-linux-amd64 \
+    && chmod +x /opt/magento2-static-deploy
+
 # Set python3 as default python executable
 RUN ln -s /usr/bin/python3 /usr/local/bin/python
 
