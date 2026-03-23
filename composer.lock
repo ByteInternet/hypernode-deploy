@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "060108911b9a3452b54a2d0704c7c549",
+    "content-hash": "4e797712f5248592d9cbec1376c4ddcc",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -917,16 +917,16 @@
         },
         {
             "name": "hypernode/deploy-configuration",
-            "version": "3.6.1",
+            "version": "3.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ByteInternet/hypernode-deploy-configuration.git",
-                "reference": "9925cffca3d028044f39b9d081a288fd07dd67aa"
+                "reference": "ca945fa3fc194adb90df79b30b24a5ee546e1651"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/9925cffca3d028044f39b9d081a288fd07dd67aa",
-                "reference": "9925cffca3d028044f39b9d081a288fd07dd67aa",
+                "url": "https://api.github.com/repos/ByteInternet/hypernode-deploy-configuration/zipball/ca945fa3fc194adb90df79b30b24a5ee546e1651",
+                "reference": "ca945fa3fc194adb90df79b30b24a5ee546e1651",
                 "shasum": ""
             },
             "require": {
@@ -954,9 +954,9 @@
             "description": "Hypernode deploy configuration files",
             "support": {
                 "issues": "https://github.com/ByteInternet/hypernode-deploy-configuration/issues",
-                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/3.6.1"
+                "source": "https://github.com/ByteInternet/hypernode-deploy-configuration/tree/3.7.0"
             },
-            "time": "2026-01-19T14:43:33+00:00"
+            "time": "2026-03-10T06:49:55+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
