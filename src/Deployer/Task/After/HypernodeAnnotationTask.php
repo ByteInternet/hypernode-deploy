@@ -18,9 +18,9 @@ class HypernodeAnnotationTask extends TaskBase implements ConfigurableTaskInterf
     }
 
     /**
-     * @param TaskConfigurationInterface|HypernodeAnnotation $taskConfig
+     * @param TaskConfigurationInterface|HypernodeAnnotation $config
      */
-    public function configureWithTaskConfig(TaskConfigurationInterface $taskConfig): ?Task
+    public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
         set('hypernode_annotations', [
             'name' => $taskConfig->getName(),
