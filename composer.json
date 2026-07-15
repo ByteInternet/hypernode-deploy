@@ -16,7 +16,7 @@
         "deployer/deployer": "v7.4.0",
         "doctrine/annotations": "^1.6",
         "guzzlehttp/guzzle": "^7.5",
-        "hypernode/api-client": "^0.5",
+        "hypernode/api-client": "^0.6.0",
         "hypernode/deploy-configuration": "^3.7",
         "php-di/php-di": "^7.0",
         "psr/log": "^1.0",
