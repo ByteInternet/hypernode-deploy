@@ -23,11 +23,11 @@ class HypernodeAnnotationTask extends TaskBase implements ConfigurableTaskInterf
     public function configureWithTaskConfig(TaskConfigurationInterface $config): ?Task
     {
         set('hypernode_annotations', [
-            'name' => $taskConfig->getName(),
-            'description' => $taskConfig->getDescription(),
-            'app' => $taskConfig->getApp(),
-            'api_token' => $taskConfig->getApiToken(),
-            'throw_on_error' => $taskConfig->getThrowOnError(),
+            'name' => $config->getName(),
+            'description' => $config->getDescription(),
+            'app' => $config->getApp(),
+            'api_token' => $config->getApiToken(),
+            'throw_on_error' => $config->getThrowOnError(),
         ]);
 
         return null;
