@@ -202,7 +202,7 @@ class BrancherHypernodeManager
                     $resolved = true;
                     break;
                 }
-            } catch (HypernodeApiClientException $e) {
+            } catch (HypernodeApiClientException | HypernodeApiServerException $e) {
                 // A 404 not found means there are no flows in the logbook yet, we should wait.
                 // Otherwise, there's an error, and it should be propagated.
                 if ($e->getCode() !== 404) {
