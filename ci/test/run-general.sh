@@ -10,6 +10,13 @@ else
     export IMAGE_OS="buster"
 fi
 
+if [[ "${PHP_VERSION:-8.2}" == "8.5" ]]; then
+    # Magento 2.4.9 only supports MySQL 8.4, and there is no mysql57 image for PHP 8.5
+    export MYSQL_VERSION_SHORT="84"
+else
+    export MYSQL_VERSION_SHORT="57"
+fi
+
 if [[ "${PHP_VERSION:-8.2}" == "8.1" ]]; then
     export MAGENTO_VERSION="2.4.6-p10"
 elif [[ "${PHP_VERSION:-8.2}" == "8.5" ]]; then
