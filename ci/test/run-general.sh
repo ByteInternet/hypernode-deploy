@@ -91,6 +91,8 @@ $HN /data/web/magento2/bin/magento app:config:dump scopes themes
 echo "Waiting for SSH to be available on the Hypernode container"
 chmod 0600 ci/test/.ssh/id_rsa
 chmod 0600 ci/test/.ssh/authorized_keys
+# Magento 2.4.9 creates a root-owned var/cache/symfony that the app user below cannot read
+$HN chown -R app:app /data/web/magento2
 $DP rsync -a app@hypernode:/data/web/magento2/ /web
 $DP rsync -a /config/ /web
 $DP rm /web/app/etc/env.php
