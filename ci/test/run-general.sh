@@ -4,7 +4,7 @@ set -e
 set -x
 
 export PHP_VERSION_SHORT=$(echo "${PHP_VERSION:-8.2}" | sed 's/\.//')
-if [[ "${PHP_VERSION:-8.2}" == "8.4" ]]; then
+if [[ "${PHP_VERSION:-8.2}" == "8.4" || "${PHP_VERSION:-8.2}" == "8.5" ]]; then
     export IMAGE_OS="bookworm"
 else
     export IMAGE_OS="buster"
@@ -12,6 +12,9 @@ fi
 
 if [[ "${PHP_VERSION:-8.2}" == "8.1" ]]; then
     export MAGENTO_VERSION="2.4.6-p10"
+elif [[ "${PHP_VERSION:-8.2}" == "8.5" ]]; then
+    # Magento 2.4.9 is the first release compatible with PHP 8.5
+    export MAGENTO_VERSION="2.4.9"
 else
     export MAGENTO_VERSION="2.4.8"
 fi
