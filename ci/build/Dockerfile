@@ -71,7 +71,6 @@ RUN apt-get install -y --no-install-recommends \
         php${PHP_VERSION}-mbstring \
         php${PHP_VERSION}-mysql \
         php${PHP_VERSION}-odbc \
-        php${PHP_VERSION}-opcache \
         php${PHP_VERSION}-pgsql \
         php${PHP_VERSION}-pspell \
         php${PHP_VERSION}-readline \
@@ -80,6 +79,11 @@ RUN apt-get install -y --no-install-recommends \
         php${PHP_VERSION}-tidy \
         php${PHP_VERSION}-xml \
         php${PHP_VERSION}-zip
+
+# Since PHP 8.5 opcache is compiled into PHP itself and no separate package exists
+RUN if dpkg --compare-versions "${PHP_VERSION}" lt "8.5"; then \
+        apt-get install -y --no-install-recommends php${PHP_VERSION}-opcache; \
+    fi
 
 # Confirm NodeJS & NPM are installed
 RUN node -v && npm -v
