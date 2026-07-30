@@ -4,14 +4,24 @@ set -e
 set -x
 
 export PHP_VERSION_SHORT=$(echo "${PHP_VERSION:-8.2}" | sed 's/\.//')
-if [[ "${PHP_VERSION:-8.2}" == "8.4" ]]; then
+if [[ "${PHP_VERSION:-8.2}" == "8.4" || "${PHP_VERSION:-8.2}" == "8.5" ]]; then
     export IMAGE_OS="bookworm"
 else
     export IMAGE_OS="buster"
 fi
 
+if [[ "${PHP_VERSION:-8.2}" == "8.5" ]]; then
+    # Magento 2.4.9 only supports MySQL 8.4, and there is no mysql57 image for PHP 8.5
+    export MYSQL_VERSION_SHORT="84"
+else
+    export MYSQL_VERSION_SHORT="57"
+fi
+
 if [[ "${PHP_VERSION:-8.2}" == "8.1" ]]; then
     export MAGENTO_VERSION="2.4.6-p10"
+elif [[ "${PHP_VERSION:-8.2}" == "8.5" ]]; then
+    # Magento 2.4.9 is the first release compatible with PHP 8.5
+    export MAGENTO_VERSION="2.4.9"
 else
     export MAGENTO_VERSION="2.4.8"
 fi
@@ -81,6 +91,8 @@ $HN /data/web/magento2/bin/magento app:config:dump scopes themes
 echo "Waiting for SSH to be available on the Hypernode container"
 chmod 0600 ci/test/.ssh/id_rsa
 chmod 0600 ci/test/.ssh/authorized_keys
+# Magento 2.4.9 creates a root-owned var/cache/symfony that the app user below cannot read
+$HN chown -R app:app /data/web/magento2
 $DP rsync -a app@hypernode:/data/web/magento2/ /web
 $DP rsync -a /config/ /web
 $DP rm /web/app/etc/env.php

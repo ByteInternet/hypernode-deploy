@@ -12,18 +12,20 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         node_version:
           - 16
           - 18
           - 20
           - 22
           - 24
+          - 26
     runs-on: ubuntu-latest
     env:
       PHP_VERSION: ${{ matrix.php_version }}
       NODE_VERSION: ${{ matrix.node_version }}
       LATEST_PHP_VERSION: 8.4
-      LATEST_NODE_VERSION: 24
+      LATEST_NODE_VERSION: 26
     steps:
       - name: Checkout hypernode-deploy
         uses: actions/checkout@v3
