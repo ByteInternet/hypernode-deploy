@@ -7,6 +7,7 @@ use Deployer\Exception\Exception;
 use Deployer\Exception\GracefulShutdownException;
 use Deployer\Host\Host;
 use Deployer\Task\Task;
+use Hypernode\Api\Exception\HypernodeApiServerException;
 use Hypernode\Deploy\Brancher\BrancherHypernodeManager;
 use Hypernode\Deploy\Deployer\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
@@ -313,7 +314,7 @@ class DeployRunner
                     $reachabilityCheckInterval
                 );
                 $this->log->info('Brancher Hypernode has become available!');
-            } catch (CreateBrancherHypernodeFailedException | TimeoutException $e) {
+            } catch (CreateBrancherHypernodeFailedException | TimeoutException | HypernodeApiServerException $e) {
                 if (in_array($brancherApp, $this->brancherHypernodesRegistered)) {
                     $this->brancherHypernodeManager->cancel($brancherApp);
                 }
