@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Hypernode\Deploy\Tests\Unit\Brancher;
 
 use Hypernode\Api\Exception\HypernodeApiClientException;
+use Hypernode\Api\Exception\HypernodeApiServerException;
 use Hypernode\Api\HypernodeClient;
 use Hypernode\Api\Resource\Logbook\Flow;
 use Hypernode\Api\Service\BrancherApp;
@@ -161,6 +162,25 @@ class BrancherHypernodeManagerTest extends TestCase
             ->willThrowException($exception500);
 
         $this->expectException(HypernodeApiClientException::class);
+
+        $this->manager->waitForAvailability('test-brancher', 1500, 6, 10);
+    }
+
+    public function testLogbookServerErrorPropagates(): void
+    {
+        $this->sshPoller->pollResults = array_fill(0, 5, false);
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(503);
+        $response->method('getBody')->willReturn('Service Unavailable');
+        $exception503 = new HypernodeApiServerException($response);
+
+        $this->logbook->expects($this->once())
+            ->method('getList')
+            ->with('test-brancher')
+            ->willThrowException($exception503);
+
+        $this->expectException(HypernodeApiServerException::class);
 
         $this->manager->waitForAvailability('test-brancher', 1500, 6, 10);
     }
