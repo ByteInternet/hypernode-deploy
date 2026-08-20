@@ -19,7 +19,7 @@ use function Deployer\writeln;
 class TaskBuilder
 {
     /**
-     * @param TaskConfigurationInterface[] $commands
+     * @param Command[] $commands
      *
      * @param string $namePrefix
      * @return string[]
@@ -32,7 +32,6 @@ class TaskBuilder
         foreach ($commands as $command) {
             $name = $namePrefix . ':' . \count($tasks);
 
-            /** @var Command $command */
             $this->build($command, $name);
 
             $tasks[] = $name;
