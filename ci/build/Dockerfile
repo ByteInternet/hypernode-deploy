@@ -117,8 +117,16 @@ RUN ln -s /bin/hypernode-deploy /bin/hipex-deploy
 # Install composer 1
 RUN curl -sS https://getcomposer.org/installer | php -- --1 --filename=composer1 && mv composer1 /usr/local/bin/ && chmod +x /usr/local/bin/composer1
 # Install composer 2
-RUN curl -sS https://getcomposer.org/installer | php -- --2.2 --filename=composer2 && mv composer2 /usr/local/bin/ && chmod +x /usr/local/bin/composer2
-# Use version 1 for main composer binary
+# Composer 2.2 LTS is kept for older PHP variants, but its RemoteFilesystem callback
+# is rejected by the stricter callable validation in PHP 8.4+ (composer/composer#12051, #12471),
+# so those variants get Composer 2.9.3 (minimum for Magento 2.4.7/2.4.8) instead.
+RUN if dpkg --compare-versions "${PHP_VERSION}" lt "8.4"; then \
+        curl -sS https://getcomposer.org/installer | php -- --2.2 --filename=composer2; \
+    else \
+        curl -sS https://getcomposer.org/installer | php -- --version=2.9.3 --filename=composer2; \
+    fi \
+    && mv composer2 /usr/local/bin/ && chmod +x /usr/local/bin/composer2
+# Use composer 2 as the main composer binary
 RUN rm -f /usr/local/bin/composer; ln -s /usr/local/bin/composer2 /usr/local/bin/composer
 
 # Install elgentos magento2-static-deploy binary for high-performance static content deployment
