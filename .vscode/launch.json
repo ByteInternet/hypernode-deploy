@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch hypernode-deploy",
+            "type": "php",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/hypernode-deploy.php",
+            "args": ["list"],
+            // Other useful commands:
+            // "args": ["build", "-v", "-f", "${workspaceFolder}/deploy.php"],
+            // "args": ["tree", "deploy", "-f", "${workspaceFolder}/deploy.php"],
+            "cwd": "${workspaceFolder}",
+            "port": 0,
+            "runtimeArgs": [
+                "-dxdebug.start_with_request=yes"
+            ],
+            "env": {
+                "XDEBUG_MODE": "debug,develop",
+                "XDEBUG_CONFIG": "client_port=${port}"
+            }
+        },
+        {
+            "name": "Launch currently open script",
+            "type": "php",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}",
+            "port": 0,
+            "runtimeArgs": [
+                "-dxdebug.start_with_request=yes"
+            ],
+            "env": {
+                "XDEBUG_MODE": "debug,develop",
+                "XDEBUG_CONFIG": "client_port=${port}"
+            }
+        },
+        {
+            "name": "Listen for Xdebug (phpunit, CLI)",
+            "type": "php",
+            "request": "launch",
+            "port": 9003
+        }
+    ]
+}
