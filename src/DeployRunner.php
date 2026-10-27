@@ -57,6 +57,7 @@ class DeployRunner
 
     private array $deployedHostnames = [];
     private string $deployedStage = '';
+    private ?Configuration $configuration = null;
 
     public function __construct(
         TaskFactory $taskFactory,
@@ -120,6 +121,7 @@ class DeployRunner
         $config = $this->configurationLoader->load(
             $this->input->getOption('file') ?: 'deploy.php'
         );
+        $this->configuration = $config;
         $config->setLogger($this->log);
 
         if ($configureBuildStage) {
@@ -409,5 +411,10 @@ class DeployRunner
             $this->deployedHostnames,
             $this->brancherHypernodesRegistered
         );
+    }
+
+    public function getConfiguration(): ?Configuration
+    {
+        return $this->configuration;
     }
 }
