@@ -30,6 +30,13 @@ class TaskBuilder
     {
         $tasks = [];
         foreach ($commands as $command) {
+            // Only commands are executed by the task builder. Other task
+            // configurations (e.g. Tideways or Rumvision) are registered by
+            // their own ConfigurableTaskInterface implementation.
+            if (!$command instanceof Command) {
+                continue;
+            }
+
             $name = $namePrefix . ':' . \count($tasks);
 
             $this->build($command, $name);
