@@ -2,6 +2,7 @@
 
 namespace Hypernode\Deploy\Deployer\Task\After;
 
+use Deployer\Deployer;
 use Deployer\Task\Task;
 use Hypernode\DeployConfiguration\RecipeLoader;
 use Hypernode\Deploy\Deployer\Task\ConfigurableTaskInterface;
@@ -48,7 +49,7 @@ class RumvisionTask extends TaskBase implements ConfigurableTaskInterface
             'category_slug' => $config->getCategorySlug(),
         ]);
 
-        return null;
+        return Deployer::get()->tasks->get('deploy:rumvision');
     }
 
     public function register(): void
