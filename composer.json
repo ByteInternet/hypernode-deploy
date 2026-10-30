@@ -21,7 +21,7 @@
         "php-di/php-di": "^7.0",
         "psr/log": "^1.0",
         "symfony/console": "^5.4",
-        "symfony/finder": "^5.4",
+        "symfony/finder": "^8.1",
         "symfony/http-client": "^5.4",
         "symfony/process": "^5.4",
         "twig/twig": "^3.11.2",
