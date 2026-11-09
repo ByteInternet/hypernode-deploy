@@ -34,7 +34,7 @@ class AfterTaskGlobal extends TaskBase
         $tasks = $this->taskBuilder->buildAll($commands, 'deploy:after');
         if (count($tasks) === 0) {
             $tasks = function (): void {
-                writeln('No after deploy tasks defined');
+                writeln('No after deploy commands configured');
             };
         }
 
